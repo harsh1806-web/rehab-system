@@ -1,21 +1,25 @@
 "use client"
-import { useEffect } from "react"
-import { supabase } from "@/lib/supabase"
+
+import { useRouter } from "next/navigation"
 
 export default function Home() {
+  const router = useRouter()
 
-  useEffect(() => {
-    test()
-  }, [])
+  return (
+    <div style={{ padding: "100px", textAlign: "center", color: "white" }}>
+      <h1>Rehab System</h1>
 
-  const test = async () => {
-    const { data, error } = await supabase
-      .from("patients")
-      .select("*")
+      <br />
 
-    console.log("DATA:", data)
-    console.log("ERROR:", error)
-  }
+      <button onClick={() => router.push("/login")}>
+        Login
+      </button>
 
-  return <h1>Supabase Connected ✅</h1>
+      <br /><br />
+
+      <button onClick={() => router.push("/register")}>
+        Register
+      </button>
+    </div>
+  )
 }
