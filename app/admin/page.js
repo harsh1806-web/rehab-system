@@ -1,5 +1,6 @@
 "use client"
-import { bedLayout } from "../../lib/bedLayout"
+import { hospitalLayout } from "@/lib/hospitalLayout"
+import ZoneBox from "@/components/ZoneBox"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
@@ -337,203 +338,60 @@ if (role === "user" && view === "admin") {
 
     {/* LEFT SECTION */}
     {view === "beds" && (
-    <div style={{
-  flex: 1,
-  background: "#0f172a",
-  padding: "20px",
-  borderRadius: "12px",
-  marginTop: "20px"
-}}>
-  <h2 style={{ marginBottom: "10px" }}>🏥 Bed Overview</h2>
-  <div style={{
-  display: "flex",
-  gap: "15px",
-  marginTop: "15px"
-}}>
-
-  <div style={{
-    flex: 1,
-    background: "#1e293b",
-    padding: "15px",
-    borderRadius: "10px"
-  }}>
-    <h4>Total Beds</h4>
-    <p>{bedLayout.flatMap(f => f.zones).flatMap(z => z.beds).length}</p>
-  </div>
-
-  <div style={{
-    flex: 1,
-    background: "#1e293b",
-    padding: "15px",
-    borderRadius: "10px"
-  }}>
-    <h4>Occupied</h4>
-    <p>{activePatients.length}</p>
-  </div>
-
-  <div style={{
-    flex: 1,
-    background: "#1e293b",
-    padding: "15px",
-    borderRadius: "10px"
-  }}>
-    <h4>Available</h4>
-    <p>
-  {bedLayout.flatMap(f => f.zones).flatMap(z => z.beds).length - activePatients.length}
-</p>
-  </div>
-
-</div>
-<p style={{ color: "#94a3b8" }}>Real-time occupancy</p>
-
-  <div style={{ marginTop: "20px" }}>
   <div style={{ marginTop: "20px" }}>
 
-  {/* LEGEND */}
-  <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-    <span>🟩 Empty</span>
-    <span>🟥 Occupied</span>
-    <span>⬛ Hold</span>
-  </div>
-
-  {/* ================= FLOOR ================= */}
-  <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
-
-  {/* ================= ZONE A ================= */}
-  <div style={{
-  border: "2px solid #06b6d4",
-  padding: "10px",
-  display: "inline-block",
-  marginRight: "20px"
-}}>
-    <div style={{
-  background: "#facc15",
-  color: "black",
-  padding: "5px",
-  fontWeight: "bold",
-  textAlign: "center",
-  marginBottom: "5px"
-}}>
-  ZONE A
-</div>
-
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(3, 50px)",
-      gap: "5px"
-    }}>
-      {[1,2,3,4,5,6,7,8].map((bed) => {
-        const patient = activePatients.find(p => Number(p.bed_number) === bed)
-
-        return (
-          <div
-            key={bed}
-            onClick={() => {
-              if (patient) {
-                setSelectedPatient(patient)
-              } else {
-                setShowForm(true)
-                setForm({ ...form, bed_number: bed })
-              }
-            }}
-            style={{
-              width: "50px",
-height: "50px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background:
-                patient?.status === "hold"
-                  ? "black"
-                  : patient
-                  ? "#ef4444"
-                  : "#22c55e",
-              color: "white",
-              fontWeight: "bold",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
-          >
-            {bed}
-          </div>
-        )
-      })}
+    {/* LEGEND */}
+    <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+      <span>🟩 Empty</span>
+      <span>🟥 Occupied</span>
+      <span>⬛ Hold</span>
     </div>
-  </div>
 
-  {/* ================= ZONE B ================= */}
-  <div style={{
-  border: "2px solid #06b6d4",
-  padding: "10px",
-  display: "inline-block",
-  marginRight: "20px"
-}}>
-    <div style={{
-  background: "#facc15",
-  color: "black",
-  padding: "5px",
-  fontWeight: "bold",
-  textAlign: "center",
-  marginBottom: "5px"
-}}>
-  ZONE B
-</div>
+    {/* ================= GROUND FLOOR ================= */}
+    <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
 
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(3, 50px)",
-      gap: "5px"
-    }}>
-      {[9,10,11,12,13,14].map((bed) => {
-        const patient = activePatients.find(p => Number(p.bed_number) === bed)
-
-        return (
-          <div
-            key={bed}
-            onClick={() => {
-              if (patient) {
-                setSelectedPatient(patient)
-              } else {
-                setShowForm(true)
-                setForm({ ...form, bed_number: bed })
-              }
-            }}
-            style={{
-              width: "50px",
-height: "50px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background:
-                patient?.status === "hold"
-                  ? "black"
-                  : patient
-                  ? "#ef4444"
-                  : "#22c55e",
-              color: "white",
-              fontWeight: "bold",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
-          >
-            {bed}
-          </div>
-        )
-      })}
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+      {hospitalLayout.ground.map((zone) => (
+        <ZoneBox
+          key={zone.title}
+          title={zone.title}
+          beds={zone.beds}
+          patients={activePatients}
+          onClick={(bed, patient) => {
+            if (patient) {
+              setSelectedPatient(patient)
+            } else {
+              setShowForm(true)
+              setForm({ ...form, bed_number: bed })
+            }
+          }}
+        />
+      ))}
     </div>
+
+    {/* ================= FIRST FLOOR ================= */}
+    <h2 style={{ color: "#f97316", marginTop: "30px" }}>1st Floor</h2>
+
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+      {hospitalLayout.first.map((zone) => (
+        <ZoneBox
+          key={zone.title}
+          title={zone.title}
+          beds={zone.beds}
+          patients={activePatients}
+          onClick={(bed, patient) => {
+            if (patient) {
+              setSelectedPatient(patient)
+            } else {
+              setShowForm(true)
+              setForm({ ...form, bed_number: bed })
+            }
+          }}
+        />
+      ))}
+    </div>
+
   </div>
-
-</div>
-</div>
-
-  
-
-  <p style={{ marginTop: "20px" }}>
-    Occupied: {activePatients.length}
-  </p>
- 
-
-</div>
 )}
 
     {/* RIGHT SECTION */}
