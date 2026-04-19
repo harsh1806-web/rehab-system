@@ -752,20 +752,7 @@ onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
         Discharge
       </button>
     </div>
-    <button
-  onClick={() => setSelectedPatient(null)}
-  style={{
-    marginTop: "10px",
-    background: "#334155",
-    color: "white",
-    padding: "8px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer"
-  }}
->
-  Close
-</button>
+    
   </div>
 )}
 {showForm && (
@@ -787,11 +774,23 @@ onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
 
   <input name="name" placeholder="Name" onChange={handleChange} />
 
-  <input name="age" placeholder="Age" onChange={handleChange} />
+<input name="age" placeholder="Age" onChange={handleChange} />
 
-  <input name="sex" placeholder="Sex" onChange={handleChange} />
+<input name="sex" placeholder="Sex" onChange={handleChange} />
 
-  <input name="condition" placeholder="Condition" onChange={handleChange} />
+<input name="condition" placeholder="Condition" onChange={handleChange} />
+
+<input name="address" placeholder="Address" onChange={handleChange} />
+
+<input name="contact" placeholder="Contact Number" onChange={handleChange} />
+
+<input name="reference" placeholder="Reference (Who referred?)" onChange={handleChange} />
+
+<input
+  type="date"
+  name="admission_date"
+  onChange={handleChange}
+/>
 
   <input
     placeholder="New Doctor"
