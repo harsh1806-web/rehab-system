@@ -41,7 +41,7 @@ console.log("ROLE:", role)
 if (role === "admin") {
   router.push("/admin")
 } else {
-  router.push("/worker")
+  router.push("/user")
 }
     }
   }

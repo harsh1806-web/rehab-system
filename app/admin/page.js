@@ -22,7 +22,7 @@ const checkAccess = async () => {
   const role = data.user.user_metadata.role
 
   if (role !== "admin") {
-    router.push("/worker")
+    router.push("/user")
   }
 }
     
@@ -104,7 +104,7 @@ const { data: profile } = await supabase
   .single()
 
 if (profile?.role !== "admin") {
-  router.push("/worker")
+  router.push("/user")
 }
 
   setRole(data?.role)
@@ -224,7 +224,7 @@ const handleAddDoctor = async () => {
     fetchDoctors()
   }
 }
-if (role === "worker" && view === "admin") {
+if (role === "user" && view === "admin") {
   return (
     <div style={{ color: "white", padding: "50px" }}>
       ❌ Access Denied
