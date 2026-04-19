@@ -12,28 +12,36 @@ export default function Register() {
   const [role, setRole] = useState("worker")
   const [loading, setLoading] = useState(false)
 
-  const handleRegister = async () => {
-    setLoading(true)
+ const handleRegister = async () => {
+  setLoading(true)
 
-    const { data, error } = await supabase.auth.signUp({
-  email: email,
-  password: password,
-  options: {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  })
+
+  if (error) {
+    setLoading(false)
+    alert(error.message)
+    return
+  }
+
+  // 🔥 IMPORTANT: FORCE SAVE ROLE
+  const { error: updateError } = await supabase.auth.updateUser({
     data: {
       role: role,
     },
-  },
-})
+  })
 
-    setLoading(false)
+  setLoading(false)
 
-    if (error) {
-      alert(error.message)
-    } else {
-      alert("Registered successfully!")
-      router.push("/login")
-    }
+  if (updateError) {
+    alert("Registered but role not saved")
+  } else {
+    alert("Registered successfully!")
+    router.push("/login")
   }
+}
 
   return (
     <div style={{
