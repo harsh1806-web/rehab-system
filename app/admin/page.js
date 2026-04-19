@@ -401,16 +401,26 @@ if (role === "user" && view === "admin") {
 
   {/* ================= ZONE A ================= */}
   <div style={{
-    border: "3px solid cyan",
-    padding: "15px",
-    marginBottom: "20px"
-  }}>
-    <h3>ZONE A</h3>
+  border: "2px solid #06b6d4",
+  padding: "10px",
+  display: "inline-block",
+  marginRight: "20px"
+}}>
+    <div style={{
+  background: "#facc15",
+  color: "black",
+  padding: "5px",
+  fontWeight: "bold",
+  textAlign: "center",
+  marginBottom: "5px"
+}}>
+  ZONE A
+</div>
 
     <div style={{
       display: "grid",
-      gridTemplateColumns: "repeat(3, 70px)",
-      gap: "10px"
+      gridTemplateColumns: "repeat(3, 50px)",
+      gap: "5px"
     }}>
       {[1,2,3,4,5,6,7,8].map((bed) => {
         const patient = activePatients.find(p => Number(p.bed_number) === bed)
@@ -427,8 +437,8 @@ if (role === "user" && view === "admin") {
               }
             }}
             style={{
-              width: "70px",
-              height: "70px",
+              width: "50px",
+height: "50px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -453,16 +463,26 @@ if (role === "user" && view === "admin") {
 
   {/* ================= ZONE B ================= */}
   <div style={{
-    border: "3px solid cyan",
-    padding: "15px",
-    marginBottom: "20px"
-  }}>
-    <h3>ZONE B</h3>
+  border: "2px solid #06b6d4",
+  padding: "10px",
+  display: "inline-block",
+  marginRight: "20px"
+}}>
+    <div style={{
+  background: "#facc15",
+  color: "black",
+  padding: "5px",
+  fontWeight: "bold",
+  textAlign: "center",
+  marginBottom: "5px"
+}}>
+  ZONE B
+</div>
 
     <div style={{
       display: "grid",
-      gridTemplateColumns: "repeat(3, 70px)",
-      gap: "10px"
+      gridTemplateColumns: "repeat(3, 50px)",
+      gap: "5px"
     }}>
       {[9,10,11,12,13,14].map((bed) => {
         const patient = activePatients.find(p => Number(p.bed_number) === bed)
@@ -479,8 +499,8 @@ if (role === "user" && view === "admin") {
               }
             }}
             style={{
-              width: "70px",
-              height: "70px",
+              width: "50px",
+height: "50px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
