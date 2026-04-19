@@ -696,11 +696,23 @@ onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
 
   <input name="name" placeholder="Name" onChange={handleChange} />
 
-  <input name="age" placeholder="Age" onChange={handleChange} />
+<input name="age" placeholder="Age" onChange={handleChange} />
 
-  <input name="sex" placeholder="Sex" onChange={handleChange} />
+<input name="sex" placeholder="Sex" onChange={handleChange} />
 
-  <input name="condition" placeholder="Condition" onChange={handleChange} />
+<input name="condition" placeholder="Condition" onChange={handleChange} />
+
+<input name="address" placeholder="Address" onChange={handleChange} />
+
+<input name="contact" placeholder="Contact Number" onChange={handleChange} />
+
+<input name="reference" placeholder="Reference (Who referred?)" onChange={handleChange} />
+
+<input
+  type="date"
+  name="admission_date"
+  onChange={handleChange}
+/>
 
   <input
     placeholder="New Doctor"
@@ -773,11 +785,101 @@ onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
   }}>
     <h3>Edit Patient</h3>
 
-    <input name="name" value={form.name} onChange={handleChange} /><br /><br />
-    <input name="age" value={form.age} onChange={handleChange} /><br /><br />
-    <input name="condition" value={form.condition} onChange={handleChange} /><br /><br />
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
 
-    <input name="bed_number" value={form.bed_number} onChange={handleChange} /><br /><br />
+  <input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}
+name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" />
+
+  <input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}
+name="age" value={form.age || ""} onChange={handleChange} placeholder="Age" />
+
+  <input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}
+ name="sex" value={form.sex || ""} onChange={handleChange} placeholder="Sex" />
+
+  <input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}
+ name="condition" value={form.condition || ""} onChange={handleChange} placeholder="Condition" />
+
+  <input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}
+name="address" value={form.address || ""} onChange={handleChange} placeholder="Address" />
+
+  <input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}
+name="contact" value={form.contact || ""} onChange={handleChange} placeholder="Contact" />
+
+  <input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}
+name="reference" value={form.reference || ""} onChange={handleChange} placeholder="Reference" />
+
+  {/* Doctor Dropdown */}
+  <select
+    name="doctor"
+    value={form.doctor || ""}
+    onChange={handleChange}
+    style={{
+      padding: "10px",
+      borderRadius: "6px",
+      background: "#020617",
+      color: "white",
+      border: "1px solid #334155"
+    }}
+  >
+    <option value="">Select Doctor</option>
+    {doctors.map((doc) => (
+      <option key={doc.id} value={doc.name}>
+        {doc.name}
+      </option>
+    ))}
+  </select>
+
+  {/* Bed */}
+  <input
+    name="bed_number"
+    value={form.bed_number || ""}
+    onChange={handleChange}
+    placeholder="Bed Number"
+  />
+
+</div>
 
     <button
       onClick={async () => {
