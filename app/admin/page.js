@@ -132,6 +132,7 @@ const fetchHistory = async () => {
 
   const { error } = await supabase.from("patients").insert([{
   ...form,
+  status: "occupied",
   bed_number: Number(form.bed_number),
   admission_date: form.admission_date || new Date().toISOString()
 }])
@@ -386,72 +387,123 @@ if (role === "user" && view === "admin") {
 <p style={{ color: "#94a3b8" }}>Real-time occupancy</p>
 
   <div style={{ marginTop: "20px" }}>
-  {bedLayout.map((floor) => (
-    <div key={floor.floor} style={{ marginBottom: "30px" }}>
+  <div style={{ marginTop: "20px" }}>
 
-      <h2 style={{ color: "#22c55e" }}>{floor.floor}</h2>
+  {/* LEGEND */}
+  <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+    <span>🟩 Empty</span>
+    <span>🟥 Occupied</span>
+    <span>⬛ Hold</span>
+  </div>
 
-      {floor.zones.map((zone) => (
-        <div key={zone.name} style={{
-          marginTop: "15px",
-          background: "#020617",
-padding: "15px",
-borderRadius: "12px",
-border: "1px solid #1e293b"
-        }}>
+  {/* ================= FLOOR ================= */}
+  <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
 
-          <h4 style={{ marginBottom: "10px" }}>{zone.name}</h4>
+  {/* ================= ZONE A ================= */}
+  <div style={{
+    border: "3px solid cyan",
+    padding: "15px",
+    marginBottom: "20px"
+  }}>
+    <h3>ZONE A</h3>
 
-          <div style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "10px"
-          }}>
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 70px)",
+      gap: "10px"
+    }}>
+      {[1,2,3,4,5,6,7,8].map((bed) => {
+        const patient = activePatients.find(p => Number(p.bed_number) === bed)
 
-            {zone.beds.map((bedNumber) => {
-              const patient = activePatients.find(
-                p => Number(p.bed_number) === bedNumber
-              )
-
-              return (
-                <button
-                  key={bedNumber}
-                  onClick={() => {
-                    if (patient) {
-                      setSelectedPatient(patient)
-                    } else {
-                      setShowForm(true)
-                      setForm({ ...form, bed_number: bedNumber })
-                    }
-                  }}
-                  style={{
-  width: "70px",
-  height: "55px",
-  borderRadius: "10px",
-  background: patient ? "#ef4444" : "#22c55e",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontWeight: "bold",
-  fontSize: "14px",
-  boxShadow: "0 4px 10px rgba(0,0,0,0.4)",
-  transition: "0.2s",
-  cursor: "pointer"
-}}
-onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                >
-                  {bedNumber}
-                </button>
-              )
-            })}
-
+        return (
+          <div
+            key={bed}
+            onClick={() => {
+              if (patient) {
+                setSelectedPatient(patient)
+              } else {
+                setShowForm(true)
+                setForm({ ...form, bed_number: bed })
+              }
+            }}
+            style={{
+              width: "70px",
+              height: "70px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background:
+                patient?.status === "hold"
+                  ? "black"
+                  : patient
+                  ? "#ef4444"
+                  : "#22c55e",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
+          >
+            {bed}
           </div>
-        </div>
-      ))}
-
+        )
+      })}
     </div>
-  ))}
+  </div>
+
+  {/* ================= ZONE B ================= */}
+  <div style={{
+    border: "3px solid cyan",
+    padding: "15px",
+    marginBottom: "20px"
+  }}>
+    <h3>ZONE B</h3>
+
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 70px)",
+      gap: "10px"
+    }}>
+      {[9,10,11,12,13,14].map((bed) => {
+        const patient = activePatients.find(p => Number(p.bed_number) === bed)
+
+        return (
+          <div
+            key={bed}
+            onClick={() => {
+              if (patient) {
+                setSelectedPatient(patient)
+              } else {
+                setShowForm(true)
+                setForm({ ...form, bed_number: bed })
+              }
+            }}
+            style={{
+              width: "70px",
+              height: "70px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background:
+                patient?.status === "hold"
+                  ? "black"
+                  : patient
+                  ? "#ef4444"
+                  : "#22c55e",
+              color: "white",
+              fontWeight: "bold",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
+          >
+            {bed}
+          </div>
+        )
+      })}
+    </div>
+  </div>
+
+</div>
 </div>
 
   
