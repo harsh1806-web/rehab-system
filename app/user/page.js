@@ -1,9 +1,10 @@
 "use client"
-
+import { useRouter } from "next/navigation" 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 
 export default function UserDashboard() {
+  const router = useRouter()
   const [patients, setPatients] = useState([])
   const [beds, setBeds] = useState([])
 
@@ -23,9 +24,37 @@ export default function UserDashboard() {
     setPatients(patientData || [])
     setBeds(bedData || [])
   }
+  const handleLogout = async () => {
+  await supabase.auth.signOut()
+  router.push("/login")
+}
 
   return (
-    <div style={{ padding: "30px", color: "white" }}>
+  <div style={{ padding: "30px", color: "white" }}>
+
+    {/* 🔝 Top Bar */}
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "20px"
+    }}>
+      <h1>User Dashboard</h1>
+
+      <button
+        onClick={handleLogout}
+        style={{
+          background: "#ef4444",
+          border: "none",
+          padding: "8px 16px",
+          borderRadius: "6px",
+          color: "white",
+          cursor: "pointer"
+        }}
+      >
+        Logout
+      </button>
+    </div>
       <h1 style={{ marginBottom: "20px" }}>User Dashboard</h1>
 
       <div style={{ display: "flex", gap: "20px" }}>
