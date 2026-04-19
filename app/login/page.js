@@ -2,46 +2,29 @@
 
 import { useState } from "react"
 import { supabase } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
 
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const router = useRouter()
 
   const handleLogin = async () => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
 
-  if (error) {
-    alert(error.message)
-  } else {
-    const user = data.user
-
-    // 🔥 Get role from users table
-    const { data: roleData, error: roleError } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", user.id)
-      .single()
-
-    if (roleError) {
-      alert("Role not found")
-      return
-    }
-
-    // 🔥 Redirect based on role
-    if (roleData.role === "admin") {
-      window.location.href = "/admin"
+    if (error) {
+      alert("Login failed")
     } else {
-      window.location.href = "/worker"
+      router.push("/admin")
     }
   }
-}
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Login</h1>
+    <div style={{ padding: "50px", color: "white" }}>
+      <h2>Login</h2>
 
       <input
         placeholder="Email"
@@ -57,4 +40,9 @@ export default function Login() {
       <button onClick={handleLogin}>Login</button>
     </div>
   )
+  if (role === "admin") {
+  router.push("/admin")
+} else {
+  router.push("/worker")
+}
 }
