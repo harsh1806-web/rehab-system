@@ -2,8 +2,29 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
 
 export default function Admin() {
+  const router = useRouter()
+
+useEffect(() => {
+  checkAccess()
+}, [])
+
+const checkAccess = async () => {
+  const { data } = await supabase.auth.getUser()
+
+  if (!data.user) {
+    router.push("/login")
+    return
+  }
+
+  const role = data.user.user_metadata.role
+
+  if (role !== "admin") {
+    router.push("/worker")
+  }
+}
     
     
     const [role, setRole] = useState(null)

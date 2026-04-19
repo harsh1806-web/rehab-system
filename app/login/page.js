@@ -24,64 +24,61 @@ export default function Login() {
     if (error) {
       alert(error.message)
     } else {
-      router.push("/admin") // change later based on role
+      const { data: userData } = await supabase.auth.getUser()
+
+const role = userData.user.user_metadata.role
+
+if (role === "admin") {
+  router.push("/admin")
+} else {
+  router.push("/worker")
+}
     }
   }
 
   return (
-    <div style={{
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      background: "#0f172a"
-    }}>
-      <div style={{
-        background: "#1e293b",
-        padding: "40px",
-        borderRadius: "12px",
-        width: "320px",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.5)"
-      }}>
-        <h2 style={{ color: "white", marginBottom: "20px", textAlign: "center" }}>
-          Login
-        </h2>
+  <div className="min-h-screen flex items-center justify-center bg-slate-950">
+    <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+      
+      <h2 className="text-2xl font-semibold text-white text-center mb-6">
+        Welcome Back
+      </h2>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={inputStyle}
-        />
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="w-full mb-4 px-4 py-2 rounded-lg bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+      />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={inputStyle}
-        />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full mb-4 px-4 py-2 rounded-lg bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+      />
 
-        <button
-          onClick={handleLogin}
-          style={buttonStyle}
+      <button
+        onClick={handleLogin}
+        className="w-full py-2 rounded-lg bg-green-500 hover:bg-green-600 transition text-white font-medium"
+      >
+        {loading ? "Logging in..." : "Login"}
+      </button>
+
+      <p className="text-center text-slate-400 mt-4">
+        No account?{" "}
+        <span
+          className="text-green-400 cursor-pointer"
+          onClick={() => router.push("/register")}
         >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-
-        <p style={{ color: "#94a3b8", marginTop: "15px", textAlign: "center" }}>
-          Don’t have an account?{" "}
-          <span
-            style={{ color: "#22c55e", cursor: "pointer" }}
-            onClick={() => router.push("/register")}
-          >
-            Register
-          </span>
-        </p>
-      </div>
+          Register
+        </span>
+      </p>
     </div>
-  )
+  </div>
+)
 }
 
 const inputStyle = {
