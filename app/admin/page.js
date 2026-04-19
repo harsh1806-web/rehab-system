@@ -9,6 +9,7 @@ export default function Admin() {
 
 useEffect(() => {
   checkAccess()
+  fetchUserRole()
 }, [])
 
 const checkAccess = async () => {
@@ -646,12 +647,20 @@ onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
       </div>
     ) : (
       dischargedPatients.map((p) => (
-        <div key={p.id} style={{
-          marginTop: "10px",
-          padding: "15px",
-          background: "#1e293b",
-          borderRadius: "10px"
-        }}>
+  <div
+    key={p.id}
+    onClick={() => setSelectedPatient(p)}   // ✅ THIS LINE ADDED
+    style={{
+      marginTop: "10px",
+      padding: "15px",
+      background: "#1e293b",
+      borderRadius: "10px",
+      cursor: "pointer",
+      transition: "0.2s"
+    }}
+    onMouseEnter={(e) => e.currentTarget.style.background = "#334155"}
+    onMouseLeave={(e) => e.currentTarget.style.background = "#1e293b"}
+  >
           <b>{p.name}</b>  
           <br />
           Bed: {p.bed_number}  
@@ -706,11 +715,16 @@ onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
     <h3>Patient Details</h3>
 
     <p><b>Name:</b> {selectedPatient.name}</p>
-    <p><b>Age:</b> {selectedPatient.age}</p>
-    <p><b>Sex:</b> {selectedPatient.sex}</p>
-    <p><b>Condition:</b> {selectedPatient.condition}</p>
-    <p><b>Doctor:</b> {selectedPatient.doctor}</p>
-    <p><b>Bed:</b> {selectedPatient.bed_number}</p>
+<p><b>Age:</b> {selectedPatient.age}</p>
+<p><b>Sex:</b> {selectedPatient.sex}</p>
+<p><b>Condition:</b> {selectedPatient.condition}</p>
+<p><b>Address:</b> {selectedPatient.address}</p>
+<p><b>Contact:</b> {selectedPatient.contact}</p>
+<p><b>Reference:</b> {selectedPatient.reference}</p>
+<p><b>Doctor:</b> {selectedPatient.doctor}</p>
+<p><b>Bed:</b> {selectedPatient.bed_number}</p>
+<p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
+<p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
 
     <div style={{ marginTop: "15px" }}>
       <button
@@ -738,6 +752,20 @@ onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
         Discharge
       </button>
     </div>
+    <button
+  onClick={() => setSelectedPatient(null)}
+  style={{
+    marginTop: "10px",
+    background: "#334155",
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  }}
+>
+  Close
+</button>
   </div>
 )}
 {showForm && (
