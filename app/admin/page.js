@@ -1,5 +1,5 @@
 "use client"
-
+import { bedLayout } from "@/lib/bedLayout"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
@@ -397,45 +397,65 @@ if (role === "user" && view === "admin") {
     marginTop: "20px"
   }}>
     
-    {Array.from({ length: 10 }).map((_, i) => {
-  const bedNumber = i + 1
-  const patient = activePatients.find(
-  p => Number(p.bed_number) === bedNumber
-)
-  
-
-  return (
+    {bedLayout.map((floor) => (
+  <div key={floor.floor} style={{ marginTop: "30px" }}>
     
-    <button
-      key={i}
-      onClick={() => {
-  if (patient) {
-    setSelectedPatient(patient)
-  } else {
-    setShowForm(true)
-    setForm({ ...form, bed_number: bedNumber })
-  }
-}}
-      style={{
-  padding: "18px",
-  borderRadius: "12px",
-  background: patient
-    ? "linear-gradient(135deg, #ef4444, #dc2626)"
-    : "linear-gradient(135deg, #22c55e, #16a34a)",
-  color: "white",
-  fontWeight: "bold",
-  border: "none",
-  boxShadow: "0 6px 15px rgba(0,0,0,0.4)",
-  cursor: "pointer",
-  transition: "0.2s"
-}}
-onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-    >
-      Bed {bedNumber}
-    </button>
-  )
-})}
+    <h3 style={{ color: "#22c55e" }}>{floor.floor}</h3>
+
+    {floor.zones.map((zone) => (
+      <div key={zone.name} style={{
+        marginTop: "15px",
+        padding: "15px",
+        background: "#020617",
+        borderRadius: "10px"
+      }}>
+        
+        <h4>{zone.name}</h4>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "10px",
+          marginTop: "10px"
+        }}>
+
+          {zone.beds.map((bedNumber) => {
+            const patient = activePatients.find(
+              p => Number(p.bed_number) === bedNumber
+            )
+
+            return (
+              <button
+                key={bedNumber}
+                onClick={() => {
+                  if (patient) {
+                    setSelectedPatient(patient)
+                  } else {
+                    setShowForm(true)
+                    setForm({ ...form, bed_number: bedNumber })
+                  }
+                }}
+                style={{
+                  padding: "15px",
+                  borderRadius: "10px",
+                  background: patient
+                    ? "#ef4444"
+                    : "#22c55e",
+                  color: "white",
+                  border: "none",
+                  fontWeight: "bold"
+                }}
+              >
+                {bedNumber}
+              </button>
+            )
+          })}
+
+        </div>
+      </div>
+    ))}
+  </div>
+))}
 
   </div>
 
