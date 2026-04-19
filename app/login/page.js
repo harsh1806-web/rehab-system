@@ -26,18 +26,22 @@ export default function Login() {
     } else {
       const { data: userData } = await supabase.auth.getUser()
 
-const role =
-  userData?.user?.user_metadata?.role ||
-  userData?.user?.raw_user_meta_data?.role
+const userId = userData.user.id
+
+const { data: profile } = await supabase
+  .from("profiles")
+  .select("role")
+  .eq("id", userId)
+  .single()
+
+const role = profile?.role
 
 console.log("ROLE:", role)
 
 if (role === "admin") {
   router.push("/admin")
-} else if (role === "worker") {
-  router.push("/worker")
 } else {
-  alert("No role found")
+  router.push("/worker")
 }
     }
   }

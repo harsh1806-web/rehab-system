@@ -25,6 +25,12 @@ export default function Register() {
     alert(error.message)
     return
   }
+  const { data: userData } = await supabase.auth.getUser()
+
+await supabase
+  .from("profiles")
+  .update({ role: role })
+  .eq("id", userData.user.id)
 
   // 🔥 IMPORTANT: FORCE SAVE ROLE
   const { error: updateError } = await supabase.auth.updateUser({

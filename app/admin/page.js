@@ -95,15 +95,17 @@ useEffect(() => {
 
 
 const fetchUserRole = async () => {
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: userData } = await supabase.auth.getUser()
 
-  if (!user) return
+const { data: profile } = await supabase
+  .from("profiles")
+  .select("role")
+  .eq("id", userData.user.id)
+  .single()
 
-  const { data } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single()
+if (profile?.role !== "admin") {
+  router.push("/worker")
+}
 
   setRole(data?.role)
 }
