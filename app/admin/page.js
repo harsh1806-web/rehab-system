@@ -1,5 +1,5 @@
 "use client"
-import { bedLayout } from "@/lib/bedLayout"
+import { bedLayout } from "../../lib/bedLayout"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
@@ -84,19 +84,6 @@ const [form, setForm] = useState({
     setPatients(data)
   }
 }
-useEffect(() => {
-    const checkUser = async () => {
-  const { data } = await supabase.auth.getUser()
-
-  if (!data.user) {
-    window.location.href = "/login"
-  }
-}
-    
-  fetchPatients()
-  fetchDoctors()
-  fetchHistory()
-}, [])
 
 
 const fetchUserRole = async () => {
@@ -154,18 +141,15 @@ const fetchHistory = async () => {
     console.log(error)
   } else {
     alert("Patient added ✅")
-      fetchPatients()
-fetchHistory()   // 👈 ADD THIS
-      
-
-  
-  await supabase.from("patient_history").insert([{
+      await supabase.from("patient_history").insert([{
   patient_name: form.name,
   action: "admitted",
   bed_number: Number(form.bed_number),
   doctor: form.doctor
-  
 }])
+
+fetchPatients()
+fetchHistory()
   }
 
   setLoading(false)
@@ -251,6 +235,14 @@ if (role === "user" && view === "admin") {
   onClick={async () => {
     await supabase.auth.signOut()
     window.location.href = "/login"
+  }}
+  style={{
+    background: "#ef4444",
+    color: "white",
+    padding: "8px 12px",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer"
   }}
 >
   Logout
@@ -390,12 +382,66 @@ if (role === "user" && view === "admin") {
 </div>
 <p style={{ color: "#94a3b8" }}>Real-time occupancy</p>
 
-  <div style={{
-    display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
-    gap: "10px",
-    marginTop: "20px"
-  }}>
+  <div style={{ marginTop: "20px" }}>
+  {bedLayout.map((floor) => (
+    <div key={floor.floor} style={{ marginBottom: "30px" }}>
+
+      <h2 style={{ color: "#22c55e" }}>{floor.floor}</h2>
+
+      {floor.zones.map((zone) => (
+        <div key={zone.name} style={{
+          marginTop: "15px",
+          padding: "15px",
+          background: "#020617",
+          borderRadius: "10px"
+        }}>
+
+          <h4 style={{ marginBottom: "10px" }}>{zone.name}</h4>
+
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px"
+          }}>
+
+            {zone.beds.map((bedNumber) => {
+              const patient = activePatients.find(
+                p => Number(p.bed_number) === bedNumber
+              )
+
+              return (
+                <button
+                  key={bedNumber}
+                  onClick={() => {
+                    if (patient) {
+                      setSelectedPatient(patient)
+                    } else {
+                      setShowForm(true)
+                      setForm({ ...form, bed_number: bedNumber })
+                    }
+                  }}
+                  style={{
+                    width: "60px",
+                    height: "50px",
+                    borderRadius: "8px",
+                    background: patient ? "#ef4444" : "#22c55e",
+                    color: "white",
+                    border: "none",
+                    fontWeight: "bold"
+                  }}
+                >
+                  {bedNumber}
+                </button>
+              )
+            })}
+
+          </div>
+        </div>
+      ))}
+
+    </div>
+  ))}
+</div>
     
     {bedLayout.map((floor) => (
   <div key={floor.floor} style={{ marginTop: "30px" }}>
@@ -457,7 +503,7 @@ if (role === "user" && view === "admin") {
   </div>
 ))}
 
-  </div>
+  
 
   <p style={{ marginTop: "20px" }}>
     Occupied: {activePatients.length}
