@@ -299,6 +299,19 @@ if (role === "user" && view === "admin") {
       >
         Doctors
       </button>
+      <button
+  onClick={() => setView("discharged")}
+  style={{
+    background: view === "discharged" ? "#22c55e" : "#334155",
+    padding: "8px 16px",
+    borderRadius: "6px",
+    color: "white",
+    border: "none",
+    cursor: "pointer"
+  }}
+>
+  Discharged
+</button>
 {role === "admin" && (
       <button
         onClick={() => setView("admin")}
@@ -611,6 +624,21 @@ onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
         </div>
       ))
     )}
+  </div>
+)}
+{view === "discharged" && (
+  <div style={{ marginTop: "20px" }}>
+    <h2>Discharged Patients</h2>
+
+    <div style={{
+      background: "#1e293b",
+      padding: "20px",
+      borderRadius: "10px"
+    }}>
+      <p style={{ color: "#94a3b8" }}>
+        No discharged patients yet
+      </p>
+    </div>
   </div>
 )}
 {view === "admin" && role === "admin" && (

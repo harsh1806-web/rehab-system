@@ -47,11 +47,23 @@ if (role === "admin") {
   }
 
   return (
-  <div className="min-h-screen flex items-center justify-center bg-slate-950">
-    <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
-      
-      <h2 className="text-2xl font-semibold text-white text-center mb-6">
-        Welcome Back
+  <div style={{
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "linear-gradient(to right, #0f172a, #020617)"
+  }}>
+    <div style={{
+      background: "#1e293b",
+      padding: "40px",
+      borderRadius: "12px",
+      width: "350px",
+      boxShadow: "0 10px 30px rgba(0,0,0,0.5)"
+    }}>
+
+      <h2 style={{ color: "white", marginBottom: "20px" }}>
+        Login
       </h2>
 
       <input
@@ -59,7 +71,15 @@ if (role === "admin") {
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full mb-4 px-4 py-2 rounded-lg bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+        style={{
+          width: "100%",
+          padding: "10px",
+          marginBottom: "15px",
+          borderRadius: "6px",
+          border: "none",
+          background: "#334155",
+          color: "white"
+        }}
       />
 
       <input
@@ -67,25 +87,33 @@ if (role === "admin") {
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full mb-4 px-4 py-2 rounded-lg bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+        style={{
+          width: "100%",
+          padding: "10px",
+          marginBottom: "20px",
+          borderRadius: "6px",
+          border: "none",
+          background: "#334155",
+          color: "white"
+        }}
       />
 
       <button
         onClick={handleLogin}
-        className="w-full py-2 rounded-lg bg-green-500 hover:bg-green-600 transition text-white font-medium"
+        style={{
+          width: "100%",
+          padding: "10px",
+          background: "#22c55e",
+          border: "none",
+          borderRadius: "6px",
+          color: "white",
+          cursor: "pointer",
+          fontWeight: "bold"
+        }}
       >
-        {loading ? "Logging in..." : "Login"}
+        Login
       </button>
 
-      <p className="text-center text-slate-400 mt-4">
-        No account?{" "}
-        <span
-          className="text-green-400 cursor-pointer"
-          onClick={() => router.push("/register")}
-        >
-          Register
-        </span>
-      </p>
     </div>
   </div>
 )
