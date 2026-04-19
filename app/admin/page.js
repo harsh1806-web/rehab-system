@@ -19,11 +19,15 @@ const checkAccess = async () => {
     return
   }
 
-  const role = data.user.user_metadata.role
+  const { data: profile } = await supabase
+  .from("profiles")
+  .select("role")
+  .eq("id", data.user.id)
+  .single()
 
-  if (role !== "admin") {
-    router.push("/user")
-  }
+if (profile?.role !== "admin") {
+  router.push("/user")
+}
 }
     
     
@@ -38,7 +42,7 @@ const checkAccess = async () => {
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
     const activePatients = patients.filter(p => !p.discharge_date)
-    const dischargedPatients = patients.filter(p => p.discharge_date)
+    const dischargedPatients = patients.filter(p => p.discharge_date !== null)
     const doctorStats = {}
 
 activePatients.forEach((p) => {
@@ -97,17 +101,17 @@ useEffect(() => {
 const fetchUserRole = async () => {
   const { data: userData } = await supabase.auth.getUser()
 
-const { data: profile } = await supabase
-  .from("profiles")
-  .select("role")
-  .eq("id", userData.user.id)
-  .single()
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userData.user.id)
+    .single()
 
-if (profile?.role !== "admin") {
-  router.push("/user")
-}
+  if (profile?.role !== "admin") {
+    router.push("/user")
+  }
 
-  setRole(data?.role)
+  setRole(profile?.role)   // ✅ FIXED
 }
   const fetchDoctors = async () => {
   const { data, error } = await supabase
@@ -630,15 +634,34 @@ onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
   <div style={{ marginTop: "20px" }}>
     <h2>Discharged Patients</h2>
 
-    <div style={{
-      background: "#1e293b",
-      padding: "20px",
-      borderRadius: "10px"
-    }}>
-      <p style={{ color: "#94a3b8" }}>
-        No discharged patients yet
-      </p>
-    </div>
+    {dischargedPatients.length === 0 ? (
+      <div style={{
+        background: "#1e293b",
+        padding: "20px",
+        borderRadius: "10px"
+      }}>
+        <p style={{ color: "#94a3b8" }}>
+          No discharged patients yet
+        </p>
+      </div>
+    ) : (
+      dischargedPatients.map((p) => (
+        <div key={p.id} style={{
+          marginTop: "10px",
+          padding: "15px",
+          background: "#1e293b",
+          borderRadius: "10px"
+        }}>
+          <b>{p.name}</b>  
+          <br />
+          Bed: {p.bed_number}  
+          <br />
+          Doctor: {p.doctor}  
+          <br />
+          Discharged on: {p.discharge_date?.slice(0,10)}
+        </div>
+      ))
+    )}
   </div>
 )}
 {view === "admin" && role === "admin" && (
