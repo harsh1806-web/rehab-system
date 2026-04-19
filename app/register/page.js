@@ -25,12 +25,37 @@ export default function Register() {
     alert(error.message)
     return
   }
-  const { data: userData } = await supabase.auth.getUser()
+  const handleRegister = async () => {
+  setLoading(true)
 
-await supabase
-  .from("profiles")
-  .update({ role: role })
-  .eq("id", userData.user.id)
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  })
+
+  if (error) {
+    setLoading(false)
+    alert(error.message)
+    return
+  }
+
+  const userId = data.user.id
+
+  // 🔥 UPDATE PROFILE WITH ROLE
+  const { error: updateError } = await supabase
+    .from("profiles")
+    .update({ role: role })
+    .eq("id", userId)
+
+  if (updateError) {
+    console.log(updateError)
+    alert("Role update failed")
+  }
+
+  setLoading(false)
+  alert("Registered successfully!")
+  router.push("/login")
+}
 
   // 🔥 IMPORTANT: FORCE SAVE ROLE
   const { error: updateError } = await supabase.auth.updateUser({
