@@ -231,22 +231,7 @@ if (role === "user" && view === "admin") {
    
 
   {/* 🔥 TOP NAVBAR */}
-  <button
-  onClick={async () => {
-    await supabase.auth.signOut()
-    window.location.href = "/login"
-  }}
-  style={{
-    background: "#ef4444",
-    color: "white",
-    padding: "8px 12px",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer"
-  }}
->
-  Logout
-</button>
+
   <div style={{
     display: "flex",
     justifyContent: "space-between",
@@ -258,6 +243,22 @@ if (role === "user" && view === "admin") {
     <h2 style={{ margin: 0 }}>🏥 Rehab Dashboard</h2>
 
     <div style={{ display: "flex", gap: "10px" }}>
+      <button
+  onClick={async () => {
+    await supabase.auth.signOut()
+    router.push("/login")
+  }}
+  style={{
+    background: "#ef4444",
+    color: "white",
+    padding: "8px 12px",
+    borderRadius: "6px",
+    border: "none",
+    cursor: "pointer"
+  }}
+>
+  Logout
+</button>
       <button
         onClick={() => setView("beds")}
         style={{
@@ -356,7 +357,7 @@ if (role === "user" && view === "admin") {
     borderRadius: "10px"
   }}>
     <h4>Total Beds</h4>
-    <p>10</p>
+    <p>{bedLayout.flatMap(f => f.zones).flatMap(z => z.beds).length}</p>
   </div>
 
   <div style={{
@@ -376,7 +377,9 @@ if (role === "user" && view === "admin") {
     borderRadius: "10px"
   }}>
     <h4>Available</h4>
-    <p>{10 - activePatients.length}</p>
+    <p>
+  {bedLayout.flatMap(f => f.zones).flatMap(z => z.beds).length - activePatients.length}
+</p>
   </div>
 
 </div>
@@ -391,9 +394,10 @@ if (role === "user" && view === "admin") {
       {floor.zones.map((zone) => (
         <div key={zone.name} style={{
           marginTop: "15px",
-          padding: "15px",
           background: "#020617",
-          borderRadius: "10px"
+padding: "15px",
+borderRadius: "12px",
+border: "1px solid #1e293b"
         }}>
 
           <h4 style={{ marginBottom: "10px" }}>{zone.name}</h4>
@@ -421,14 +425,21 @@ if (role === "user" && view === "admin") {
                     }
                   }}
                   style={{
-                    width: "60px",
-                    height: "50px",
-                    borderRadius: "8px",
-                    background: patient ? "#ef4444" : "#22c55e",
-                    color: "white",
-                    border: "none",
-                    fontWeight: "bold"
-                  }}
+  width: "70px",
+  height: "55px",
+  borderRadius: "10px",
+  background: patient ? "#ef4444" : "#22c55e",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontWeight: "bold",
+  fontSize: "14px",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.4)",
+  transition: "0.2s",
+  cursor: "pointer"
+}}
+onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
                 >
                   {bedNumber}
                 </button>
@@ -442,66 +453,6 @@ if (role === "user" && view === "admin") {
     </div>
   ))}
 </div>
-    
-    {bedLayout.map((floor) => (
-  <div key={floor.floor} style={{ marginTop: "30px" }}>
-    
-    <h3 style={{ color: "#22c55e" }}>{floor.floor}</h3>
-
-    {floor.zones.map((zone) => (
-      <div key={zone.name} style={{
-        marginTop: "15px",
-        padding: "15px",
-        background: "#020617",
-        borderRadius: "10px"
-      }}>
-        
-        <h4>{zone.name}</h4>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "10px",
-          marginTop: "10px"
-        }}>
-
-          {zone.beds.map((bedNumber) => {
-            const patient = activePatients.find(
-              p => Number(p.bed_number) === bedNumber
-            )
-
-            return (
-              <button
-                key={bedNumber}
-                onClick={() => {
-                  if (patient) {
-                    setSelectedPatient(patient)
-                  } else {
-                    setShowForm(true)
-                    setForm({ ...form, bed_number: bedNumber })
-                  }
-                }}
-                style={{
-                  padding: "15px",
-                  borderRadius: "10px",
-                  background: patient
-                    ? "#ef4444"
-                    : "#22c55e",
-                  color: "white",
-                  border: "none",
-                  fontWeight: "bold"
-                }}
-              >
-                {bedNumber}
-              </button>
-            )
-          })}
-
-        </div>
-      </div>
-    ))}
-  </div>
-))}
 
   
 
@@ -766,10 +717,11 @@ if (role === "user" && view === "admin") {
     ))}
   </div>
 )}
+
     {selectedPatient && (
   <div style={{
     position: "fixed",
-    top: "30%",
+    top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
     background: "#1e293b",
@@ -824,7 +776,7 @@ if (role === "user" && view === "admin") {
 {showForm && (
   <div style={{
   position: "fixed",
-  top: "30%",
+  top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   background: "#1e293b",
@@ -919,7 +871,7 @@ if (role === "user" && view === "admin") {
 {editMode && (
   <div style={{
     position: "fixed",
-    top: "30%",
+    top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
     background: "#1e293b",
