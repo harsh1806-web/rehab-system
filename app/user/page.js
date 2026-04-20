@@ -46,6 +46,9 @@ if (profile?.role !== "user") {
     const activePatients = (patients || []).filter(
   p => !p.discharge_date && p.status !== "hospital"
 )
+const hospitalPatients = (patients || []).filter(
+  p => p.status === "hospital" && !p.discharge_date
+)
     const dischargedPatients = patients.filter(p => p.discharge_date !== null)
     const doctorStats = {}
 
@@ -374,6 +377,18 @@ const calculateRehabDays = (stays) => {
   maxWidth: "1200px",
   margin: "0 auto"
 }}>
+  <button
+  onClick={() => setView("hospital")}
+  style={{
+    background: view === "hospital" ? "#22c55e" : "#1e293b",
+    color: "white",
+    padding: "8px 12px",
+    border: "none",
+    borderRadius: "6px"
+  }}
+>
+  Hospital
+</button>
     
     
 
@@ -493,8 +508,10 @@ fetchTimeline(patient.id)
 
   </div>
 ))}
+
 </div>
     )}
+    
 
     {/* RIGHT SECTION */}
     {view === "patients" && (
@@ -730,6 +747,80 @@ fetchTimeline(patient.id)
   </div>
 ))}
     
+  </div>
+)}
+{view === "hospital" && (
+  <div style={{ padding: "20px" }}>
+    <h2>🏥 Hospital Patients</h2>
+
+    {hospitalPatients.length === 0 ? (
+      <p style={{ color: "#94a3b8" }}>
+        No patients in hospital
+      </p>
+    ) : (
+      hospitalPatients.map((p) => (
+        <div
+          key={p.id}
+          style={{
+            marginTop: "10px",
+            padding: "15px",
+            background: "#1e293b",
+            borderRadius: "10px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
+        >
+          <div>
+            <b>{p.name}</b>
+            <br />
+            Bed: {p.bed_number}
+            <br />
+            Doctor: {p.doctor}
+          </div>
+
+          <button
+            onClick={async () => {
+              const now = new Date().toISOString()
+
+              // Close hospital stay
+              await supabase
+                .from("patient_stays")
+                .update({ end_date: now })
+                .eq("patient_id", p.id)
+                .eq("type", "hospital")
+                .is("end_date", null)
+
+              // Start rehab again
+              await supabase.from("patient_stays").insert([{
+                patient_id: p.id,
+                type: "rehab",
+                start_date: now
+              }])
+
+              // Move back to rehab
+              await supabase
+                .from("patients")
+                .update({ status: "occupied" })
+                .eq("id", p.id)
+
+              fetchPatients()
+
+              alert("Returned to rehab 🏥")
+            }}
+            style={{
+              background: "#22c55e",
+              color: "white",
+              padding: "8px",
+              border: "none",
+              borderRadius: "6px"
+            }}
+          >
+            Return
+          </button>
+        </div>
+      ))
+    )}
   </div>
 )}
 
