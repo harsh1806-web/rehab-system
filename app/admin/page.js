@@ -988,45 +988,46 @@ fetchTimeline(patient.id)
   onClick={async () => {
     if (!selectedPatient) return
 
-    const choice = prompt(
-    "Type:\n1 → Empty Bed\n2 → Hold Bed"
-  )
+    const choice = prompt("Type:\n1 → Empty Bed\n2 → Hold Bed")
+if (!choice) return
 
-  if (!choice) return
+const newBedStatus = choice === "2" ? "hold" : "empty"
+const now = new Date().toISOString()
 
-  const now = new Date().toISOString()
-
-  // Close rehab stay
-  await supabase
-    .from("patient_stays")
-    .update({ end_date: now })
-    .eq("patient_id", selectedPatient.id)
-    .eq("type", "rehab")
-    .is("end_date", null)
-
-  // Start hospital stay
-  await supabase.from("patient_stays").insert([{
-    patient_id: selectedPatient.id,
-    type: "hospital",
-    start_date: now
-  }])
-
-  // 🔥 MAIN CHANGE
-  const newBedStatus = choice === "2" ? "hold" : "empty"
-
+// 1. Close rehab stay
 await supabase
+  .from("patient_stays")
+  .update({ end_date: now })
+  .eq("patient_id", selectedPatient.id)
+  .eq("type", "rehab")
+  .is("end_date", null)
+
+// 2. Start hospital stay
+await supabase.from("patient_stays").insert([{
+  patient_id: selectedPatient.id,
+  type: "hospital",
+  start_date: now
+}])
+
+// 3. UPDATE PATIENT (🔥 FIXED)
+const { error } = await supabase
   .from("patients")
   .update({
-    status: "occupied",
-    bed_number: Number(bed),
-    bed_status: null   // 🔥 CLEAR HOLD
+    status: "hospital",
+    bed_status: newBedStatus
   })
   .eq("id", selectedPatient.id)
 
-  await fetchPatients()
-  setSelectedPatient(null)
+if (error) {
+  console.log(error)
+  alert("Transfer failed ❌")
+  return
+}
 
-  alert(
+await fetchPatients()
+setSelectedPatient(null)
+
+alert(
   newBedStatus === "hold"
     ? "Bed on HOLD 🟠"
     : "Bed emptied 🟢"
