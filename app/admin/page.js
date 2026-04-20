@@ -202,14 +202,30 @@ const td = {
 }
 
 const handleAddDoctor = async () => {
-  if (!newDoctor) return alert("Enter doctor name")
+  if (!newDoctor.trim()) {
+    return alert("Enter doctor name")
+  }
+
+  // ✅ normalize input
+  const doctorName = newDoctor.trim().toLowerCase()
+
+  // 🔍 check existing doctors (case insensitive)
+  const exists = doctors.find(
+    (d) => d.name.toLowerCase() === doctorName
+  )
+
+  if (exists) {
+    alert("Doctor already exists ❌")
+    return
+  }
 
   const { error } = await supabase
     .from("doctors")
-    .insert([{ name: newDoctor }])
+    .insert([{ name: newDoctor.trim() }])
 
   if (error) {
     console.log(error)
+    alert("Error adding doctor")
   } else {
     setNewDoctor("")
     fetchDoctors()
