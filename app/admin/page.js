@@ -47,7 +47,8 @@ if (profile?.role !== "admin") {
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
     const activePatients = (patients || []).filter(
-  p => !p.discharge_date
+  p => !p.discharge_date && p.status !== "hospital"
+
 )
 const hospitalPatients = (patients || []).filter(
   p => p.status === "hospital" && !p.discharge_date
@@ -1082,9 +1083,10 @@ alert(
     await supabase
       .from("patients")
       .update({
-        status: "occupied",
-        bed_number: Number(bed)
-      })
+  status: "occupied",
+  bed_number: Number(bed),
+  bed_status: null   // 🔥 VERY IMPORTANT
+})
       .eq("id", selectedPatient.id)
 
     await fetchPatients()
