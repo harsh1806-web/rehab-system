@@ -32,7 +32,7 @@ if (profile?.role !== "admin") {
 }
 }
     
-    
+    const [timeline, setTimeline] = useState([])
     const [role, setRole] = useState(null)
     const [view, setView] = useState("beds")
     const [history, setHistory] = useState([])
@@ -113,6 +113,23 @@ const fetchUserRole = async () => {
     setDoctors(data)
   }
 }
+const calculateRehabDays = (stays) => {
+  let total = 0
+
+  stays.forEach((stay) => {
+    if (stay.type === "rehab") {
+      const start = new Date(stay.start_date)
+      const end = stay.end_date
+        ? new Date(stay.end_date)
+        : new Date()
+
+      const diff = (end - start) / (1000 * 60 * 60 * 24)
+      total += diff
+    }
+  })
+
+  return Math.floor(total)
+}
 const fetchHistory = async () => {
   const { data } = await supabase
     .from("patient_history")
@@ -131,18 +148,28 @@ const fetchHistory = async () => {
 
   setLoading(true)
 
-  const { error } = await supabase.from("patients").insert([{
-  ...form,
-  status: "occupied",
-  bed_number: Number(form.bed_number),
-  admission_date: form.admission_date || new Date().toISOString()
-}])
+  const { data, error } = await supabase
+  .from("patients")
+  .insert([{
+    ...form,
+    status: "occupied",
+    bed_number: Number(form.bed_number),
+    admission_date: form.admission_date || new Date().toISOString()
+  }])
+  .select()
+  .single()
 
   if (error) {
     alert(error.message)
     console.log(error)
   } else {
     alert("Patient added ✅")
+    // ✅ Create first rehab stay
+await supabase.from("patient_stays").insert([{
+  patient_id: data.id,
+  type: "rehab",
+  start_date: new Date().toISOString()
+}])
       await supabase.from("patient_history").insert([{
   patient_name: form.name,
   action: "admitted",
@@ -255,6 +282,15 @@ if (role === "user" && view === "admin") {
       ❌ Access Denied
     </div>
   )
+}
+const fetchTimeline = async (patientId) => {
+  const { data } = await supabase
+    .from("patient_stays")
+    .select("*")
+    .eq("patient_id", patientId)
+    .order("start_date", { ascending: true })
+
+  setTimeline(data || [])
 }
 
  return (
@@ -435,6 +471,7 @@ if (role === "user" && view === "admin") {
           onBedClick={(bed, patient) => {
             if (patient) {
               setSelectedPatient(patient)
+fetchTimeline(patient.id)
             } else {
               setShowForm(true)
               setForm({ ...form, bed_number: bed })
@@ -473,6 +510,7 @@ if (role === "user" && view === "admin") {
           onBedClick={(bed, patient) => {
             if (patient) {
               setSelectedPatient(patient)
+fetchTimeline(patient.id)
             } else {
               setShowForm(true)
               setForm({ ...form, bed_number: bed })
@@ -818,18 +856,100 @@ if (role === "user" && view === "admin") {
 <p><b>Bed:</b> {selectedPatient.bed_number}</p>
 <p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
 <p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
+<h4 style={{ marginTop: "15px" }}>Timeline</h4>
+
+{timeline.map((t) => (
+  <div key={t.id} style={{
+    padding: "8px",
+    marginTop: "5px",
+    background: "#020617",
+    borderRadius: "6px"
+  }}>
+    <b>{t.type.toUpperCase()}</b>
+    <br />
+    {t.start_date?.slice(0,10)} → {t.end_date?.slice(0,10) || "Present"}
+  </div>
+))}
+
+<p style={{ marginTop: "10px", color: "#22c55e" }}>
+  Total Rehab Days: {calculateRehabDays(timeline)}
+</p>
 
     <div style={{ marginTop: "15px" }}>
       <button
   onClick={() => {
     setEditMode(true)
+    
     setForm(selectedPatient)
   }}
   style={{ marginRight: "10px" }}
 >
   Edit
 </button>
+<button
+  onClick={async () => {
+    const now = new Date().toISOString()
 
+    // 1. Close rehab stay
+    await supabase
+      .from("patient_stays")
+      .update({ end_date: now })
+      .eq("patient_id", selectedPatient.id)
+      .eq("type", "rehab")
+      .is("end_date", null)
+
+    // 2. Start hospital stay
+    await supabase.from("patient_stays").insert([{
+      patient_id: selectedPatient.id,
+      type: "hospital",
+      start_date: now
+    }])
+
+    alert("Transferred to hospital 🚑")
+  }}
+  style={{
+    marginLeft: "10px",
+    background: "#f97316",
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "5px"
+  }}
+>
+  Transfer
+</button>
+<button
+  onClick={async () => {
+    const now = new Date().toISOString()
+
+    // Close hospital stay
+    await supabase
+      .from("patient_stays")
+      .update({ end_date: now })
+      .eq("patient_id", selectedPatient.id)
+      .eq("type", "hospital")
+      .is("end_date", null)
+
+    // Start rehab again
+    await supabase.from("patient_stays").insert([{
+      patient_id: selectedPatient.id,
+      type: "rehab",
+      start_date: now
+    }])
+
+    alert("Returned to rehab 🏥")
+  }}
+  style={{
+    marginLeft: "10px",
+    background: "#22c55e",
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "5px"
+  }}
+>
+  Return
+</button>
       <button
         onClick={handleDischarge}
         style={{
