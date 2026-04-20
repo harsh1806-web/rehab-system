@@ -238,6 +238,17 @@ const cardStyle = {
   borderRadius: "12px",
   border: "1px solid #1e293b"
 }
+const availableBeds = []
+
+for (let i = 1; i <= 60; i++) {
+  const occupied = activePatients.find(
+    p => Number(p.bed_number) === i && p.id !== selectedPatient?.id
+  )
+
+  if (!occupied) {
+    availableBeds.push(i)
+  }
+}
 if (role === "user" && view === "admin") {
   return (
     <div style={{ color: "white", padding: "50px" }}>
@@ -649,34 +660,67 @@ if (role === "user" && view === "admin") {
   <div style={{ padding: "20px" }}>
     <h2>👨‍⚕️ Doctors</h2>
 
-    {Object.keys(doctorStats).length === 0 ? (
-      <p style={{ color: "#94a3b8" }}>No doctors yet</p>
-    ) : (
-      Object.keys(doctorStats).map((doc) => (
-        <div
-          key={doc}
-          style={{
-            marginTop: "10px",
-            padding: "15px",
-            background: "#1e293b",
-            borderRadius: "10px",
-            display: "flex",
-            justifyContent: "space-between"
-          }}
-        >
-          <span
-  onClick={() => {
-    setDoctorFilter(doc)
-    setView("patients")
-  }}
-  style={{ cursor: "pointer", color: "#22c55e" }}
->
-  {doc}
-</span>
-          <span>{doctorStats[doc]} patients</span>
-        </div>
-      ))
-    )}
+    {Object.keys(doctorStats).map((doc) => (
+  <div
+    key={doc}
+    style={{
+      marginTop: "10px",
+      padding: "15px",
+      background: "#1e293b",
+      borderRadius: "10px",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
+    }}
+  >
+    <span
+      onClick={() => {
+        setDoctorFilter(doc)
+        setView("patients")
+      }}
+      style={{ cursor: "pointer", color: "#22c55e" }}
+    >
+      {doc}
+    </span>
+
+    <div style={{ display: "flex", gap: "10px" }}>
+      <span>{doctorStats[doc]} patients</span>
+
+      <button
+        onClick={async () => {
+          const confirmDelete = confirm(`Delete doctor ${doc}?`)
+          if (!confirmDelete) return
+
+          // ❌ Prevent delete if patients exist
+          const hasPatients = activePatients.some(p => p.doctor === doc)
+
+          if (hasPatients) {
+            alert("Cannot delete doctor with active patients ❌")
+            return
+          }
+
+          await supabase
+            .from("doctors")
+            .delete()
+            .eq("name", doc)
+
+          fetchDoctors()
+        }}
+        style={{
+          background: "#ef4444",
+          border: "none",
+          color: "white",
+          padding: "5px 8px",
+          borderRadius: "5px",
+          cursor: "pointer"
+        }}
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+))}
+    
   </div>
 )}
 {view === "discharged" && (
@@ -856,7 +900,6 @@ if (role === "user" && view === "admin") {
   value={form.doctor || ""}
   onChange={handleChange}
   style={{
-    width: "100%",
     padding: "10px",
     borderRadius: "6px",
     background: "#020617",
@@ -864,24 +907,35 @@ if (role === "user" && view === "admin") {
     border: "1px solid #334155"
   }}
 >
-    <option value="">Select Doctor</option>
-    {doctors.map((doc) => (
-      <option
-  key={doc.id}
-  value={doc.name}
-  style={{ background: "#020617", color: "white" }}
->
-        {doc.name}
-      </option>
-    ))}
-  </select>
+  <option value="">Select Doctor</option>
 
-  <input
-    name="bed_number"
-    value={form.bed_number}
-    readOnly
-    style={{ background: "#334155", color: "#94a3b8" }}
-  />
+  {doctors.map((doc) => (
+    <option key={doc.id} value={doc.name}>
+      {doc.name}
+    </option>
+  ))}
+</select>
+
+  <select
+  name="bed_number"
+  value={form.bed_number || ""}
+  onChange={handleChange}
+  style={{
+    padding: "10px",
+    borderRadius: "6px",
+    background: "#020617",
+    color: "white",
+    border: "1px solid #334155"
+  }}
+>
+  <option value="">Select Bed</option>
+
+  {availableBeds.map((bed) => (
+    <option key={bed} value={bed}>
+      Bed {bed}
+    </option>
+  ))}
+</select>
 
 </div>
 
