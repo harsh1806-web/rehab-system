@@ -39,10 +39,8 @@ boxShadow: "0 0 10px rgba(34,211,238,0.3)",
           )
           let bg = "#22c55e" // empty
 
-if (patient?.bed_status === "hold") {
-  bg = "#f97316" // 🟠 orange
-} else if (patient) {
-  bg = "#ef4444" // 🔴 occupied
+if (patient) {
+  bg = "#ef4444" // only occupied
 }
 
           return (
