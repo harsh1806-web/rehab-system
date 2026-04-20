@@ -1031,13 +1031,7 @@ fetchTimeline(patient.id)
       .update({ status: "hospital" })
       .eq("id", selectedPatient.id)
 
-    // 🔥 4. REFRESH UI
-    await fetchPatients()
-
-    // 🔥 5. CLOSE POPUP
-    setSelectedPatient(null)
-
-    alert("Transferred to hospital 🚑 Bed is now free")
+   
   }}
   style={{
     marginLeft: "10px",
@@ -1050,6 +1044,8 @@ fetchTimeline(patient.id)
 >
   Transfer
 </button>
+<button
+
 onClick={async () => {
   const bed = prompt("Enter bed number to assign:")
 
@@ -1096,6 +1092,8 @@ onClick={async () => {
 
   alert("Returned to rehab 🏥")
 }}
+>
+</button>
       <button
         onClick={handleDischarge}
         style={{
