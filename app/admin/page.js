@@ -1043,53 +1043,59 @@ fetchTimeline(patient.id)
   Transfer
 </button>
 <button
+  onClick={async () => {
+    const bed = prompt("Enter bed number to assign:")
 
-onClick={async () => {
-  const bed = prompt("Enter bed number to assign:")
+    if (!bed) return
 
-  if (!bed) return
+    const isTaken = activePatients.some(
+      p => Number(p.bed_number) === Number(bed)
+    )
 
-  // 🔴 Check if bed is already occupied
-  const isTaken = activePatients.some(
-    p => Number(p.bed_number) === Number(bed)
-  )
+    if (isTaken) {
+      alert("Bed already occupied ❌")
+      return
+    }
 
-  if (isTaken) {
-    alert("Bed already occupied ❌")
-    return
-  }
+    const now = new Date().toISOString()
 
-  const now = new Date().toISOString()
+    // close hospital stay
+    await supabase
+      .from("patient_stays")
+      .update({ end_date: now })
+      .eq("patient_id", selectedPatient.id)
+      .eq("type", "hospital")
+      .is("end_date", null)
 
-  // Close hospital stay
-  await supabase
-    .from("patient_stays")
-    .update({ end_date: now })
-    .eq("patient_id", selectedPatient.id)
-    .eq("type", "hospital")
-    .is("end_date", null)
+    // start rehab again
+    await supabase.from("patient_stays").insert([{
+      patient_id: selectedPatient.id,
+      type: "rehab",
+      start_date: now
+    }])
 
-  // Start rehab stay again
-  await supabase.from("patient_stays").insert([{
-    patient_id: selectedPatient.id,
-    type: "rehab",
-    start_date: now
-  }])
+    await supabase
+      .from("patients")
+      .update({
+        status: "occupied",
+        bed_number: Number(bed)
+      })
+      .eq("id", selectedPatient.id)
 
-  // 🔥 Assign bed + mark occupied
-  await supabase
-    .from("patients")
-    .update({
-      status: "occupied",
-      bed_number: Number(bed)
-    })
-    .eq("id", selectedPatient.id)
+    await fetchPatients()
+    setSelectedPatient(null)
 
-  await fetchPatients()
-  setSelectedPatient(null)
-
-  alert("Returned to rehab 🏥")
-}}
+    alert("Returned to rehab 🏥")
+  }}
+  style={{
+    marginLeft: "10px",
+    background: "#22c55e",
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  }}
 >
   Return
 </button>
