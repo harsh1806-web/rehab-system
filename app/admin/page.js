@@ -47,7 +47,7 @@ if (profile?.role !== "admin") {
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
     const activePatients = (patients || []).filter(
-  p => !p.discharge_date && p.status !== "hospital"
+  p => !p.discharge_date
 )
 const hospitalPatients = (patients || []).filter(
   p => p.status === "hospital" && !p.discharge_date
@@ -1012,11 +1012,14 @@ fetchTimeline(patient.id)
   }])
 
   // 🔥 MAIN CHANGE
-  await supabase
+  const newBedStatus = choice === "2" ? "hold" : "empty"
+
+await supabase
   .from("patients")
   .update({
-    status: "hospital",
-    bed_status: choice === "2" ? "hold" : "empty"
+    status: "occupied",
+    bed_number: Number(bed),
+    bed_status: null   // 🔥 CLEAR HOLD
   })
   .eq("id", selectedPatient.id)
 
@@ -1024,10 +1027,10 @@ fetchTimeline(patient.id)
   setSelectedPatient(null)
 
   alert(
-    newStatus === "hold"
-      ? "Bed on HOLD 🟠"
-      : "Bed emptied 🟢"
-  )
+  newBedStatus === "hold"
+    ? "Bed on HOLD 🟠"
+    : "Bed emptied 🟢"
+)
 
 
    
