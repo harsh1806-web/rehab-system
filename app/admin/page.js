@@ -375,11 +375,7 @@ if (role === "user" && view === "admin") {
 }}>
 
     {/* LEGEND */}
-    <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-      <span>🟩 Empty</span>
-      <span>🟥 Occupied</span>
-
-    </div>
+    
 
     {/* ================= GROUND FLOOR ================= */}
     <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
