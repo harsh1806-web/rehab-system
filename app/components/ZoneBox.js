@@ -1,34 +1,41 @@
-export default function ZoneBox({ title, beds, activePatients, onBedClick }) {
+export default function ZoneBox({
+  title,
+  beds,
+  columns = 3,
+  activePatients,
+  onBedClick
+}) {
   return (
     <div style={{
       background: "#020617",
       border: "2px solid #22d3ee",
       borderRadius: "10px",
       padding: "10px",
-      marginBottom: "15px"
+      minWidth: "140px"
     }}>
-      {/* Zone Title */}
+
+      {/* TITLE */}
       <div style={{
         background: "#facc15",
         color: "black",
         fontWeight: "bold",
         textAlign: "center",
         padding: "5px",
-        marginBottom: "10px"
+        marginBottom: "8px"
       }}>
         {title}
       </div>
 
-      {/* Beds */}
+      {/* BEDS */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: 'repeat(${columns || 3}, 1fr',
+        gridTemplateColumns: `repeat(${columns}, 1fr)`,
         gap: "6px"
       }}>
-        {(beds || []).map((bed) => {
-         const patient = (activePatients || []).find(
-  (p) => Number(p.bed_number) === bed
-)
+        {beds.map((bed) => {
+          const patient = activePatients.find(
+            p => Number(p.bed_number) === bed
+          )
 
           return (
             <div
@@ -41,14 +48,13 @@ export default function ZoneBox({ title, beds, activePatients, onBedClick }) {
                 justifyContent: "center",
                 borderRadius: "5px",
                 cursor: "pointer",
+                fontWeight: "bold",
                 background:
                   patient?.status === "hold"
                     ? "#000000"
                     : patient
                     ? "#ef4444"
-                    : "#22c55e",
-                color: "white",
-                fontWeight: "bold"
+                    : "#22c55e"
               }}
             >
               {bed}
