@@ -43,7 +43,9 @@ if (profile?.role !== "admin") {
     const [search, setSearch] = useState("")
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
-    const activePatients = (patients || []).filter(p => !p.discharge_date)
+    const activePatients = (patients || []).filter(
+  p => !p.discharge_date && p.status !== "hospital"
+)
     const dischargedPatients = patients.filter(p => p.discharge_date !== null)
     const doctorStats = {}
 
@@ -888,6 +890,13 @@ fetchTimeline(patient.id)
 </button>
 <button
   onClick={async () => {
+    if (!selectedPatient) return
+
+    const confirmTransfer = confirm(
+      "Transfer this patient to hospital?\nBed will be freed."
+    )
+    if (!confirmTransfer) return
+
     const now = new Date().toISOString()
 
     // 1. Close rehab stay
@@ -905,7 +914,19 @@ fetchTimeline(patient.id)
       start_date: now
     }])
 
-    alert("Transferred to hospital 🚑")
+    // 🔥 3. THIS IS THE IMPORTANT PART
+    await supabase
+      .from("patients")
+      .update({ status: "hospital" })
+      .eq("id", selectedPatient.id)
+
+    // 🔥 4. REFRESH UI
+    await fetchPatients()
+
+    // 🔥 5. CLOSE POPUP
+    setSelectedPatient(null)
+
+    alert("Transferred to hospital 🚑 Bed is now free")
   }}
   style={{
     marginLeft: "10px",
@@ -964,6 +985,20 @@ fetchTimeline(patient.id)
       >
         Discharge
       </button>
+      <button
+  onClick={() => setSelectedPatient(null)}
+  style={{
+    marginLeft: "10px",
+    background: "#64748b",
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  }}
+>
+  Close
+</button>
     </div>
     
   </div>
