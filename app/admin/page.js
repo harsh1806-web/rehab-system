@@ -344,7 +344,7 @@ if (role === "user" && view === "admin") {
     <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
       <span>🟩 Empty</span>
       <span>🟥 Occupied</span>
-      <span>⬛ Hold</span>
+
     </div>
 
     {/* ================= GROUND FLOOR ================= */}
