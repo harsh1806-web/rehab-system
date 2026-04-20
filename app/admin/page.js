@@ -350,7 +350,7 @@ if (role === "user" && view === "admin") {
     {/* ================= GROUND FLOOR ================= */}
     <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
 
-    <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
+    
 
 {hospitalLayout.ground.map((block) => (
   <div key={block.block} style={{ marginBottom: "20px" }}>
