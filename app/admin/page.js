@@ -1,6 +1,6 @@
 "use client"
 import { hospitalLayout } from "@/lib/hospitalLayout"
-import  ZoneBox  from "@/components/ZoneBox"
+import  ZoneBox  from "../components/ZoneBox"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
@@ -43,7 +43,7 @@ if (profile?.role !== "admin") {
     const [search, setSearch] = useState("")
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
-    const activePatients = patients.filter(p => !p.discharge_date)
+    const activePatients = (patients || []).filter(p => !p.discharge_date)
     const dischargedPatients = patients.filter(p => p.discharge_date !== null)
     const doctorStats = {}
 

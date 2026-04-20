@@ -25,10 +25,10 @@ export default function ZoneBox({ title, beds, activePatients, onBedClick }) {
         gridTemplateColumns: "repeat(3, 1fr)",
         gap: "6px"
       }}>
-        {beds.map((bed) => {
-          const patient = activePatients.find(
-            (p) => Number(p.bed_number) === bed
-          )
+        {(beds || []).map((bed) => {
+         const patient = (activePatients || []).find(
+  (p) => Number(p.bed_number) === bed
+)
 
           return (
             <div
