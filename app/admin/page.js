@@ -34,7 +34,9 @@ if (profile?.role !== "admin") {
   router.push("/user")
 }
 }
-    
+    const [showReturnModal, setShowReturnModal] = useState(false)
+const [returnPatient, setReturnPatient] = useState(null)
+const [selectedBed, setSelectedBed] = useState("")
     const [timeline, setTimeline] = useState([])
     const [role, setRole] = useState(null)
     const [view, setView] = useState("beds")
@@ -872,6 +874,20 @@ fetchTimeline(patient.id)
     border: "none",
     borderRadius: "6px"
   }}
+ 
+  onClick={() => {
+    setReturnPatient(p)
+    setShowReturnModal(true)
+  }}
+  style={{
+    background: "#22c55e",
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "6px"
+  }}
+
+
 >
   Return
 </button>
@@ -956,8 +972,8 @@ fetchTimeline(patient.id)
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%) scale(1)",
-  background: "#1e293b",
   padding: "20px",
+  background: "rgba(0,0,0,0.5)",
   borderRadius: "10px",
   color: "white",
   minWidth: "250px",
@@ -1332,6 +1348,115 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
     </button>
 
     <button onClick={() => setEditMode(false)}>Cancel</button>
+  </div>
+)}
+{showReturnModal && (
+  <div style={{
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    background: "#1e293b",
+    padding: "20px",
+    borderRadius: "10px",
+    color: "white",
+    minWidth: "300px",
+    zIndex: 1000
+  }}>
+    <h3>Select Bed</h3>
+
+    <select
+      value={selectedBed}
+      onChange={(e) => setSelectedBed(e.target.value)}
+      style={{
+        width: "100%",
+        padding: "10px",
+        borderRadius: "6px",
+        background: "#020617",
+        color: "white",
+        marginTop: "10px"
+      }}
+    >
+      <option value="">Select Bed</option>
+
+      {availableBeds.map((bed) => (
+        <option key={bed} value={bed}>
+          Bed {bed}
+        </option>
+      ))}
+    </select>
+
+    <div style={{ marginTop: "15px", display: "flex", gap: "10px" }}>
+      <button
+        onClick={async () => {
+          if (!selectedBed) {
+            alert("Please select a bed ❌")
+            return
+          }
+
+          const now = new Date().toISOString()
+
+          // close hospital stay
+          await supabase
+            .from("patient_stays")
+            .update({ end_date: now })
+            .eq("patient_id", returnPatient.id)
+            .eq("type", "hospital")
+            .is("end_date", null)
+
+          // start rehab stay
+          await supabase.from("patient_stays").insert([{
+            patient_id: returnPatient.id,
+            type: "rehab",
+            start_date: now
+          }])
+
+          // assign bed
+          await supabase
+            .from("patients")
+            .update({
+              status: "occupied",
+              bed_number: Number(selectedBed)
+            })
+            .eq("id", returnPatient.id)
+
+          await fetchPatients()
+
+          // reset
+          setShowReturnModal(false)
+          setSelectedBed("")
+          setReturnPatient(null)
+
+          alert("Returned to rehab 🏥")
+        }}
+        style={{
+          background: "#22c55e",
+          padding: "8px",
+          border: "none",
+          borderRadius: "6px",
+          color: "white"
+        }}
+      >
+        Confirm
+      </button>
+
+      <button
+        onClick={() => {
+          setShowReturnModal(false)
+          setSelectedBed("")
+          setReturnPatient(null)
+        }}
+        style={{
+          background: "#64748b",
+          padding: "8px",
+          border: "none",
+          borderRadius: "6px",
+          color: "white"
+        }}
+      >
+        Cancel
+      </button>
+    </div>
   </div>
 )}
   </div>   
