@@ -1012,12 +1012,13 @@ fetchTimeline(patient.id)
   }])
 
   // 🔥 MAIN CHANGE
-  const newStatus = choice === "2" ? "hold" : "hospital"
-
   await supabase
-    .from("patients")
-    .update({ status: newStatus })
-    .eq("id", selectedPatient.id)
+  .from("patients")
+  .update({
+    status: "hospital",
+    bed_status: choice === "2" ? "hold" : "empty"
+  })
+  .eq("id", selectedPatient.id)
 
   await fetchPatients()
   setSelectedPatient(null)

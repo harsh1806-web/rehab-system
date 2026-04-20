@@ -37,29 +37,38 @@ boxShadow: "0 0 10px rgba(34,211,238,0.3)",
           const patient = activePatients.find(
             p => Number(p.bed_number) === bed
           )
+          let bg = "#22c55e" // empty
+
+if (patient?.bed_status === "hold") {
+  bg = "#f97316" // 🟠 orange
+} else if (patient) {
+  bg = "#ef4444" // 🔴 occupied
+}
 
           return (
-            <div
-              key={bed}
-              onClick={() => onBedClick(bed, patient)}
-              style={{
-                height: "45px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: "5px",
-                cursor: "pointer",
-                fontWeight: "bold",
-                background:
-                  patient?.status === "hold"
-                    ? "#000000"
-                    : patient
-                    ? "#ef4444"
-                    : "#22c55e"
-              }}
-            >
-              {bed}
-            </div>
+            <button
+  key={bed}
+  onClick={() => onBedClick(bed, patient)}
+  style={{
+    width: "60px",
+    height: "50px",
+    borderRadius: "8px",
+    background: bg,
+    color: "white",
+    border: "none",
+    fontWeight: "bold",
+    cursor: "pointer",
+    transition: "all 0.2s ease"
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.transform = "scale(1.1)"
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.transform = "scale(1)"
+  }}
+>
+  {bed}
+</button>
           )
         })}
       </div>
