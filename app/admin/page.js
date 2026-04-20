@@ -268,7 +268,9 @@ const cardStyle = {
   background: "#0f172a",
   padding: "20px",
   borderRadius: "12px",
-  border: "1px solid #1e293b"
+  border: "1px solid #1e293b",
+  transition: "0.2s",
+  cursor: "pointer"
 }
 const availableBeds = []
 
@@ -418,7 +420,8 @@ const fetchTimeline = async (patientId) => {
   <div style={{
   padding: "20px",
   maxWidth: "1200px",
-  margin: "0 auto"
+  margin: "0 auto",
+  animation: "fadeIn 0.2s ease"
 }}>
     
     
@@ -924,16 +927,17 @@ fetchTimeline(patient.id)
 
     {selectedPatient && (
   <div style={{
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    background: "#1e293b",
-    padding: "20px",
-    borderRadius: "10px",
-    color: "white",
-    minWidth: "250px"
-  }}>
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%) scale(1)",
+  background: "#1e293b",
+  padding: "20px",
+  borderRadius: "10px",
+  color: "white",
+  minWidth: "250px",
+  animation: "fadeIn 0.2s ease"
+}}>
     <h3>Patient Details</h3>
 
     <p><b>Name:</b> {selectedPatient.name}</p>
@@ -1189,7 +1193,12 @@ fetchTimeline(patient.id)
   style={{
     background: loading ? "#64748b" : "#22c55e",
     cursor: loading ? "not-allowed" : "pointer",
-    marginRight: "10px"
+    opacity: loading ? 0.7 : 1,
+    padding: "10px",
+    borderRadius: "6px",
+    border: "none",
+    color: "white",
+    transition: "0.2s"
   }}
 >
   {loading ? "Saving..." : "Save"}
