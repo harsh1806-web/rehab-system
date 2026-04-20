@@ -350,36 +350,32 @@ if (role === "user" && view === "admin") {
     {/* ================= GROUND FLOOR ================= */}
     <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
 
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
-      {hospitalLayout.ground.map((zone) => (
-        <ZoneBox
-          key={zone.title}
-          title={zone.title}
-          beds={zone.beds}
-          patients={activePatients}
-          onClick={(bed, patient) => {
-            if (patient) {
-              setSelectedPatient(patient)
-            } else {
-              setShowForm(true)
-              setForm({ ...form, bed_number: bed })
-            }
-          }}
-        />
-      ))}
+    <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
+
+{hospitalLayout.ground.map((block) => (
+  <div key={block.block} style={{ marginBottom: "20px" }}>
+
+    {/* BLOCK TITLE */}
+    <div style={{
+      background: "#0ea5e9",
+      padding: "6px",
+      color: "white",
+      fontWeight: "bold",
+      marginBottom: "10px"
+    }}>
+      {block.block}
     </div>
 
-    {/* ================= FIRST FLOOR ================= */}
-    <h2 style={{ color: "#f97316", marginTop: "30px" }}>1st Floor</h2>
-
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
-      {hospitalLayout.first.map((zone) => (
+    {/* ZONES */}
+    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+      {block.zones.map((zone) => (
         <ZoneBox
           key={zone.title}
           title={zone.title}
           beds={zone.beds}
-          patients={activePatients}
-          onClick={(bed, patient) => {
+          columns={zone.columns}
+          activePatients={activePatients}
+          onBedClick={(bed, patient) => {
             if (patient) {
               setSelectedPatient(patient)
             } else {
@@ -392,7 +388,47 @@ if (role === "user" && view === "admin") {
     </div>
 
   </div>
-)}
+))}
+
+    <h2 style={{ color: "#f97316" }}>1st Floor</h2>
+
+{hospitalLayout.first.map((block) => (
+  <div key={block.block} style={{ marginBottom: "20px" }}>
+
+    <div style={{
+      background: "#f97316",
+      padding: "6px",
+      color: "white",
+      fontWeight: "bold",
+      marginBottom: "10px"
+    }}>
+      {block.block}
+    </div>
+
+    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+      {block.zones.map((zone) => (
+        <ZoneBox
+          key={zone.title}
+          title={zone.title}
+          beds={zone.beds}
+          columns={zone.columns}
+          activePatients={activePatients}
+          onBedClick={(bed, patient) => {
+            if (patient) {
+              setSelectedPatient(patient)
+            } else {
+              setShowForm(true)
+              setForm({ ...form, bed_number: bed })
+            }
+          }}
+        />
+      ))}
+    </div>
+
+  </div>
+))}
+</div>
+    )}
 
     {/* RIGHT SECTION */}
     {view === "patients" && (

@@ -22,7 +22,7 @@ export default function ZoneBox({ title, beds, activePatients, onBedClick }) {
       {/* Beds */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
+        gridTemplateColumns: 'repeat(${columns || 3}, 1fr',
         gap: "6px"
       }}>
         {(beds || []).map((bed) => {
