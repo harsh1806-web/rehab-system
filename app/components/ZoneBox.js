@@ -9,6 +9,7 @@ export default function ZoneBox({
     <div style={{
       background: "#020617",
       border: "2px solid #22d3ee",
+boxShadow: "0 0 10px rgba(34,211,238,0.3)",
       borderRadius: "10px",
       padding: "10px",
       minWidth: "140px"

@@ -215,6 +215,13 @@ const handleAddDoctor = async () => {
     fetchDoctors()
   }
 }
+const cardStyle = {
+  flex: 1,
+  background: "#0f172a",
+  padding: "20px",
+  borderRadius: "12px",
+  border: "1px solid #1e293b"
+}
 if (role === "user" && view === "admin") {
   return (
     <div style={{ color: "white", padding: "50px" }}>
@@ -337,8 +344,35 @@ if (role === "user" && view === "admin") {
     
 
     {/* LEFT SECTION */}
+    <div style={{
+  display: "flex",
+  gap: "20px",
+  marginBottom: "20px"
+}}>
+
+  <div style={cardStyle}>
+    <p>Total Beds</p>
+    <h2>60</h2>
+  </div>
+
+  <div style={cardStyle}>
+    <p>Occupied</p>
+    <h2>{activePatients.length}</h2>
+  </div>
+
+  <div style={cardStyle}>
+    <p>Available</p>
+    <h2>{60 - activePatients.length}</h2>
+  </div>
+
+</div>
     {view === "beds" && (
-  <div style={{ marginTop: "20px" }}>
+      
+    <div style={{
+  display: "flex",
+  gap: "20px",
+  alignItems: "flex-start"
+}}>
 
     {/* LEGEND */}
     <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
@@ -564,6 +598,26 @@ if (role === "user" && view === "admin") {
 
 </div>
 )}
+
+<div style={{
+  flex: 1,
+  background: "#0f172a",
+  padding: "20px",
+  borderRadius: "12px",
+  border: "1px solid #1e293b"
+}}>
+
+  <h3>Total Beds</h3>
+  <h1 style={{ color: "#22c55e" }}>60</h1>
+
+  <hr style={{ borderColor: "#1e293b" }} />
+
+  <p>🟩 Empty: {60 - activePatients.length}</p>
+  <p>🟥 Occupied: {activePatients.length}</p>
+  <p>⬛ Hold: 0</p>
+
+</div>
+
 {view === "history" && (
   <div style={{ padding: "20px" }}>
     <h2>📜 History</h2>
