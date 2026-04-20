@@ -82,3 +82,6 @@ input:focus, select:focus {
 button:active {
   transform: scale(0.95);
 }
+html, body {
+  overflow-x: hidden;
+}

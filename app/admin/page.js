@@ -457,13 +457,9 @@ const fetchTimeline = async (patientId) => {
 
 </div>
     {view === "beds" && (
-      
-    <div style={{
-  display: "flex",
-  flexWrap: "wrap",   // ✅ THIS FIXES OVERFLOW
-  gap: "20px",
-  alignItems: "flex-start"
-}}>
+  <div style={{
+    display: "block"   // ✅ IMPORTANT FIX
+  }}>
 
     {/* LEGEND */}
     
@@ -494,7 +490,12 @@ const fetchTimeline = async (patientId) => {
     </div>
 
     {/* ZONES */}
-    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+   <div style={{
+  display: "flex",
+  gap: "15px",
+  flexWrap: "wrap",
+  alignItems: "flex-start"
+}}>
       {block.zones.map((zone) => (
         <ZoneBox
           key={zone.title}
@@ -832,62 +833,6 @@ fetchTimeline(patient.id)
           </div>
 
           <button
-            
-  onClick={async () => {
-    const bed = prompt("Enter bed number to assign:")
-
-    if (!bed) {
-      alert("Please enter a bed ❌")
-      return
-    }
-
-    // check occupied
-    const isTaken = activePatients.some(
-      ap => Number(ap.bed_number) === Number(bed)
-    )
-
-    if (isTaken) {
-      alert("Bed already occupied ❌")
-      return
-    }
-
-    const now = new Date().toISOString()
-
-    // 1. close hospital stay
-    await supabase
-      .from("patient_stays")
-      .update({ end_date: now })
-      .eq("patient_id", p.id)
-      .eq("type", "hospital")
-      .is("end_date", null)
-
-    // 2. start rehab stay
-    await supabase.from("patient_stays").insert([{
-      patient_id: p.id,
-      type: "rehab",
-      start_date: now
-    }])
-
-    // 3. update patient + assign bed
-    await supabase
-      .from("patients")
-      .update({
-        status: "occupied",
-        bed_number: Number(bed)
-      })
-      .eq("id", p.id)
-
-    await fetchPatients()
-
-    alert("Returned to rehab 🏥")
-  }}
-  style={{
-    background: "#22c55e",
-    color: "white",
-    padding: "8px",
-    border: "none",
-    borderRadius: "6px"
-  }}
  
   onClick={() => {
     setReturnPatient(p)
