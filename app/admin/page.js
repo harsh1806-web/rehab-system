@@ -987,122 +987,88 @@ fetchTimeline(patient.id)
 </button>
 <button
   onClick={async () => {
-    if (!selectedPatient) return
+  if (!selectedPatient) return
 
-    const choice = prompt("Type:\n1 → Empty Bed\n2 → Hold Bed")
-if (!choice) return
+  const now = new Date().toISOString()
 
-const newBedStatus = choice === "2" ? "hold" : "empty"
-const now = new Date().toISOString()
+  // 1. Close rehab stay
+  await supabase
+    .from("patient_stays")
+    .update({ end_date: now })
+    .eq("patient_id", selectedPatient.id)
+    .eq("type", "rehab")
+    .is("end_date", null)
 
-// 1. Close rehab stay
-await supabase
-  .from("patient_stays")
-  .update({ end_date: now })
-  .eq("patient_id", selectedPatient.id)
-  .eq("type", "rehab")
-  .is("end_date", null)
+  // 2. Start hospital stay
+  await supabase.from("patient_stays").insert([{
+    patient_id: selectedPatient.id,
+    type: "hospital",
+    start_date: now
+  }])
 
-// 2. Start hospital stay
-await supabase.from("patient_stays").insert([{
-  patient_id: selectedPatient.id,
-  type: "hospital",
-  start_date: now
-}])
+  // 3. Move patient to hospital + FREE BED
+  await supabase
+    .from("patients")
+    .update({
+      status: "hospital",
+      bed_number: null   // 🔥 FREE THE BED
+    })
+    .eq("id", selectedPatient.id)
 
-// 3. UPDATE PATIENT (🔥 FIXED)
-const { error } = await supabase
-  .from("patients")
-  .update({
-    status: "hospital",
-    bed_status: newBedStatus
-  })
-  .eq("id", selectedPatient.id)
+  await fetchPatients()
+  setSelectedPatient(null)
 
-if (error) {
-  console.log(error)
-  alert("Transfer failed ❌")
-  return
-}
-
-await fetchPatients()
-setSelectedPatient(null)
-
-alert(
-  newBedStatus === "hold"
-    ? "Bed on HOLD 🟠"
-    : "Bed emptied 🟢"
-)
-
-
-   
-  }}
-  style={{
-    marginLeft: "10px",
-    background: "#f97316",
-    color: "white",
-    padding: "8px",
-    border: "none",
-    borderRadius: "5px"
-  }}
+  alert("Transferred to hospital 🏥")
+}}
 >
   Transfer
 </button>
 <button
   onClick={async () => {
-    const bed = prompt("Enter bed number to assign:")
+  const bed = prompt("Enter bed number:")
 
-    if (!bed) return
+  if (!bed) return
 
-    const isTaken = activePatients.some(
-      p => Number(p.bed_number) === Number(bed)
-    )
+  const isTaken = activePatients.some(
+    p => Number(p.bed_number) === Number(bed)
+  )
 
-    if (isTaken) {
-      alert("Bed already occupied ❌")
-      return
-    }
+  if (isTaken) {
+    alert("Bed already occupied ❌")
+    return
+  }
 
-    const now = new Date().toISOString()
+  const now = new Date().toISOString()
 
-    // close hospital stay
-    await supabase
-      .from("patient_stays")
-      .update({ end_date: now })
-      .eq("patient_id", selectedPatient.id)
-      .eq("type", "hospital")
-      .is("end_date", null)
+  // Close hospital stay
+  await supabase
+    .from("patient_stays")
+    .update({ end_date: now })
+    .eq("patient_id", selectedPatient.id)
+    .eq("type", "hospital")
+    .is("end_date", null)
 
-    // start rehab again
-    await supabase.from("patient_stays").insert([{
-      patient_id: selectedPatient.id,
-      type: "rehab",
-      start_date: now
-    }])
+  // Start rehab again
+  await supabase.from("patient_stays").insert([{
+    patient_id: selectedPatient.id,
+    type: "rehab",
+    start_date: now
+  }])
 
-    await supabase
-      .from("patients")
-      .update({
-  status: "occupied",
-  bed_number: Number(bed),
-  bed_status: null   // 🔥 VERY IMPORTANT
-})
-      .eq("id", selectedPatient.id)
+  // Assign new bed
+  await supabase
+    .from("patients")
+    .update({
+      status: "occupied",
+      bed_number: Number(bed)
+    })
+    .eq("id", selectedPatient.id)
 
-    await fetchPatients()
-    setSelectedPatient(null)
+  await fetchPatients()
+  setSelectedPatient(null)
 
-    alert("Returned to rehab 🏥")
-  }}
-  style={{
-    marginLeft: "10px",
-    background: "#22c55e",
-    color: "white",
-    padding: "8px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer"
-  }}
+  alert("Returned to rehab 🏥")
+}}
 >
   Return
 </button>
