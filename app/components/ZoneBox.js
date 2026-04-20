@@ -12,7 +12,8 @@ export default function ZoneBox({
 boxShadow: "0 0 10px rgba(34,211,238,0.3)",
       borderRadius: "10px",
       padding: "10px",
-      minWidth: "140px"
+      width: "100%",
+maxWidth: "160px"
     }}>
 
       {/* TITLE */}
@@ -31,6 +32,7 @@ boxShadow: "0 0 10px rgba(34,211,238,0.3)",
       <div style={{
         display: "grid",
         gridTemplateColumns: `repeat(${columns}, 1fr)`,
+        width: "100%",
         gap: "6px"
       }}>
         {beds.map((bed) => {
@@ -38,7 +40,7 @@ boxShadow: "0 0 10px rgba(34,211,238,0.3)",
             p => Number(p.bed_number) === bed
           )
           let bg = "#22c55e" // empty
-
+          
 if (patient) {
   bg = "#ef4444" // only occupied
 }

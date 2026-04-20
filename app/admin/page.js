@@ -425,8 +425,9 @@ const fetchTimeline = async (patientId) => {
   </div>
   <div style={{
   padding: "20px",
-  maxWidth: "1200px",
-  margin: "0 auto",
+  width: "100%",
+  maxWidth: "100%",
+  overflowX: "hidden",
   animation: "fadeIn 0.2s ease"
 }}>
     
@@ -460,7 +461,8 @@ const fetchTimeline = async (patientId) => {
     <div style={{
   display: "flex",
   gap: "20px",
-  alignItems: "flex-start"
+  alignItems: "flex-start",
+  flexWrap: "wrap"   // 🔥 IMPORTANT
 }}>
 
     {/* LEGEND */}
@@ -972,6 +974,7 @@ fetchTimeline(patient.id)
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%) scale(1)",
+  background: "#1e293b",
   padding: "20px",
   background: "rgba(0,0,0,0.5)",
   borderRadius: "10px",
