@@ -11,6 +11,9 @@ export default function Admin() {
 useEffect(() => {
   checkAccess()
   fetchUserRole()
+  fetchPatients()
+  fetchDoctors()
+  fetchHistory()
 }, [])
 
 const checkAccess = async () => {
@@ -1025,11 +1028,6 @@ fetchTimeline(patient.id)
       : "Bed emptied 🟢"
   )
 
-    // 🔥 3. THIS IS THE IMPORTANT PART
-    await supabase
-      .from("patients")
-      .update({ status: "hospital" })
-      .eq("id", selectedPatient.id)
 
    
   }}
@@ -1093,6 +1091,7 @@ onClick={async () => {
   alert("Returned to rehab 🏥")
 }}
 >
+  Return
 </button>
       <button
         onClick={handleDischarge}
