@@ -610,7 +610,6 @@ if (role === "user" && view === "admin") {
 
   <p>🟩 Empty: {60 - activePatients.length}</p>
   <p>🟥 Occupied: {activePatients.length}</p>
-  <p>⬛ Hold: 0</p>
 
 </div>
 
