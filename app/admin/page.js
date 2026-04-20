@@ -1,6 +1,6 @@
 "use client"
 import { hospitalLayout } from "@/lib/hospitalLayout"
-import  ZoneBox  from "../app/components/ZoneBox"
+import  ZoneBox  from "@/components/ZoneBox"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
