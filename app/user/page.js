@@ -887,33 +887,45 @@ fetchTimeline(patient.id)
   onClick={async () => {
     if (!selectedPatient) return
 
-    const confirmTransfer = confirm(
-      "Transfer this patient to hospital?\nBed will be freed."
-    )
-    if (!confirmTransfer) return
+    const choice = prompt(
+    "Type:\n1 → Empty Bed\n2 → Hold Bed"
+  )
 
-    const now = new Date().toISOString()
+  if (!choice) return
 
-    // 1. Close rehab stay
-    await supabase
-      .from("patient_stays")
-      .update({ end_date: now })
-      .eq("patient_id", selectedPatient.id)
-      .eq("type", "rehab")
-      .is("end_date", null)
+  const now = new Date().toISOString()
 
-    // 2. Start hospital stay
-    await supabase.from("patient_stays").insert([{
-      patient_id: selectedPatient.id,
-      type: "hospital",
-      start_date: now
-    }])
+  // Close rehab stay
+  await supabase
+    .from("patient_stays")
+    .update({ end_date: now })
+    .eq("patient_id", selectedPatient.id)
+    .eq("type", "rehab")
+    .is("end_date", null)
 
-    // 🔥 3. THIS IS THE IMPORTANT PART
-    await supabase
-      .from("patients")
-      .update({ status: "hospital" })
-      .eq("id", selectedPatient.id)
+  // Start hospital stay
+  await supabase.from("patient_stays").insert([{
+    patient_id: selectedPatient.id,
+    type: "hospital",
+    start_date: now
+  }])
+
+  // 🔥 MAIN CHANGE
+  const newStatus = choice === "2" ? "hold" : "hospital"
+
+  await supabase
+    .from("patients")
+    .update({ status: newStatus })
+    .eq("id", selectedPatient.id)
+
+  await fetchPatients()
+  setSelectedPatient(null)
+
+  alert(
+    newStatus === "hold"
+      ? "Bed on HOLD 🟠"
+      : "Bed emptied 🟢"
+  )
 
     // 🔥 4. REFRESH UI
     await fetchPatients()
@@ -934,38 +946,54 @@ fetchTimeline(patient.id)
 >
   Transfer
 </button>
-<button
+
   onClick={async () => {
-    const now = new Date().toISOString()
+  const bed = prompt("Enter bed number to assign:")
 
-    // Close hospital stay
-    await supabase
-      .from("patient_stays")
-      .update({ end_date: now })
-      .eq("patient_id", selectedPatient.id)
-      .eq("type", "hospital")
-      .is("end_date", null)
+  if (!bed) return
 
-    // Start rehab again
-    await supabase.from("patient_stays").insert([{
-      patient_id: selectedPatient.id,
-      type: "rehab",
-      start_date: now
-    }])
+  // 🔴 Check if bed is already occupied
+  const isTaken = activePatients.some(
+    p => Number(p.bed_number) === Number(bed)
+  )
 
-    alert("Returned to rehab 🏥")
-  }}
-  style={{
-    marginLeft: "10px",
-    background: "#22c55e",
-    color: "white",
-    padding: "8px",
-    border: "none",
-    borderRadius: "5px"
-  }}
->
-  Return
-</button>
+  if (isTaken) {
+    alert("Bed already occupied ❌")
+    return
+  }
+
+  const now = new Date().toISOString()
+
+  // Close hospital stay
+  await supabase
+    .from("patient_stays")
+    .update({ end_date: now })
+    .eq("patient_id", selectedPatient.id)
+    .eq("type", "hospital")
+    .is("end_date", null)
+
+  // Start rehab stay again
+  await supabase.from("patient_stays").insert([{
+    patient_id: selectedPatient.id,
+    type: "rehab",
+    start_date: now
+  }])
+
+  // 🔥 Assign bed + mark occupied
+  await supabase
+    .from("patients")
+    .update({
+      status: "occupied",
+      bed_number: Number(bed)
+    })
+    .eq("id", selectedPatient.id)
+
+  await fetchPatients()
+  setSelectedPatient(null)
+
+  alert("Returned to rehab 🏥")
+}}
+
       <button
         onClick={handleDischarge}
         style={{
@@ -980,6 +1008,7 @@ fetchTimeline(patient.id)
       >
         Discharge
       </button>
+      
     </div>
     
   </div>
