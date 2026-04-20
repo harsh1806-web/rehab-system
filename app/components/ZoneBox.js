@@ -7,14 +7,13 @@ export default function ZoneBox({
 }) {
   return (
     <div style={{
-      background: "#020617",
-      border: "2px solid #22d3ee",
-boxShadow: "0 0 10px rgba(34,211,238,0.3)",
-      borderRadius: "10px",
-      padding: "10px",
-      width: "100%",
-maxWidth: "160px"
-    }}>
+  background: "#020617",
+  border: "2px solid #22d3ee",
+  boxShadow: "0 0 10px rgba(34,211,238,0.3)",
+  borderRadius: "10px",
+  padding: "10px",
+  width: "160px"   // 🔥 FIXED WIDTH
+}}>
 
       {/* TITLE */}
       <div style={{
@@ -30,17 +29,17 @@ maxWidth: "160px"
 
       {/* BEDS */}
       <div style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        width: "100%",
-        gap: "6px"
-      }}>
+  display: "grid",
+  gridTemplateColumns: `repeat(${columns}, 1fr)`,
+  gap: "6px",
+  justifyItems: "center"
+}}>
         {beds.map((bed) => {
           const patient = activePatients.find(
             p => Number(p.bed_number) === bed
           )
           let bg = "#22c55e" // empty
-          
+
 if (patient) {
   bg = "#ef4444" // only occupied
 }

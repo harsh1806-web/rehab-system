@@ -460,9 +460,9 @@ const fetchTimeline = async (patientId) => {
       
     <div style={{
   display: "flex",
+  flexWrap: "wrap",   // ✅ THIS FIXES OVERFLOW
   gap: "20px",
-  alignItems: "flex-start",
-  flexWrap: "wrap"   // 🔥 IMPORTANT
+  alignItems: "flex-start"
 }}>
 
     {/* LEGEND */}
@@ -474,7 +474,13 @@ const fetchTimeline = async (patientId) => {
     
 
 {hospitalLayout.ground.map((block) => (
-  <div key={block.block} style={{ marginBottom: "20px" }}>
+  <div
+  key={block.block}
+  style={{
+    marginBottom: "20px",
+    width: "100%"   // ✅ forces each row to stay clean
+  }}
+>
 
     {/* BLOCK TITLE */}
     <div style={{
@@ -515,7 +521,13 @@ fetchTimeline(patient.id)
     <h2 style={{ color: "#f97316" }}>1st Floor</h2>
 
 {hospitalLayout.first.map((block) => (
-  <div key={block.block} style={{ marginBottom: "20px" }}>
+  <div
+  key={block.block}
+  style={{
+    marginBottom: "20px",
+    width: "100%"   // ✅ forces each row to stay clean
+  }}
+>
 
     <div style={{
       background: "#f97316",
