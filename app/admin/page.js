@@ -976,7 +976,7 @@ onMouseLeave={(e) => {
         <td style={td}>{p.reference}</td>
         <td style={td}>{p.admission_date?.slice(0,10)}</td>
         <td style={td}>{p.discharge_date?.slice(0,10)}</td>
-        <td style={td}>{physio_incharge}</td>
+        <td style={td}>{p.physio_incharge}</td>
         <td style={td}>{p.bed_number}</td>
       </tr>
     ))}
