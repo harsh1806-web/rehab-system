@@ -159,7 +159,7 @@ const fetchHistory = async () => {
 
   const handleSubmit = async () => {
     if (!form.physio_incharge) {
-  alert("Please select a doctor")
+  alert("Please select a physio_incharge")
   return
 }
   if (loading) return   // ⛔ prevent double click
@@ -1346,8 +1346,8 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
 
   {/* Doctor Dropdown */}
   <select
-    name="doctor"
-    value={form.doctor || ""}
+    name="physio_incharge"
+    value={form.physio_incharge || ""}
     onChange={handleChange}
     style={{
       padding: "10px",
