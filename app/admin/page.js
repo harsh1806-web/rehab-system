@@ -492,7 +492,19 @@ const fetchTimeline = async (patientId) => {
       return (
         <div key={blockName} style={{ marginBottom: "30px" }}>
           
-          <h2 style={{ color: "#22c55e" }}>{blockName}</h2>
+          <div style={{
+  background: "#facc15",        // same yellow as zones
+  color: "black",
+  fontWeight: "bold",
+  padding: "10px",
+  borderRadius: "8px",
+  marginBottom: "10px",
+  textAlign: "center",
+  fontSize: "18px",
+  boxShadow: "0 0 10px #facc15"
+}}>
+  🏢 {blockName}
+</div>
 
           {/* Ground Floor */}
           {block.ground.length > 0 && (
