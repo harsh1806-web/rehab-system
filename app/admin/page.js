@@ -34,7 +34,7 @@ if (profile?.role !== "admin") {
   router.push("/user")
 }
 }
-const [dischargeSearch, setDischargeSearch] = useState("")
+
     const [showReturnModal, setShowReturnModal] = useState(false)
 const [returnPatient, setReturnPatient] = useState(null)
 const [selectedBed, setSelectedBed] = useState("")
@@ -383,19 +383,7 @@ const fetchTimeline = async (patientId) => {
       >
         Doctors
       </button>
-      <button
-  onClick={() => setView("discharged")}
-  style={{
-    background: view === "discharged" ? "#22c55e" : "#334155",
-    padding: "8px 16px",
-    borderRadius: "6px",
-    color: "white",
-    border: "none",
-    cursor: "pointer"
-  }}
->
-  Discharged
-</button>
+      
 {role === "admin" && (
       <button
         onClick={() => setView("admin")}
@@ -877,66 +865,7 @@ onMouseLeave={(e) => {
     )}
   </div>
 )}
-{view === "discharged" && (
 
-  
-  <div style={{ marginTop: "20px" }}>
-    <h2>Discharged Patients</h2>
-    <input
-  placeholder="Search discharged patient..."
-  value={dischargeSearch}
-  onChange={(e) => setDischargeSearch(e.target.value)}
-  style={{
-    marginBottom: "10px",
-    padding: "8px",
-    width: "100%",
-    borderRadius: "6px",
-    border: "none"
-  }}
-/>
-
-    {dischargedPatients.length === 0 ? (
-      <div style={{
-        background: "#1e293b",
-        padding: "20px",
-        borderRadius: "10px"
-      }}>
-        <p style={{ color: "#94a3b8" }}>
-          No discharged patients yet
-        </p>
-      </div>
-    ) : (
-      dischargedPatients
-  .filter(p =>
-    p.name?.toLowerCase().includes(dischargeSearch.toLowerCase())
-  )
-  .map((p) => (
-  <div
-    key={p.id}
-    onClick={() => setSelectedPatient(p)}   // ✅ THIS LINE ADDED
-    style={{
-      marginTop: "10px",
-      padding: "15px",
-      background: "#1e293b",
-      borderRadius: "10px",
-      cursor: "pointer",
-      transition: "0.2s"
-    }}
-    onMouseEnter={(e) => e.currentTarget.style.background = "#334155"}
-    onMouseLeave={(e) => e.currentTarget.style.background = "#1e293b"}
-  >
-          <b>{p.name}</b>  
-          <br />
-          Bed: {p.bed_number}  
-          <br />
-          Doctor: {p.doctor}  
-          <br />
-          Discharged on: {p.discharge_date?.slice(0,10)}
-        </div>
-      ))
-    )}
-  </div>
-)}
 {view === "admin" && role === "admin" && (
   <div style={{ padding: "20px" }}>
     <h2>🔒 Admin Panel</h2>
@@ -966,7 +895,11 @@ onMouseLeave={(e) => {
   </thead>
 
   <tbody>
-    {dischargedPatients.map((p) => (
+    {dischargedPatients
+  .filter(p =>
+    p.name?.toLowerCase().includes(dischargeSearch.toLowerCase())
+  )
+  .map((p) => (
       <tr
         key={p.id}
         style={{ cursor: "pointer" }}
