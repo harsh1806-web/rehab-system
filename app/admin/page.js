@@ -968,17 +968,25 @@ onMouseLeave={(e) => {
   position: "fixed",
   top: "50%",
   left: "50%",
-  transform: "translate(-50%, -50%) scale(0.95)",
-animation: "fadeIn 0.2s ease forwards",
-  background: "#1e293b",
-  padding: "20px",
-  background: "rgba(0,0,0,0.5)",
-  borderRadius: "10px",
+  transform: "translate(-50%, -50%)",
+  background: "rgba(15, 23, 42, 0.9)",
+  backdropFilter: "blur(10px)",
+  padding: "25px",
+  borderRadius: "16px",
   color: "white",
-  minWidth: "250px",
-  animation: "fadeIn 0.2s ease"
+  minWidth: "320px",
+  boxShadow: "0 10px 40px rgba(0,0,0,0.6)",
+  border: "1px solid #334155"
 }}>
-    <h3>Patient Details</h3>
+    <h3 style={{
+  marginBottom: "15px",
+  fontSize: "20px",
+  fontWeight: "600",
+  borderBottom: "1px solid #334155",
+  paddingBottom: "8px"
+}}>
+  🧾 Patient Details
+</h3>
 
     <p><b>Name:</b> {selectedPatient.name}</p>
 <p><b>Age:</b> {selectedPatient.age}</p>
