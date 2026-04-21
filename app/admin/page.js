@@ -63,10 +63,10 @@ const hospitalPatients = (patients || []).filter(
     const doctorStats = {}
 
 activePatients.forEach((p) => {
-  if (!doctorStats[p.doctor]) {
-    doctorStats[p.doctor] = 0
+  if (!doctorStats[p.physio_incharge]) {
+    doctorStats[p.physio_incharge] = 0
   }
-  doctorStats[p.doctor]++
+  doctorStats[p.physio_incharge]++
 })
     
   const [loading, setLoading] = useState(false)
@@ -85,7 +85,6 @@ const [form, setForm] = useState({
   ref_from: "",
   reference: "",
   admission_date: "",
-  doctor: "",
   bed_number: ""
 })
 
@@ -159,7 +158,7 @@ const fetchHistory = async () => {
 }
 
   const handleSubmit = async () => {
-    if (!form.doctor) {
+    if (!form.physio_incharge) {
   alert("Please select a doctor")
   return
 }
@@ -193,7 +192,7 @@ await supabase.from("patient_stays").insert([{
   patient_name: form.name,
   action: "admitted",
  bed_number: form.bed_number,
-  doctor: form.doctor
+  physio_incharge: form.physio_incharge
 }])
 
 fetchPatients()
@@ -230,7 +229,7 @@ fetchHistory()   // 👈 ADD THIS
   patient_name: selectedPatient.name,
   action: "discharged",
   bed_number: selectedPatient.bed_number,
-  doctor: selectedPatient.doctor
+  physio_incharge: selectedPatient.physio_incharge
 }])
   }
 }
@@ -261,7 +260,7 @@ const handleAddDoctor = async () => {
   )
 
   if (exists) {
-    alert("Doctor already exists ❌")
+    alert("physio_incharge already exists ❌")
     return
   }
 
@@ -430,7 +429,7 @@ const fetchTimeline = async (patientId) => {
           borderRadius: "6px"
         }}
       >
-        Doctors
+        physio_incharge
       </button>
       
 {role === "admin" && (
@@ -645,7 +644,7 @@ const fetchTimeline = async (patientId) => {
     borderRadius: "6px"
   }}
 >
-  <option value="">All Doctors</option>
+  <option value="">All physio_incharge</option>
 
   {doctors.map((doc) => (
     <option
@@ -687,7 +686,7 @@ const fetchTimeline = async (patientId) => {
     {activePatients
   .filter(p =>
   p.name?.toLowerCase().includes(search.toLowerCase()) &&
-  (doctorFilter ? p.doctor === doctorFilter : true)
+  (doctorFilter ? p.physio_incharge === doctorFilter : true)
 )
   .map((p) => (
       <tr
@@ -786,7 +785,7 @@ onMouseLeave={(e) => {
 )}
 {view === "doctors" && (
   <div style={{ padding: "20px" }}>
-    <h2>👨‍⚕️ Doctors</h2>
+    <h2>👨‍⚕️ physio_incharge</h2>
 
     {Object.keys(doctorStats).map((doc) => (
   <div
@@ -820,7 +819,7 @@ onMouseLeave={(e) => {
           if (!confirmDelete) return
 
           // ❌ Prevent delete if patients exist
-          const hasPatients = activePatients.some(p => p.doctor === doc)
+          const hasPatients = activePatients.some(p => p.physio_incharge === doc)
 
           if (hasPatients) {
             alert("Cannot delete doctor with active patients ❌")
@@ -878,7 +877,7 @@ onMouseLeave={(e) => {
             <br />
             Bed: {p.bed_number}
             <br />
-            Doctor: {p.doctor}
+            physio_incharge: {p.physio_incharge}
           </div>
 
           <button
@@ -941,7 +940,7 @@ onMouseLeave={(e) => {
       <th style={th}>Reference</th>
       <th style={th}>Admission</th>
       <th style={th}>Discharge</th>
-      <th style={th}>Doctor</th>
+      <th style={th}>physio_incharge</th>
       <th style={th}>Bed</th>
     </tr>
   </thead>
@@ -950,7 +949,7 @@ onMouseLeave={(e) => {
     {dischargedPatients
   .filter(p =>
     p.name?.toLowerCase().includes(adminSearch.toLowerCase()) ||
-    p.doctor?.toLowerCase().includes(adminSearch.toLowerCase())
+    p.physio_incharge?.toLowerCase().includes(adminSearch.toLowerCase())
   )
   .map((p) => (
       <tr
@@ -977,7 +976,7 @@ onMouseLeave={(e) => {
         <td style={td}>{p.reference}</td>
         <td style={td}>{p.admission_date?.slice(0,10)}</td>
         <td style={td}>{p.discharge_date?.slice(0,10)}</td>
-        <td style={td}>{p.doctor}</td>
+        <td style={td}>{physio_incharge}</td>
         <td style={td}>{p.bed_number}</td>
       </tr>
     ))}
@@ -1035,7 +1034,6 @@ animation: "popupFade 0.25s ease forwards",
 <p><b>Reference:</b> {selectedPatient.reference}</p>
 <p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
 <p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
-<p><b>Doctor:</b> {selectedPatient.doctor}</p>
 <p><b>Bed:</b> {selectedPatient.bed_number}</p>
 
 
@@ -1212,8 +1210,8 @@ animation: "popupFade 0.25s ease forwards",
   </button>
 
   <select
-  name="doctor"
-  value={form.doctor || ""}
+  name="physio_incharge"
+  value={form.physio_incharge || ""}
   onChange={handleChange}
   style={{
     padding: "10px",
