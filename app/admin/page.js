@@ -815,19 +815,19 @@ onMouseLeave={(e) => {
 
       <button
         onClick={async () => {
-          const confirmDelete = confirm(`Delete doctor ${doc}?`)
+          const confirmDelete = confirm(`Delete physio_incharge ${doc}?`)
           if (!confirmDelete) return
 
           // ❌ Prevent delete if patients exist
           const hasPatients = activePatients.some(p => p.physio_incharge === doc)
 
           if (hasPatients) {
-            alert("Cannot delete doctor with active patients ❌")
+            alert("Cannot delete physio_incharge with active patients ❌")
             return
           }
 
           await supabase
-            .from("doctors")
+            .from("physio_incharge")
             .delete()
             .eq("name", doc)
 
