@@ -166,7 +166,7 @@ const fetchHistory = async () => {
     ...form,
     status: "occupied",
     bed_number: Number(form.bed_number),
-    admission_date: form.admission_date || new Date().toISOString()
+    admission_date: new Date().toISOString()
   }])
   .select()
   .single()
@@ -1002,7 +1002,7 @@ animation: "fadeIn 0.2s ease forwards",
 <p><b>Reference:</b> {selectedPatient.reference}</p>
 <p><b>Doctor:</b> {selectedPatient.doctor}</p>
 <p><b>Bed:</b> {selectedPatient.bed_number}</p>
-<p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
+
 <p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
 <h4 style={{ marginTop: "15px" }}>Timeline</h4>
 
@@ -1140,12 +1140,6 @@ animation: "fadeIn 0.2s ease forwards",
 <input name="contact" placeholder="Contact Number" onChange={handleChange} />
 
 <input name="reference" placeholder="Reference (Who referred?)" onChange={handleChange} />
-
-<input
-  type="date"
-  name="admission_date"
-  onChange={handleChange}
-/>
 
   <input
     placeholder="New Doctor"
