@@ -9,12 +9,6 @@ export default function Admin() {
   const router = useRouter()
 
 useEffect(() => {
-  const interval = setInterval(() => {
-    setTick(prev => prev + 1)
-  }, 60000) // update every 1 min
-
-  return () => clearInterval(interval)
-
   checkAccess()
   fetchUserRole()
   fetchPatients()
@@ -40,8 +34,6 @@ if (profile?.role !== "admin") {
   router.push("/user")
 }
 }
-
-const [tick, setTick] = useState(0)
 const [dischargeSearch, setDischargeSearch] = useState("")
     const [showReturnModal, setShowReturnModal] = useState(false)
 const [returnPatient, setReturnPatient] = useState(null)
@@ -57,7 +49,6 @@ const [selectedBed, setSelectedBed] = useState("")
     const [search, setSearch] = useState("")
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
-    const currentStay = timeline.find(t => !t.end_date)
     const activePatients = (patients || []).filter(
   p => !p.discharge_date && p.status !== "hospital"
 
@@ -298,15 +289,6 @@ for (let i = 1; i <= 60; i++) {
   if (!occupied) {
     availableBeds.push(i)
   }
-}
-const getLiveDays = (startDate) => {
-  if (!startDate) return 0
-
-  const start = new Date(startDate)
-  const now = new Date()
-
-  const diff = (now - start) / (1000 * 60 * 60 * 24)
-  return Math.floor(diff)
 }
 if (role === "user" && view === "admin") {
   return (
@@ -959,27 +941,62 @@ onMouseLeave={(e) => {
   <div style={{ padding: "20px" }}>
     <h2>🔒 Admin Panel</h2>
 
-    {dischargedPatients.map((p) => (
-      <div key={p.id} style={{
-        marginTop: "10px",
-        padding: "10px",
-        background: "#1e293b",
-        borderRadius: "6px"
-      }}>
-        {p.name} (Bed {p.bed_number})
+    <table style={{
+  width: "100%",
+  borderCollapse: "collapse",
+  background: "#020617",
+  borderRadius: "10px",
+  overflow: "hidden",
+  marginTop: "10px"
+}}>
+  <thead style={{ background: "#1e293b" }}>
+    <tr>
+      <th style={th}>Name</th>
+      <th style={th}>Age</th>
+      <th style={th}>Sex</th>
+      <th style={th}>Condition</th>
+      <th style={th}>Address</th>
+      <th style={th}>Contact</th>
+      <th style={th}>Reference</th>
+      <th style={th}>Admission</th>
+      <th style={th}>Discharge</th>
+      <th style={th}>Doctor</th>
+      <th style={th}>Bed</th>
+    </tr>
+  </thead>
 
-        <button
-          onClick={() => {
-            setSelectedPatient(p)
-            setEditMode(true)
-            setForm(p)
-          }}
-          style={{ marginLeft: "10px" }}
-        >
-          Edit
-        </button>
-      </div>
+  <tbody>
+    {dischargedPatients.map((p) => (
+      <tr
+        key={p.id}
+        style={{ cursor: "pointer" }}
+        onClick={() => setSelectedPatient(p)}
+        onMouseEnter={(e) => e.currentTarget.style.background = "#1e293b"}
+        onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+      >
+        <td style={td}>{p.name}</td>
+        <td style={td}>{p.age}</td>
+        <td style={td}>{p.sex}</td>
+        <td style={{
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>
+          {p.condition}
+        </td>
+        <td style={td}>{p.address}</td>
+        <td style={td}>{p.contact}</td>
+        <td style={td}>{p.reference}</td>
+        <td style={td}>{p.admission_date?.slice(0,10)}</td>
+        <td style={td}>{p.discharge_date?.slice(0,10)}</td>
+        <td style={td}>{p.doctor}</td>
+        <td style={td}>{p.bed_number}</td>
+      </tr>
     ))}
+  </tbody>
+</table>
   </div>
 )}
 
@@ -1037,17 +1054,9 @@ animation: "fadeIn 0.2s ease forwards",
   </div>
 ))}
 
-
-
 <p style={{ marginTop: "10px", color: "#22c55e" }}>
   Total Rehab Days: {calculateRehabDays(timeline)}
 </p>
-
-{currentStay && (
-  <p style={{ color: "#38bdf8" }}>
-    Current Stay: {getLiveDays(currentStay.start_date)} days
-  </p>
-)}
 
     <div style={{ marginTop: "15px" }}>
 
@@ -1500,3 +1509,4 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
 </div>
 )
 }
+
