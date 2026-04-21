@@ -34,6 +34,7 @@ if (profile?.role !== "admin") {
   router.push("/user")
 }
 }
+const [dischargeSearch, setDischargeSearch] = useState("")
     const [showReturnModal, setShowReturnModal] = useState(false)
 const [returnPatient, setReturnPatient] = useState(null)
 const [selectedBed, setSelectedBed] = useState("")
@@ -862,6 +863,20 @@ onMouseLeave={(e) => {
   </div>
 )}
 {view === "discharged" && (
+
+<input
+  placeholder="Search discharged patient..."
+  value={dischargeSearch}
+  onChange={(e) => setDischargeSearch(e.target.value)}
+  style={{
+    marginBottom: "10px",
+    padding: "8px",
+    width: "100%",
+    borderRadius: "6px",
+    border: "none"
+  }}
+>
+  
   <div style={{ marginTop: "20px" }}>
     <h2>Discharged Patients</h2>
 
