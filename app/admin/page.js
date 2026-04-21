@@ -461,7 +461,7 @@ const fetchTimeline = async (patientId) => {
 
   <div style={cardStyle}>
     <p>Total Beds</p>
-    <h2>60</h2>
+    <h2>62</h2>
   </div>
 
   <div style={cardStyle}>
@@ -471,7 +471,7 @@ const fetchTimeline = async (patientId) => {
 
   <div style={cardStyle}>
     <p>Available</p>
-    <h2>{60 - activePatients.length}</h2>
+    <h2>{62 - activePatients.length}</h2>
   </div>
 
 </div>
@@ -736,11 +736,11 @@ onMouseLeave={(e) => {
 }}>
 
   <h3>Total Beds</h3>
-  <h1 style={{ color: "#22c55e" }}>60</h1>
+  <h1 style={{ color: "#22c55e" }}>62</h1>
 
   <hr style={{ borderColor: "#1e293b" }} />
 
-  <p>🟩 Empty: {60 - activePatients.length}</p>
+  <p>🟩 Empty: {62 - activePatients.length}</p>
   <p>🟥 Occupied: {activePatients.length}</p>
 
 </div>
