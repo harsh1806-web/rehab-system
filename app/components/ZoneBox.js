@@ -33,7 +33,7 @@ export default function ZoneBox({
 
       {/* BEDS */}
       <div style={{
-        display: "flex",
+        display: "grid",
 alignItems: "center",
 justifyContent: "center",
 fontSize: "11px",
