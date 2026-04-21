@@ -1,4 +1,5 @@
 "use client"
+
 import { hospitalLayout } from "@/lib/hospitalLayout"
 import  ZoneBox  from "../components/ZoneBox"
 import { useEffect, useState } from "react"
@@ -344,6 +345,20 @@ const fetchTimeline = async (patientId) => {
     color: "white",
     fontFamily: "sans-serif"
   }}>
+    <style>
+{`
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+`}
+</style>
    
 
   {/* 🔥 TOP NAVBAR */}
@@ -968,7 +983,8 @@ onMouseLeave={(e) => {
   position: "fixed",
   top: "50%",
   left: "50%",
-  transform: "translate(-50%, -50%)",
+  transform: "translate(-50%, -50%) scale(0.9)",
+animation: "popupFade 0.25s ease forwards",
   background: "rgba(15, 23, 42, 0.9)",
   backdropFilter: "blur(10px)",
   padding: "25px",
@@ -1137,12 +1153,13 @@ onMouseLeave={(e) => {
   position: "fixed",
   top: "50%",
   left: "50%",
-  transform: "translate(-50%, -50%)",
+  transform: "translate(-50%, -50%) scale(0.9)",
+animation: "popupFade 0.25s ease forwards",
   background: "#1e293b",
   padding: "20px",
   borderRadius: "10px",
   color: "white",
-  zIndex: 1000,
+  zIndex: 999,
   minWidth: "300px"
 }}>
     <h3>Add Patient</h3>
