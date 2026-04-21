@@ -76,9 +76,13 @@ const [form, setForm] = useState({
   name: "",
   age: "",
   sex: "",
-  condition: "",
   address: "",
-  contact: "",
+  to_contact: "",
+  physio_incharge: "",
+  condition: "",
+  parent_doctor: "",
+  parent_hospital: "",
+  ref_from: "",
   reference: "",
   admission_date: "",
   doctor: "",
@@ -663,17 +667,19 @@ const fetchTimeline = async (patientId) => {
 }}>
   <thead style={{ background: "#1e293b" }}>
     <tr>
-      <th style={th}>Name</th>
-<th style={th}>Age</th>
-<th style={th}>Sex</th>
-<th style={th}>Condition</th>
-<th style={th}>Address</th>
-<th style={th}>Contact</th>
-<th style={th}>Reference</th>
-<th style={th}>Admission</th>
-<th style={th}>Discharge</th>
-<th style={th}>Doctor</th>
-<th style={th}>Bed</th>
+      <th>Name</th>
+<th>Age</th>
+<th>Sex</th>
+<th>Address</th>
+<th>To Contact</th>
+<th>Physio</th>
+<th>Condition</th>
+<th>Parent Doctor</th>
+<th>Hospital</th>
+<th>Ref</th>
+<th>Admission</th>
+<th>Discharge</th>
+<th>Bed</th>
     </tr>
   </thead>
 
@@ -705,23 +711,25 @@ onMouseLeave={(e) => {
   whiteSpace: "normal",
   wordBreak: "break-word"
 }}>
-  {p.condition}
+  {p.address}
 </td>
+<td>{p.to_contact}</td>
+<td>{p.physio_incharge}</td>
 <td style={{
   ...td,
   maxWidth: "200px",
   whiteSpace: "normal",
   wordBreak: "break-word"
 }}>
-  {p.address}
+  {p.condition}
 </td>
+<td>{p.parent_doctor}</td>
+<td>{p.parent_hospital}</td>
+<td>{p.ref_from}</td>
+<td>{p.admission_date?.slice(0,10)}</td>
+<td>{p.discharge_date?.slice(0,10) || "-"}</td>
+<td>{p.bed_number}</td>
 
-<td style={td}>{p.contact}</td>
-<td style={td}>{p.reference}</td>
-<td style={td}>{p.admission_date?.slice(0,10)}</td>
-<td style={td}>{p.discharge_date?.slice(0,10) || "-"}</td>
-<td style={td}>{p.doctor}</td>
-<td style={td}>{p.bed_number}</td>
       </tr>
     ))}
   </tbody>
@@ -1011,21 +1019,26 @@ animation: "popupFade 0.25s ease forwards",
   maxWidth: "300px",
   wordBreak: "break-word"
 }}>
-  <b>Condition:</b> {selectedPatient.condition}
-</p>
-<p style={{
-  maxWidth: "300px",
-  wordBreak: "break-word"
-}}>
   <b>Address:</b> {selectedPatient.address}
 </p>
-
-<p><b>Contact:</b> {selectedPatient.contact}</p>
+ <p><b>To Contact:</b> {selectedPatient.to_contact}</p>
+ <p><b>Physio Incharge:</b> {selectedPatient.physio_incharge}</p>
+<p style={{
+  maxWidth: "300px",
+  wordBreak: "break-word"                                 
+}}>
+  <b>Condition:</b> {selectedPatient.condition}
+</p>
+<p><b>Parent Doctor:</b> {selectedPatient.parent_doctor}</p>
+<p><b>Parent Hospital:</b> {selectedPatient.parent_hospital}</p>
+<p><b>Ref. From:</b> {selectedPatient.ref_from}</p>
 <p><b>Reference:</b> {selectedPatient.reference}</p>
+<p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
+<p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
 <p><b>Doctor:</b> {selectedPatient.doctor}</p>
 <p><b>Bed:</b> {selectedPatient.bed_number}</p>
 
-<p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
+
 <h4 style={{ marginTop: "15px" }}>Timeline</h4>
 
 {timeline.map((t) => (
@@ -1172,11 +1185,19 @@ animation: "popupFade 0.25s ease forwards",
 
 <input name="sex" placeholder="Sex" onChange={handleChange} />
 
-<input name="condition" placeholder="Condition" onChange={handleChange} />
-
 <input name="address" placeholder="Address" onChange={handleChange} />
 
-<input name="contact" placeholder="Contact Number" onChange={handleChange} />
+<input name="to_contact" placeholder="To Contact" onChange={handleChange} />
+
+<input name="physio_incharge" placeholder="Physio Incharge" onChange={handleChange} />
+
+<input name="condition" placeholder="Condition" onChange={handleChange} />
+
+<input name="parent_doctor" placeholder="Parent Doctor" onChange={handleChange} />
+
+<input name="parent_hospital" placeholder="Parent Hospital" onChange={handleChange} />
+
+<input name="ref_from" placeholder="Ref. From" onChange={handleChange} />
 
 <input name="reference" placeholder="Reference (Who referred?)" onChange={handleChange} />
 
