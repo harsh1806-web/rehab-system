@@ -1,5 +1,4 @@
-console.log("Bed:", bed)
-console.log("Patients:", activePatients)
+
 export default function ZoneBox({
   
   
