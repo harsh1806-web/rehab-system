@@ -1030,48 +1030,64 @@ animation: "fadeIn 0.2s ease forwards",
   ) : (
     <>
       <button
-        onClick={() => {
-          setEditMode(true)
-          setForm(selectedPatient)
-        }}
-        style={{ marginRight: "10px" }}
-      >
-        Edit
-      </button>
+  onClick={() => {
+    setEditMode(true)
+    setForm(selectedPatient)
+  }}
+  style={{
+    marginRight: "10px",
+    background: "#3b82f6",   // 🔵 Blue
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  }}
+>
+  Edit
+</button>
 
-      <button
-        onClick={async () => {
-          const now = new Date().toISOString()
+<button
+  onClick={async () => {
+    const now = new Date().toISOString()
 
-          await supabase
-            .from("patient_stays")
-            .update({ end_date: now })
-            .eq("patient_id", selectedPatient.id)
-            .eq("type", "rehab")
-            .is("end_date", null)
+    await supabase
+      .from("patient_stays")
+      .update({ end_date: now })
+      .eq("patient_id", selectedPatient.id)
+      .eq("type", "rehab")
+      .is("end_date", null)
 
-          await supabase.from("patient_stays").insert([{
-            patient_id: selectedPatient.id,
-            type: "hospital",
-            start_date: now
-          }])
+    await supabase.from("patient_stays").insert([{
+      patient_id: selectedPatient.id,
+      type: "hospital",
+      start_date: now
+    }])
 
-          await supabase
-            .from("patients")
-            .update({
-              status: "hospital",
-              bed_number: null
-            })
-            .eq("id", selectedPatient.id)
+    await supabase
+      .from("patients")
+      .update({
+        status: "hospital",
+        bed_number: null
+      })
+      .eq("id", selectedPatient.id)
 
-          await fetchPatients()
-          setSelectedPatient(null)
+    await fetchPatients()
+    setSelectedPatient(null)
 
-          alert("Transferred to hospital 🏥")
-        }}
-      >
-        Transfer
-      </button>
+    alert("Transferred to hospital 🏥")
+  }}
+  style={{
+    background: "#f59e0b",   // 🟡 Orange
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  }}
+>
+  Transfer
+</button>
 
       <button
         onClick={handleDischarge}
