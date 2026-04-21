@@ -85,3 +85,35 @@ button:active {
 html, body {
   overflow-x: hidden;
 }
+/* 🔥 Smooth animations everywhere */
+* {
+  transition: all 0.2s ease;
+}
+
+/* Page fade */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* 🔥 ALL BUTTONS GLOBAL STYLE */
+button {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+/* Hover effect */
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+/* Click effect */
+button:active {
+  transform: scale(0.95);
+}

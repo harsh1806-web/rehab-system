@@ -275,7 +275,7 @@ const cardStyle = {
   padding: "20px",
   borderRadius: "12px",
   border: "1px solid #1e293b",
-  transition: "0.2s",
+  transition: "all 0.3s ease",
   cursor: "pointer"
 }
 const availableBeds = []
@@ -667,8 +667,14 @@ fetchTimeline(patient.id)
       <tr
   key={p.id}
   style={{ cursor: "pointer" }}
-  onMouseEnter={(e) => e.currentTarget.style.background = "#1e293b"}
-  onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+  onMouseEnter={(e) => {
+  e.currentTarget.style.background = "#1e293b"
+  e.currentTarget.style.transform = "scale(1.01)"
+}}
+onMouseLeave={(e) => {
+  e.currentTarget.style.background = "transparent"
+  e.currentTarget.style.transform = "scale(1)"
+}}
 >
         <td style={td}>{p.name}</td>
 <td style={td}>{p.age}</td>
@@ -930,7 +936,8 @@ fetchTimeline(patient.id)
   position: "fixed",
   top: "50%",
   left: "50%",
-  transform: "translate(-50%, -50%) scale(1)",
+  transform: "translate(-50%, -50%) scale(0.95)",
+animation: "fadeIn 0.2s ease forwards",
   background: "#1e293b",
   padding: "20px",
   background: "rgba(0,0,0,0.5)",

@@ -51,16 +51,25 @@ export default function ZoneBox({
               key={bed}
               onClick={() => onBedClick(bed, patient)}
               style={{
-                width: "60px",
-                height: "50px",
-                borderRadius: "8px",
-                background: bg,
-                color: "white",
-                border: "none",
-                fontWeight: "bold",
-                cursor: "pointer",
-                transition: "all 0.2s ease"
-              }}
+  width: "60px",
+  height: "50px",
+  borderRadius: "8px",
+  background: bg,
+  color: "white",
+  border: "none",
+  fontWeight: "bold",
+  cursor: "pointer",
+  transition: "all 0.2s ease",
+  transform: "scale(1)"
+}}
+onMouseEnter={(e) => {
+  e.currentTarget.style.transform = "scale(1.1)"
+  e.currentTarget.style.boxShadow = "0 0 12px rgba(255,255,255,0.4)"
+}}
+onMouseLeave={(e) => {
+  e.currentTarget.style.transform = "scale(1)"
+  e.currentTarget.style.boxShadow = "none"
+}}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.1)"
               }}
