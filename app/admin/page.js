@@ -9,6 +9,12 @@ export default function Admin() {
   const router = useRouter()
 
 useEffect(() => {
+  const interval = setInterval(() => {
+    setTick(prev => prev + 1)
+  }, 60000) // update every 1 min
+
+  return () => clearInterval(interval)
+
   checkAccess()
   fetchUserRole()
   fetchPatients()
@@ -34,6 +40,8 @@ if (profile?.role !== "admin") {
   router.push("/user")
 }
 }
+const currentStay = timeline.find(t => !t.end_date)
+const [tick, setTick] = useState(0)
 const [dischargeSearch, setDischargeSearch] = useState("")
     const [showReturnModal, setShowReturnModal] = useState(false)
 const [returnPatient, setReturnPatient] = useState(null)
@@ -289,6 +297,15 @@ for (let i = 1; i <= 60; i++) {
   if (!occupied) {
     availableBeds.push(i)
   }
+}
+const getLiveDays = (startDate) => {
+  if (!startDate) return 0
+
+  const start = new Date(startDate)
+  const now = new Date()
+
+  const diff = (now - start) / (1000 * 60 * 60 * 24)
+  return Math.floor(diff)
 }
 if (role === "user" && view === "admin") {
   return (
@@ -1019,9 +1036,17 @@ animation: "fadeIn 0.2s ease forwards",
   </div>
 ))}
 
+
+
 <p style={{ marginTop: "10px", color: "#22c55e" }}>
   Total Rehab Days: {calculateRehabDays(timeline)}
 </p>
+
+{currentStay && (
+  <p style={{ color: "#38bdf8" }}>
+    Current Stay: {getLiveDays(currentStay.start_date)} days
+  </p>
+)}
 
     <div style={{ marginTop: "15px" }}>
 
