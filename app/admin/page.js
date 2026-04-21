@@ -167,7 +167,7 @@ const fetchHistory = async () => {
   .insert([{
     ...form,
     status: "occupied",
-    bed_number: Number(form.bed_number),
+  bed_number: form.bed_number,
     admission_date: new Date().toISOString()
   }])
   .select()
@@ -187,7 +187,7 @@ await supabase.from("patient_stays").insert([{
       await supabase.from("patient_history").insert([{
   patient_name: form.name,
   action: "admitted",
-  bed_number: Number(form.bed_number),
+ bed_number: form.bed_number,
   doctor: form.doctor
 }])
 
@@ -283,15 +283,43 @@ const cardStyle = {
 }
 const availableBeds = []
 
-for (let i = 1; i <= 60; i++) {
-  const occupied = activePatients.find(
-    p => Number(p.bed_number) === i && p.id !== selectedPatient?.id
-  )
+const allBeds = []
 
-  if (!occupied) {
-    availableBeds.push(i)
+// Ground floor beds
+hospitalLayout.ground.forEach(block =>
+  block.zones.forEach(zone =>
+    zone.beds.forEach(bed => allBeds.push(bed))
+  )
+)
+
+// First floor beds
+hospitalLayout.first.forEach(block =>
+  block.zones.forEach(zone =>
+    zone.beds.forEach(bed => allBeds.push(bed))
+  )
+)
+
+// Filter available beds
+const availableBeds = allBeds.filter(bed =>
+  !activePatients.find(
+    p => p.bed_number === bed && p.id !== selectedPatient?.id
+  )
+)
+const combinedLayout = {}
+
+hospitalLayout.ground.forEach(block => {
+  if (!combinedLayout[block.block]) {
+    combinedLayout[block.block] = { ground: [], first: [] }
   }
-}
+  combinedLayout[block.block].ground = block.zones
+})
+
+hospitalLayout.first.forEach(block => {
+  if (!combinedLayout[block.block]) {
+    combinedLayout[block.block] = { ground: [], first: [] }
+  }
+  combinedLayout[block.block].first = block.zones
+})
 if (role === "user" && view === "admin") {
   return (
     <div style={{ color: "white", padding: "50px" }}>
@@ -455,105 +483,79 @@ const fetchTimeline = async (patientId) => {
     {/* LEGEND */}
     
 
-    {/* ================= GROUND FLOOR ================= */}
-    <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
+    {view === "beds" && (
+  <div style={{ display: "block" }}>
 
-    
+    {Object.keys(combinedLayout).map((blockName) => {
+      const block = combinedLayout[blockName]
 
-{hospitalLayout.ground.map((block) => (
-  <div
-  key={block.block}
-  style={{
-    marginBottom: "20px",
-    width: "100%"   // ✅ forces each row to stay clean
-  }}
->
+      return (
+        <div key={blockName} style={{ marginBottom: "30px" }}>
+          
+          <h2 style={{ color: "#22c55e" }}>{blockName}</h2>
 
-    {/* BLOCK TITLE */}
-    <div style={{
-      background: "#0ea5e9",
-      padding: "6px",
-      color: "white",
-      fontWeight: "bold",
-      marginBottom: "10px"
-    }}>
-      {block.block}
-    </div>
+          {/* Ground Floor */}
+          {block.ground.length > 0 && (
+            <>
+              <h3 style={{ color: "#38bdf8" }}>Ground Floor</h3>
 
-    {/* ZONES */}
-   <div style={{
-  display: "flex",
-  gap: "15px",
-  flexWrap: "wrap",
-  alignItems: "flex-start"
-}}>
-      {block.zones.map((zone) => (
-        <ZoneBox
-          key={zone.title}
-          title={zone.title}
-          beds={zone.beds}
-          columns={zone.columns}
-          activePatients={activePatients}
-          onBedClick={(bed, patient) => {
-            if (patient) {
-              setSelectedPatient(patient)
-fetchTimeline(patient.id)
-            } else {
-              setShowForm(true)
-              setForm({ ...form, bed_number: bed })
-            }
-          }}
-        />
-      ))}
-    </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+                {block.ground.map((zone) => (
+                  <ZoneBox
+                    key={zone.title}
+                    title={zone.title}
+                    beds={zone.beds}
+                    columns={zone.columns}
+                    activePatients={activePatients}
+                    onBedClick={(bed, patient) => {
+                      if (patient) {
+                        setSelectedPatient(patient)
+                        fetchTimeline(patient.id)
+                      } else {
+                        setShowForm(true)
+                        setForm({ ...form, bed_number: bed })
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
-  </div>
-))}
+          {/* First Floor */}
+          {block.first.length > 0 && (
+            <>
+              <h3 style={{ color: "#f97316" }}>First Floor</h3>
 
-    <h2 style={{ color: "#f97316" }}>1st Floor</h2>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+                {block.first.map((zone) => (
+                  <ZoneBox
+                    key={zone.title}
+                    title={zone.title}
+                    beds={zone.beds}
+                    columns={zone.columns}
+                    activePatients={activePatients}
+                    onBedClick={(bed, patient) => {
+                      if (patient) {
+                        setSelectedPatient(patient)
+                        fetchTimeline(patient.id)
+                      } else {
+                        setShowForm(true)
+                        setForm({ ...form, bed_number: bed })
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
-{hospitalLayout.first.map((block) => (
-  <div
-  key={block.block}
-  style={{
-    marginBottom: "20px",
-    width: "100%"   // ✅ forces each row to stay clean
-  }}
->
-
-    <div style={{
-      background: "#f97316",
-      padding: "6px",
-      color: "white",
-      fontWeight: "bold",
-      marginBottom: "10px"
-    }}>
-      {block.block}
-    </div>
-
-    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-      {block.zones.map((zone) => (
-        <ZoneBox
-          key={zone.title}
-          title={zone.title}
-          beds={zone.beds}
-          columns={zone.columns}
-          activePatients={activePatients}
-          onBedClick={(bed, patient) => {
-            if (patient) {
-              setSelectedPatient(patient)
-fetchTimeline(patient.id)
-            } else {
-              setShowForm(true)
-              setForm({ ...form, bed_number: bed })
-            }
-          }}
-        />
-      ))}
-    </div>
+        </div>
+      )
+    })}
 
   </div>
-))}
+)}
 </div>
     )}
 
