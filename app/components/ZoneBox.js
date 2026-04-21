@@ -1,22 +1,4 @@
-const bedStyle = {
-  background: "#22c55e",
-  color: "white",
-  padding: "8px",
-  borderRadius: "8px",
-  minWidth: "70px",
-  height: "50px",
 
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-
-  fontSize: "11px",
-  fontWeight: "bold",
-
-  textAlign: "center",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}
 export default function ZoneBox({
   
   title,
@@ -50,7 +32,17 @@ export default function ZoneBox({
       </div>
 
       {/* BEDS */}
-      <div style={bedStyle}>
+      <div style={{
+        display: "flex",
+alignItems: "center",
+justifyContent: "center",
+fontSize: "11px",
+whiteSpace: "normal",
+wordBreak: "break-word",
+        gridTemplateColumns: `repeat(${columns}, 1fr)`,
+        gap: "6px",
+        justifyItems: "center"
+      }}>
         {beds.map((bed) => {
           const patient = activePatients.find(
             p => Number(p.bed_number) === bed
