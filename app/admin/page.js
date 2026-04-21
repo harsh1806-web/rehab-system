@@ -936,7 +936,7 @@ onMouseLeave={(e) => {
       <th style={th}>Sex</th>
       <th style={th}>Condition</th>
       <th style={th}>Address</th>
-      <th style={th}>Contact</th>
+      <th style={th}>To Contact</th>
       <th style={th}>Reference</th>
       <th style={th}>Admission</th>
       <th style={th}>Discharge</th>
@@ -972,7 +972,7 @@ onMouseLeave={(e) => {
           {p.condition}
         </td>
         <td style={td}>{p.address}</td>
-        <td style={td}>{p.contact}</td>
+        <td style={td}>{p.to_contact}</td>
         <td style={td}>{p.reference}</td>
         <td style={td}>{p.admission_date?.slice(0,10)}</td>
         <td style={td}>{p.discharge_date?.slice(0,10)}</td>
@@ -1200,7 +1200,7 @@ animation: "popupFade 0.25s ease forwards",
 <input name="reference" placeholder="Reference (Who referred?)" onChange={handleChange} />
 
   <input
-    placeholder="New Doctor"
+    placeholder="New physio_incharge"
     value={newDoctor}
     onChange={(e) => setNewDoctor(e.target.value)}
   />
@@ -1221,7 +1221,7 @@ animation: "popupFade 0.25s ease forwards",
     border: "1px solid #334155"
   }}
 >
-  <option value="">Select Doctor</option>
+  <option value="">Select physio_incharge</option>
 
   {doctors.map((doc) => (
     <option key={doc.id} value={doc.name}>
@@ -1334,7 +1334,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   border: "1px solid #334155",
   background: "#020617",
   color: "white"
-}}name="contact" value={form.contact || ""} onChange={handleChange} placeholder="Contact" />
+}}name="to_contact" value={form.to_contact || ""} onChange={handleChange} placeholder="To Contact" />
 
   <input style={{
   padding: "10px",
