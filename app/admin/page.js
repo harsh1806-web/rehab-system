@@ -972,54 +972,56 @@ fetchTimeline(patient.id)
 </p>
 
     <div style={{ marginTop: "15px" }}>
+
+  {selectedPatient.discharge_date ? (
+    <p style={{ color: "#94a3b8" }}>
+      Patient already discharged
+    </p>
+  ) : (
+    <>
       <button
-  onClick={() => {
-    setEditMode(true)
-    
-    setForm(selectedPatient)
-  }}
-  style={{ marginRight: "10px" }}
->
-  Edit
-</button>
-<button
-  onClick={async () => {
-  if (!selectedPatient) return
+        onClick={() => {
+          setEditMode(true)
+          setForm(selectedPatient)
+        }}
+        style={{ marginRight: "10px" }}
+      >
+        Edit
+      </button>
 
-  const now = new Date().toISOString()
+      <button
+        onClick={async () => {
+          const now = new Date().toISOString()
 
-  // 1. Close rehab stay
-  await supabase
-    .from("patient_stays")
-    .update({ end_date: now })
-    .eq("patient_id", selectedPatient.id)
-    .eq("type", "rehab")
-    .is("end_date", null)
+          await supabase
+            .from("patient_stays")
+            .update({ end_date: now })
+            .eq("patient_id", selectedPatient.id)
+            .eq("type", "rehab")
+            .is("end_date", null)
 
-  // 2. Start hospital stay
-  await supabase.from("patient_stays").insert([{
-    patient_id: selectedPatient.id,
-    type: "hospital",
-    start_date: now
-  }])
+          await supabase.from("patient_stays").insert([{
+            patient_id: selectedPatient.id,
+            type: "hospital",
+            start_date: now
+          }])
 
-  // 3. Move patient to hospital + FREE BED
-  await supabase
-    .from("patients")
-    .update({
-      status: "hospital",
-      bed_number: null   // 🔥 FREE THE BED
-    })
-    .eq("id", selectedPatient.id)
+          await supabase
+            .from("patients")
+            .update({
+              status: "hospital",
+              bed_number: null
+            })
+            .eq("id", selectedPatient.id)
 
-  await fetchPatients()
-  setSelectedPatient(null)
+          await fetchPatients()
+          setSelectedPatient(null)
 
-  alert("Transferred to hospital 🏥")
-}}
->
-  Transfer
-</button>
+          alert("Transferred to hospital 🏥")
+        }}
+      >
+        Transfer
+      </button>
 
       <button
         onClick={handleDischarge}
@@ -1029,29 +1031,32 @@ fetchTimeline(patient.id)
           color: "white",
           padding: "8px",
           border: "none",
-          borderRadius: "5px",
-          cursor: "pointer"
+          borderRadius: "5px"
         }}
       >
         Discharge
       </button>
-      <button
-  onClick={() => setSelectedPatient(null)}
-  style={{
-    marginLeft: "10px",
-    background: "#64748b",
-    color: "white",
-    padding: "8px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer"
-  }}
->
-  Close
-</button>
+    </>
+  )}
+
+  <button
+    onClick={() => setSelectedPatient(null)}
+    style={{
+      marginLeft: "10px",
+      background: "#64748b",
+      color: "white",
+      padding: "8px",
+      border: "none",
+      borderRadius: "5px"
+    }}
+  >
+    Close
+  </button>
+
+</div>
     </div>
     
-  </div>
+  
 )}
 {showForm && (
   <div style={{
