@@ -680,7 +680,14 @@ onMouseLeave={(e) => {
         <td style={td}>{p.name}</td>
 <td style={td}>{p.age}</td>
 <td style={td}>{p.sex}</td>
-<td style={td}>{p.condition}</td>
+<td style={{
+  ...td,
+  maxWidth: "200px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>
+  {p.condition}
+</td>
 <td style={td}>{p.address}</td>
 <td style={td}>{p.contact}</td>
 <td style={td}>{p.reference}</td>
@@ -864,7 +871,10 @@ onMouseLeave={(e) => {
 )}
 {view === "discharged" && (
 
-<input
+  
+  <div style={{ marginTop: "20px" }}>
+    <h2>Discharged Patients</h2>
+    <input
   placeholder="Search discharged patient..."
   value={dischargeSearch}
   onChange={(e) => setDischargeSearch(e.target.value)}
@@ -875,10 +885,7 @@ onMouseLeave={(e) => {
     borderRadius: "6px",
     border: "none"
   }}
->
-  
-  <div style={{ marginTop: "20px" }}>
-    <h2>Discharged Patients</h2>
+/>
 
     {dischargedPatients.length === 0 ? (
       <div style={{
@@ -891,7 +898,11 @@ onMouseLeave={(e) => {
         </p>
       </div>
     ) : (
-      dischargedPatients.map((p) => (
+      dischargedPatients
+  .filter(p =>
+    p.name?.toLowerCase().includes(dischargeSearch.toLowerCase())
+  )
+  .map((p) => (
   <div
     key={p.id}
     onClick={() => setSelectedPatient(p)}   // ✅ THIS LINE ADDED
@@ -966,7 +977,12 @@ animation: "fadeIn 0.2s ease forwards",
     <p><b>Name:</b> {selectedPatient.name}</p>
 <p><b>Age:</b> {selectedPatient.age}</p>
 <p><b>Sex:</b> {selectedPatient.sex}</p>
-<p><b>Condition:</b> {selectedPatient.condition}</p>
+<p style={{
+  maxWidth: "300px",
+  wordBreak: "break-word"
+}}>
+  <b>Condition:</b> {selectedPatient.condition}
+</p>
 <p><b>Address:</b> {selectedPatient.address}</p>
 <p><b>Contact:</b> {selectedPatient.contact}</p>
 <p><b>Reference:</b> {selectedPatient.reference}</p>
