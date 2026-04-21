@@ -49,6 +49,7 @@ const [selectedBed, setSelectedBed] = useState("")
     const [search, setSearch] = useState("")
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
+    const dischargedPatients = patients.filter(p => p.discharge_date)
     const activePatients = (patients || []).filter(
   p => !p.discharge_date && p.status !== "hospital"
 
