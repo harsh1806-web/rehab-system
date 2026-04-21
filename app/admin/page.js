@@ -688,7 +688,15 @@ onMouseLeave={(e) => {
 }}>
   {p.condition}
 </td>
-<td style={td}>{p.address}</td>
+<td style={{
+  ...td,
+  maxWidth: "200px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>
+  {p.address}
+</td>
+
 <td style={td}>{p.contact}</td>
 <td style={td}>{p.reference}</td>
 <td style={td}>{p.admission_date?.slice(0,10)}</td>
@@ -983,7 +991,13 @@ animation: "fadeIn 0.2s ease forwards",
 }}>
   <b>Condition:</b> {selectedPatient.condition}
 </p>
-<p><b>Address:</b> {selectedPatient.address}</p>
+<p style={{
+  maxWidth: "300px",
+  wordBreak: "break-word"
+}}>
+  <b>Address:</b> {selectedPatient.address}
+</p>
+
 <p><b>Contact:</b> {selectedPatient.contact}</p>
 <p><b>Reference:</b> {selectedPatient.reference}</p>
 <p><b>Doctor:</b> {selectedPatient.doctor}</p>
