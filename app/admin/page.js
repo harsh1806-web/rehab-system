@@ -281,7 +281,7 @@ const cardStyle = {
   transition: "all 0.3s ease",
   cursor: "pointer"
 }
-const availableBeds = []
+
 
 const allBeds = []
 
@@ -1305,7 +1305,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
 
     <button
       onClick={async () => {
-  const bedNumber = parseInt(form.bed_number)
+  const bedNumber = form.bed_number
 
   if (!bedNumber) {
     alert("Invalid bed number")
@@ -1413,7 +1413,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
             .from("patients")
             .update({
               status: "occupied",
-              bed_number: Number(selectedBed)
+              bed_number: selectedBed
             })
             .eq("id", returnPatient.id)
 
