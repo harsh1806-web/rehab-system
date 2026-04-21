@@ -50,6 +50,7 @@ const [selectedBed, setSelectedBed] = useState("")
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
     const [dischargeSearch, setDischargeSearch] = useState("")
+    const [adminSearch, setAdminSearch] = useState("")
     const activePatients = (patients || []).filter(
   p => !p.discharge_date && p.status !== "hospital"
 
@@ -871,6 +872,19 @@ onMouseLeave={(e) => {
   <div style={{ padding: "20px" }}>
     <h2>🔒 Admin Panel</h2>
 
+    <input
+  placeholder="Search discharged patient..."
+  value={adminSearch}
+  onChange={(e) => setAdminSearch(e.target.value)}
+  style={{
+    marginBottom: "10px",
+    padding: "8px",
+    width: "100%",
+    borderRadius: "6px",
+    border: "none"
+  }}
+/>
+
     <table style={{
   width: "100%",
   borderCollapse: "collapse",
@@ -898,7 +912,8 @@ onMouseLeave={(e) => {
   <tbody>
     {dischargedPatients
   .filter(p =>
-    p.name?.toLowerCase().includes(dischargeSearch.toLowerCase())
+    p.name?.toLowerCase().includes(adminSearch.toLowerCase()) ||
+    p.doctor?.toLowerCase().includes(adminSearch.toLowerCase())
   )
   .map((p) => (
       <tr
