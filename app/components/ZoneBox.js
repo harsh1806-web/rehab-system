@@ -1,5 +1,7 @@
-
+console.log("Bed:", bed)
+console.log("Patients:", activePatients)
 export default function ZoneBox({
+  
   
   title,
   beds,
@@ -33,7 +35,7 @@ export default function ZoneBox({
 
       {/* BEDS */}
       <div style={{
-        display: "grid",
+        display: "grid",  
 alignItems: "center",
 justifyContent: "center",
 fontSize: "11px",
@@ -45,8 +47,10 @@ wordBreak: "break-word",
       }}>
         {beds.map((bed) => {
           const patient = activePatients.find(
-            p => Number(p.bed_number) === bed
-          )
+  p =>
+    p.bed_number?.toString().trim().toUpperCase() ===
+    bed.toString().trim().toUpperCase()
+)
 
           let bg = "#22c55e" // empty
 

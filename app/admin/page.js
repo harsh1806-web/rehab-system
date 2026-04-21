@@ -302,7 +302,7 @@ hospitalLayout.first.forEach(block =>
 // Filter available beds
 const availableBeds = allBeds.filter(bed =>
   !activePatients.find(
-    p => p.bed_number === bed && p.id !== selectedPatient?.id
+    p => p.bed_number?.toString().trim().toUpperCase() === bed.toString().trim().toUpperCase() && p.id !== selectedPatient?.id
   )
 )
 const combinedLayout = {}
