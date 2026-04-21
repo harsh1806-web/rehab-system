@@ -40,7 +40,7 @@ if (profile?.role !== "admin") {
   router.push("/user")
 }
 }
-const currentStay = timeline.find(t => !t.end_date)
+
 const [tick, setTick] = useState(0)
 const [dischargeSearch, setDischargeSearch] = useState("")
     const [showReturnModal, setShowReturnModal] = useState(false)
@@ -57,6 +57,7 @@ const [selectedBed, setSelectedBed] = useState("")
     const [search, setSearch] = useState("")
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
+    const currentStay = timeline.find(t => !t.end_date)
     const activePatients = (patients || []).filter(
   p => !p.discharge_date && p.status !== "hospital"
 
