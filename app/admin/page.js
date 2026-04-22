@@ -725,7 +725,8 @@ onMouseLeave={(e) => {
 </td>
 <td>{p.parent_doctor}</td>
 <td>{p.parent_hospital}</td>
-<td>{p.ref_from}</td>
+<td>{p.referred_from}</td>
+<td>{p.referral}</td>
 <td>{p.admission_date?.slice(0,10)}</td>
 <td>{p.discharge_date?.slice(0,10) || "-"}</td>
 <td>{p.bed_number}</td>
@@ -976,6 +977,7 @@ onMouseLeave={(e) => {
         <td style={td}>{p.address}</td>
         <td style={td}>{p.to_contact}</td>
         <td style={td}>{p.referred_from}</td>
+        <td style={td}>{p.referral}</td>
         <td style={td}>{p.admission_date?.slice(0,10)}</td>
         <td style={td}>{p.discharge_date?.slice(0,10)}</td>
         <td style={td}>{p.physio_incharge}</td>
