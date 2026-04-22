@@ -62,11 +62,12 @@ const hospitalPatients = (patients || []).filter(
     const dischargedPatients = patients.filter(p => p.discharge_date !== null)
     const doctorStats = {}
 
-activePatients.forEach((p) => {
-  if (!doctorStats[p.physio_incharge]) {
-    doctorStats[p.physio_incharge] = 0
-  }
-  doctorStats[p.physio_incharge]++
+doctors.forEach((doc) => {
+  const count = activePatients.filter(
+    (p) => p.physio_incharge === doc.name
+  ).length
+
+  doctorStats[doc.name] = count
 })
     
   const [loading, setLoading] = useState(false)
