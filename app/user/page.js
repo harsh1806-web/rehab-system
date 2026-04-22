@@ -1,16 +1,20 @@
 "use client"
+
 import { hospitalLayout } from "@/lib/hospitalLayout"
 import  ZoneBox  from "../components/ZoneBox"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
-export default function Admin() {
+export default function User() {
   const router = useRouter()
 
 useEffect(() => {
   checkAccess()
   fetchUserRole()
+  fetchPatients()
+  fetchDoctors()
+  
 }, [])
 
 const checkAccess = async () => {
@@ -28,14 +32,17 @@ const checkAccess = async () => {
   .single()
 
 if (profile?.role !== "user") {
-  router.push("/admin")
+  router.push("/")
 }
 }
+
+    const [showReturnModal, setShowReturnModal] = useState(false)
+const [returnPatient, setReturnPatient] = useState(null)
+const [selectedBed, setSelectedBed] = useState("")
     
-    const [timeline, setTimeline] = useState([])
     const [role, setRole] = useState(null)
     const [view, setView] = useState("beds")
-    const [history, setHistory] = useState([])
+    
     const [editMode, setEditMode] = useState(false)
     const [doctorFilter, setDoctorFilter] = useState(null)
     const [newDoctor, setNewDoctor] = useState("")
@@ -43,8 +50,11 @@ if (profile?.role !== "user") {
     const [search, setSearch] = useState("")
     const [selectedPatient, setSelectedPatient] = useState(null)
     const [patients, setPatients] = useState([])
+    const [dischargeSearch, setDischargeSearch] = useState("")
+    const [adminSearch, setAdminSearch] = useState("")
     const activePatients = (patients || []).filter(
   p => !p.discharge_date && p.status !== "hospital"
+
 )
 const hospitalPatients = (patients || []).filter(
   p => p.status === "hospital" && !p.discharge_date
@@ -53,10 +63,10 @@ const hospitalPatients = (patients || []).filter(
     const doctorStats = {}
 
 activePatients.forEach((p) => {
-  if (!doctorStats[p.doctor]) {
-    doctorStats[p.doctor] = 0
+  if (!doctorStats[p.physio_incharge]) {
+    doctorStats[p.physio_incharge] = 0
   }
-  doctorStats[p.doctor]++
+  doctorStats[p.physio_incharge]++
 })
     
   const [loading, setLoading] = useState(false)
@@ -64,14 +74,17 @@ const [showForm, setShowForm] = useState(false)
 
 const [form, setForm] = useState({
   name: "",
-  age: "",
+  birthdate: "",
   sex: "",
-  condition: "",
   address: "",
-  contact: "",
-  reference: "",
+  to_contact: "",
+  physio_incharge: "",
+  condition: "",
+  parent_doctor: "",
+  parent_hospital: "",
+  referred_from: "",
+  referral: "",
   admission_date: "",
-  doctor: "",
   bed_number: ""
 })
 
@@ -101,8 +114,8 @@ const fetchUserRole = async () => {
     .eq("id", userData.user.id)
     .single()
 
-  if (profile?.role !== "user") {
-    router.push("/admin")
+  if (profile?.role !== "admin") {
+    router.push("/user")
   }
 
   setRole(profile?.role)   // ✅ FIXED
@@ -118,18 +131,45 @@ const fetchUserRole = async () => {
     setDoctors(data)
   }
 }
-const fetchHistory = async () => {
-  const { data } = await supabase
-    .from("patient_history")
-    .select("*")
-    .order("created_at", { ascending: false })
+const calculateRehabDays = (stays) => {
+  let total = 0
 
-  setHistory(data)
+  stays.forEach((stay) => {
+    if (stay.type === "rehab") {
+      const start = new Date(stay.start_date)
+      const end = stay.end_date
+        ? new Date(stay.end_date)
+        : new Date()
+
+      const diff = (end - start) / (1000 * 60 * 60 * 24)
+      total += diff
+    }
+  })
+
+  return Math.floor(total)
+}
+const calculateShiftDays = (stays) => {
+  let total = 0
+
+  stays.forEach((stay) => {
+    if (stay.type === "hospital") {   // 👈 your "shift out"
+      const start = new Date(stay.start_date)
+      const end = stay.end_date
+        ? new Date(stay.end_date)
+        : new Date()
+
+      const diff = (end - start) / (1000 * 60 * 60 * 24)
+      total += diff
+    }
+  })
+
+  return Math.floor(total)
 }
 
+
   const handleSubmit = async () => {
-    if (!form.doctor) {
-  alert("Please select a doctor")
+    if (!form.physio_incharge) {
+  alert("Please select a physio_incharge")
   return
 }
   if (loading) return   // ⛔ prevent double click
@@ -138,12 +178,13 @@ const fetchHistory = async () => {
 
   const { data, error } = await supabase
   .from("patients")
-  .insert([{
-    ...form,
-    status: "occupied",
-    bed_number: Number(form.bed_number),
-    admission_date: form.admission_date || new Date().toISOString()
-  }])
+ .insert([{
+  ...form,
+  age: calculateAge(form.birthdate),   // 👈 THIS LINE ADDED
+  status: "occupied",
+  bed_number: form.bed_number,
+  admission_date: new Date().toISOString()
+}])
   .select()
   .single()
 
@@ -161,12 +202,12 @@ await supabase.from("patient_stays").insert([{
       await supabase.from("patient_history").insert([{
   patient_name: form.name,
   action: "admitted",
-  bed_number: Number(form.bed_number),
-  doctor: form.doctor
+ bed_number: form.bed_number,
+  physio_incharge: form.physio_incharge
 }])
 
 fetchPatients()
-fetchHistory()
+
   }
 
   setLoading(false)
@@ -194,13 +235,8 @@ const handleDischarge = async () => {
   setSelectedPatient(null)  // close popup
 
 
-fetchHistory()   // 👈 ADD THIS
-    await supabase.from("patient_history").insert([{
-  patient_name: selectedPatient.name,
-  action: "discharged",
-  bed_number: selectedPatient.bed_number,
-  doctor: selectedPatient.doctor
-}])
+
+    
   }
 }
 const th = {
@@ -230,7 +266,7 @@ const handleAddDoctor = async () => {
   )
 
   if (exists) {
-    alert("Doctor already exists ❌")
+    alert("physio_incharge already exists ❌")
     return
   }
 
@@ -252,47 +288,71 @@ const cardStyle = {
   padding: "20px",
   borderRadius: "12px",
   border: "1px solid #1e293b",
-  transition: "0.2s",
+  transition: "all 0.3s ease",
   cursor: "pointer"
 }
-const availableBeds = []
 
-for (let i = 1; i <= 60; i++) {
-  const occupied = activePatients.find(
-    p => Number(p.bed_number) === i && p.id !== selectedPatient?.id
+
+const allBeds = []
+
+// Ground floor beds
+hospitalLayout.ground.forEach(block =>
+  block.zones.forEach(zone =>
+    zone.beds.forEach(bed => allBeds.push(bed))
   )
+)
 
-  if (!occupied) {
-    availableBeds.push(i)
+// First floor beds
+hospitalLayout.first.forEach(block =>
+  block.zones.forEach(zone =>
+    zone.beds.forEach(bed => allBeds.push(bed))
+  )
+)
+
+// Filter available beds
+const availableBeds = allBeds.filter(bed =>
+  !activePatients.find(
+    p => p.bed_number?.toString().trim().toUpperCase() === bed.toString().trim().toUpperCase() && p.id !== selectedPatient?.id
+  )
+)
+const combinedLayout = {}
+
+hospitalLayout.ground.forEach(block => {
+  if (!combinedLayout[block.block]) {
+    combinedLayout[block.block] = { ground: [], first: [] }
   }
-}
-const fetchTimeline = async (patientId) => {
-  const { data } = await supabase
-    .from("patient_stays")
-    .select("*")
-    .eq("patient_id", patientId)
-    .order("start_date", { ascending: true })
+  combinedLayout[block.block].ground = block.zones
+})
 
-  setTimeline(data || [])
-}
-const calculateRehabDays = (stays) => {
-  let total = 0
-
-  stays.forEach((stay) => {
-    if (stay.type === "rehab") {
-      const start = new Date(stay.start_date)
-      const end = stay.end_date
-        ? new Date(stay.end_date)
-        : new Date()
-
-      const diff = (end - start) / (1000 * 60 * 60 * 24)
-      total += diff
-    }
-  })
-
-  return Math.floor(total)
+hospitalLayout.first.forEach(block => {
+  if (!combinedLayout[block.block]) {
+    combinedLayout[block.block] = { ground: [], first: [] }
+  }
+  combinedLayout[block.block].first = block.zones
+})
+if (role === "user" && view === "admin") {
+  return (
+    <div style={{ color: "white", padding: "50px" }}>
+      ❌ Access Denied
+    </div>
+  )
 }
 
+const calculateAge = (birthdate) => {
+  if (!birthdate) return ""
+
+  const today = new Date()
+  const birth = new Date(birthdate)
+
+  let age = today.getFullYear() - birth.getFullYear()
+  const m = today.getMonth() - birth.getMonth()
+
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--
+  }
+
+  return age
+}
 
  return (
   <div style={{
@@ -301,6 +361,20 @@ const calculateRehabDays = (stays) => {
     color: "white",
     fontFamily: "sans-serif"
   }}>
+    <style>
+{`
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+`}
+</style>
    
 
   {/* 🔥 TOP NAVBAR */}
@@ -358,29 +432,10 @@ const calculateRehabDays = (stays) => {
         Patients
       </button>
 
-      <button
-        onClick={() => setView("doctors")}
-        style={{
-          background: view === "doctors" ? "#22c55e" : "#1e293b",
-          color: "white",
-          padding: "8px 12px",
-          border: "none",
-          borderRadius: "6px"
-        }}
-      >
-        Doctors
-      </button>
+      
       
 
-    </div>
-  </div>
-  <div style={{
-  padding: "20px",
-  maxWidth: "1200px",
-  margin: "0 auto",
-  animation: "fadeIn 0.2s ease"
-}}>
-  <button
+<button
   onClick={() => setView("hospital")}
   style={{
     background: view === "hospital" ? "#22c55e" : "#1e293b",
@@ -390,8 +445,17 @@ const calculateRehabDays = (stays) => {
     borderRadius: "6px"
   }}
 >
-  Hospital
+  Shift Out
 </button>
+    </div>
+  </div>
+  <div style={{
+  padding: "20px",
+  width: "100%",
+  maxWidth: "100%",
+  overflowX: "hidden",
+  animation: "fadeIn 0.2s ease"
+}}>
     
     
 
@@ -404,7 +468,7 @@ const calculateRehabDays = (stays) => {
 
   <div style={cardStyle}>
     <p>Total Beds</p>
-    <h2>60</h2>
+    <h2>{allBeds.length}</h2>
   </div>
 
   <div style={cardStyle}>
@@ -414,107 +478,105 @@ const calculateRehabDays = (stays) => {
 
   <div style={cardStyle}>
     <p>Available</p>
-    <h2>{60 - activePatients.length}</h2>
+    <h2>{allBeds.length - activePatients.length}</h2>
   </div>
 
 </div>
     {view === "beds" && (
-      
-    <div style={{
-  display: "flex",
-  gap: "20px",
-  alignItems: "flex-start"
-}}>
+  <div style={{
+    display: "block"   // ✅ IMPORTANT FIX
+  }}>
 
     {/* LEGEND */}
     
 
-    {/* ================= GROUND FLOOR ================= */}
-    <h2 style={{ color: "#22c55e" }}>Ground Floor</h2>
+    {view === "beds" && (
+  <div style={{ display: "block" }}>
 
-    
+    {Object.keys(combinedLayout).map((blockName) => {
+      const block = combinedLayout[blockName]
 
-{hospitalLayout.ground.map((block) => (
-  <div key={block.block} style={{ marginBottom: "20px" }}>
+      return (
+        <div key={blockName} style={{ marginBottom: "30px" }}>
+          
+          <div style={{
+  background: "#facc15",        // same yellow as zones
+  color: "black",
+  fontWeight: "bold",
+  padding: "10px",
+  borderRadius: "8px",
+  marginBottom: "10px",
+  textAlign: "center",
+  fontSize: "18px",
+  boxShadow: "0 0 10px #facc15"
+}}>
+  🏢 {blockName}
+</div>
 
-    {/* BLOCK TITLE */}
-    <div style={{
-      background: "#0ea5e9",
-      padding: "6px",
-      color: "white",
-      fontWeight: "bold",
-      marginBottom: "10px"
-    }}>
-      {block.block}
-    </div>
+          {/* Ground Floor */}
+          {block.ground.length > 0 && (
+            <>
+              <h3 style={{ color: "#38bdf8" }}>Ground Floor</h3>
 
-    {/* ZONES */}
-    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-      {block.zones.map((zone) => (
-        <ZoneBox
-          key={zone.title}
-          title={zone.title}
-          beds={zone.beds}
-          columns={zone.columns}
-          activePatients={activePatients}
-          onBedClick={(bed, patient) => {
-            if (patient) {
-              setSelectedPatient(patient)
-fetchTimeline(patient.id)
-            } else {
-              setShowForm(true)
-              setForm({ ...form, bed_number: bed })
-            }
-          }}
-        />
-      ))}
-    </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+                {block.ground.map((zone) => (
+                  <ZoneBox
+                    key={zone.title}
+                    title={zone.title}
+                    beds={zone.beds}
+                    columns={zone.columns}
+                    activePatients={activePatients}
+                    onBedClick={(bed, patient) => {
+                      if (patient) {
+                        setSelectedPatient(patient)
+                        fetchTimeline(patient.id)
+                      } else {
+                        setShowForm(true)
+                        setForm({ ...form, bed_number: bed })
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* First Floor */}
+          {block.first.length > 0 && (
+            <>
+              <h3 style={{ color: "#f97316" }}>First Floor</h3>
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+                {block.first.map((zone) => (
+                  <ZoneBox
+                    key={zone.title}
+                    title={zone.title}
+                    beds={zone.beds}
+                    columns={zone.columns}
+                    activePatients={activePatients}
+                    onBedClick={(bed, patient) => {
+                      if (patient) {
+                        setSelectedPatient(patient)
+                        fetchTimeline(patient.id)
+                      } else {
+                        setShowForm(true)
+                        setForm({ ...form, bed_number: bed })
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+        </div>
+      )
+    })}
 
   </div>
-))}
-
-    <h2 style={{ color: "#f97316" }}>1st Floor</h2>
-
-{hospitalLayout.first.map((block) => (
-  <div key={block.block} style={{ marginBottom: "20px" }}>
-
-    <div style={{
-      background: "#f97316",
-      padding: "6px",
-      color: "white",
-      fontWeight: "bold",
-      marginBottom: "10px"
-    }}>
-      {block.block}
-    </div>
-
-    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-      {block.zones.map((zone) => (
-        <ZoneBox
-          key={zone.title}
-          title={zone.title}
-          beds={zone.beds}
-          columns={zone.columns}
-          activePatients={activePatients}
-          onBedClick={(bed, patient) => {
-            if (patient) {
-              setSelectedPatient(patient)
-fetchTimeline(patient.id)
-            } else {
-              setShowForm(true)
-              setForm({ ...form, bed_number: bed })
-            }
-          }}
-        />
-      ))}
-    </div>
-
-  </div>
-))}
-
+)}
 </div>
     )}
-    
 
     {/* RIGHT SECTION */}
     {view === "patients" && (
@@ -571,7 +633,7 @@ fetchTimeline(patient.id)
     borderRadius: "6px"
   }}
 >
-  <option value="">All Doctors</option>
+  <option value="">All physio_incharge</option>
 
   {doctors.map((doc) => (
     <option
@@ -596,13 +658,10 @@ fetchTimeline(patient.id)
       <th style={th}>Name</th>
 <th style={th}>Age</th>
 <th style={th}>Sex</th>
-<th style={th}>Condition</th>
 <th style={th}>Address</th>
-<th style={th}>Contact</th>
-<th style={th}>Reference</th>
-<th style={th}>Admission</th>
-<th style={th}>Discharge</th>
-<th style={th}>Doctor</th>
+<th style={th}>To Contact</th>
+<th style={th}>Physio</th>
+
 <th style={th}>Bed</th>
     </tr>
   </thead>
@@ -611,41 +670,42 @@ fetchTimeline(patient.id)
     {activePatients
   .filter(p =>
   p.name?.toLowerCase().includes(search.toLowerCase()) &&
-  (doctorFilter ? p.doctor === doctorFilter : true)
+  (doctorFilter ? p.physio_incharge === doctorFilter : true)
 )
   .map((p) => (
       <tr
   key={p.id}
   style={{ cursor: "pointer" }}
-  onMouseEnter={(e) => e.currentTarget.style.background = "#1e293b"}
-  onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+  onMouseEnter={(e) => {
+  e.currentTarget.style.background = "#1e293b"
+  e.currentTarget.style.transform = "scale(1.01)"
+}}
+onMouseLeave={(e) => {
+  e.currentTarget.style.background = "transparent"
+  e.currentTarget.style.transform = "scale(1)"
+}}
 >
         <td style={td}>{p.name}</td>
 <td style={td}>{p.age}</td>
 <td style={td}>{p.sex}</td>
-<td style={td}>{p.condition}</td>
-<td style={td}>{p.address}</td>
-<td style={td}>{p.contact}</td>
-<td style={td}>{p.reference}</td>
-<td style={td}>{p.admission_date?.slice(0,10)}</td>
-<td style={td}>{p.discharge_date?.slice(0,10) || "-"}</td>
-<td style={td}>{p.doctor}</td>
-<td style={td}>{p.bed_number}</td>
+<td style={{
+  ...td,
+  maxWidth: "200px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>
+  {p.address}
+</td>
+<td>{p.to_contact}</td>
+<td>{p.physio_incharge}</td>
+
+<td>{p.bed_number}</td>
+
       </tr>
     ))}
   </tbody>
 </table>
-<h3 style={{ marginTop: "20px" }}>📜 History</h3>
-{history.map((h) => (
-  <div key={h.id} style={{
-    padding: "10px",
-    marginTop: "5px",
-    background: "#1e293b",
-    borderRadius: "6px"
-  }}>
-    {h.patient_name} → {h.action} (Bed {h.bed_number})
-  </div>
-))}
+
 
 
 </div>
@@ -660,11 +720,11 @@ fetchTimeline(patient.id)
 }}>
 
   <h3>Total Beds</h3>
-  <h1 style={{ color: "#22c55e" }}>60</h1>
+  <h1 style={{ color: "#22c55e" }}>{allBeds.length}</h1>
 
   <hr style={{ borderColor: "#1e293b" }} />
 
-  <p>🟩 Empty: {60 - activePatients.length}</p>
+  <p>🟩 Empty: {allBeds.length - activePatients.length}</p>
   <p>🟥 Occupied: {activePatients.length}</p>
 
 </div>
@@ -685,76 +745,10 @@ fetchTimeline(patient.id)
     ))}
   </div>
 )}
-{view === "doctors" && (
-  <div style={{ padding: "20px" }}>
-    <h2>👨‍⚕️ Doctors</h2>
 
-    {Object.keys(doctorStats).map((doc) => (
-  <div
-    key={doc}
-    style={{
-      marginTop: "10px",
-      padding: "15px",
-      background: "#1e293b",
-      borderRadius: "10px",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center"
-    }}
-  >
-    <span
-      onClick={() => {
-        setDoctorFilter(doc)
-        setView("patients")
-      }}
-      style={{ cursor: "pointer", color: "#22c55e" }}
-    >
-      {doc}
-    </span>
-
-    <div style={{ display: "flex", gap: "10px" }}>
-      <span>{doctorStats[doc]} patients</span>
-
-      <button
-        onClick={async () => {
-          const confirmDelete = confirm(`Delete doctor ${doc}?`)
-          if (!confirmDelete) return
-
-          // ❌ Prevent delete if patients exist
-          const hasPatients = activePatients.some(p => p.doctor === doc)
-
-          if (hasPatients) {
-            alert("Cannot delete doctor with active patients ❌")
-            return
-          }
-
-          await supabase
-            .from("doctors")
-            .delete()
-            .eq("name", doc)
-
-          fetchDoctors()
-        }}
-        style={{
-          background: "#ef4444",
-          border: "none",
-          color: "white",
-          padding: "5px 8px",
-          borderRadius: "5px",
-          cursor: "pointer"
-        }}
-      >
-        Delete
-      </button>
-    </div>
-  </div>
-))}
-    
-  </div>
-)}
 {view === "hospital" && (
   <div style={{ padding: "20px" }}>
-    <h2>🏥 Hospital Patients</h2>
+    <h2>🏥 Shifted Out Patients</h2>
 
     {hospitalPatients.length === 0 ? (
       <p style={{ color: "#94a3b8" }}>
@@ -779,48 +773,27 @@ fetchTimeline(patient.id)
             <br />
             Bed: {p.bed_number}
             <br />
-            Doctor: {p.doctor}
+            physio_incharge: {p.physio_incharge}
           </div>
 
           <button
-            onClick={async () => {
-              const now = new Date().toISOString()
+ 
+  onClick={() => {
+    setReturnPatient(p)
+    setShowReturnModal(true)
+  }}
+  style={{
+    background: "#22c55e",
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "6px"
+  }}
 
-              // Close hospital stay
-              await supabase
-                .from("patient_stays")
-                .update({ end_date: now })
-                .eq("patient_id", p.id)
-                .eq("type", "hospital")
-                .is("end_date", null)
 
-              // Start rehab again
-              await supabase.from("patient_stays").insert([{
-                patient_id: p.id,
-                type: "rehab",
-                start_date: now
-              }])
-
-              // Move back to rehab
-              await supabase
-                .from("patients")
-                .update({ status: "occupied" })
-                .eq("id", p.id)
-
-              fetchPatients()
-
-              alert("Returned to rehab 🏥")
-            }}
-            style={{
-              background: "#22c55e",
-              color: "white",
-              padding: "8px",
-              border: "none",
-              borderRadius: "6px"
-            }}
-          >
-            Return
-          </button>
+>
+  Return
+</button>
         </div>
       ))
     )}
@@ -828,32 +801,53 @@ fetchTimeline(patient.id)
 )}
 
 
+
     {selectedPatient && (
   <div style={{
   position: "fixed",
   top: "50%",
   left: "50%",
-  transform: "translate(-50%, -50%) scale(1)",
-  background: "#1e293b",
-  padding: "20px",
-  borderRadius: "10px",
+  transform: "translate(-50%, -50%) scale(0.9)",
+  animation: "popupFade 0.25s ease forwards",
+
+  background: "rgba(15, 23, 42, 0.9)",
+  backdropFilter: "blur(10px)",
+  padding: "25px",
+  borderRadius: "16px",
   color: "white",
-  minWidth: "250px",
-  animation: "fadeIn 0.2s ease"
+  minWidth: "320px",
+
+  maxHeight: "80vh",     // ✅ IMPORTANT
+  overflowY: "auto",     // ✅ IMPORTANT
+
+  boxShadow: "0 10px 40px rgba(0,0,0,0.6)",
+  border: "1px solid #334155"
 }}>
-    <h3>Patient Details</h3>
+    <h3 style={{
+  marginBottom: "15px",
+  fontSize: "20px",
+  fontWeight: "600",
+  borderBottom: "1px solid #334155",
+  paddingBottom: "8px"
+}}>
+  🧾 Patient Details
+</h3>
 
     <p><b>Name:</b> {selectedPatient.name}</p>
 <p><b>Age:</b> {selectedPatient.age}</p>
 <p><b>Sex:</b> {selectedPatient.sex}</p>
-<p><b>Condition:</b> {selectedPatient.condition}</p>
-<p><b>Address:</b> {selectedPatient.address}</p>
-<p><b>Contact:</b> {selectedPatient.contact}</p>
-<p><b>Reference:</b> {selectedPatient.reference}</p>
-<p><b>Doctor:</b> {selectedPatient.doctor}</p>
+<p style={{
+  maxWidth: "300px",
+  wordBreak: "break-word"
+}}>
+  <b>Address:</b> {selectedPatient.address}
+</p>
+ <p><b>To Contact:</b> {selectedPatient.to_contact}</p>
+ <p><b>Physio Incharge:</b> {selectedPatient.physio_incharge}</p>
+
 <p><b>Bed:</b> {selectedPatient.bed_number}</p>
-<p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
-<p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
+
+
 <h4 style={{ marginTop: "15px" }}>Timeline</h4>
 
 {timeline.map((t) => (
@@ -869,126 +863,83 @@ fetchTimeline(patient.id)
   </div>
 ))}
 
-<p style={{ marginTop: "10px", color: "#22c55e" }}>
-  Total Rehab Days: {calculateRehabDays(timeline)}
-</p>
 
-    <div style={{ marginTop: "15px" }}>
+
+    <div style={{
+  marginTop: "15px",
+  position: "sticky",
+  bottom: 0,
+  background: "rgba(15, 23, 42, 0.95)",
+  paddingTop: "10px",
+  paddingBottom: "5px"
+}}>
+
+  {selectedPatient.discharge_date ? (
+    <p style={{ color: "#94a3b8" }}>
+      Patient already discharged
+    </p>
+  ) : (
+    <>
       <button
   onClick={() => {
     setEditMode(true)
     setForm(selectedPatient)
   }}
-  style={{ marginRight: "10px" }}
->
-  Edit
-</button>
-<button
-  onClick={async () => {
-    if (!selectedPatient) return
-
-    const choice = prompt(
-    "Type:\n1 → Empty Bed\n2 → Hold Bed"
-  )
-
-  if (!choice) return
-
-  const now = new Date().toISOString()
-
-  // Close rehab stay
-  await supabase
-    .from("patient_stays")
-    .update({ end_date: now })
-    .eq("patient_id", selectedPatient.id)
-    .eq("type", "rehab")
-    .is("end_date", null)
-
-  // Start hospital stay
-  await supabase.from("patient_stays").insert([{
-    patient_id: selectedPatient.id,
-    type: "hospital",
-    start_date: now
-  }])
-
-  // 🔥 MAIN CHANGE
-  const newStatus = choice === "2" ? "hold" : "hospital"
-
-  await supabase
-    .from("patients")
-    .update({ status: newStatus })
-    .eq("id", selectedPatient.id)
-
-  await fetchPatients()
-  setSelectedPatient(null)
-
-  alert(
-    newStatus === "hold"
-      ? "Bed on HOLD 🟠"
-      : "Bed emptied 🟢"
-  )
-
-    
-  }}
   style={{
-    marginLeft: "10px",
-    background: "#f97316",
+    marginRight: "10px",
+    background: "#3b82f6",   // 🔵 Blue
     color: "white",
     padding: "8px",
     border: "none",
-    borderRadius: "5px"
+    borderRadius: "5px",
+    cursor: "pointer"
   }}
 >
-  Transfer
+  Edit
 </button>
- <button
+
+<button
   onClick={async () => {
-  const bed = prompt("Enter bed number to assign:")
+    const now = new Date().toISOString()
 
-  if (!bed) return
+    await supabase
+      .from("patient_stays")
+      .update({ end_date: now })
+      .eq("patient_id", selectedPatient.id)
+      .eq("type", "rehab")
+      .is("end_date", null)
 
-  // 🔴 Check if bed is already occupied
-  const isTaken = activePatients.some(
-    p => Number(p.bed_number) === Number(bed)
-  )
+    await supabase.from("patient_stays").insert([{
+      patient_id: selectedPatient.id,
+      type: "hospital",
+      start_date: now
+    }])
 
-  if (isTaken) {
-    alert("Bed already occupied ❌")
-    return
-  }
+    await supabase
+      .from("patients")
+      .update({
+        status: "hospital",
+        bed_number: null
+      })
+      .eq("id", selectedPatient.id)
 
-  const now = new Date().toISOString()
+    await fetchPatients()
+    setSelectedPatient(null)
 
-  // Close hospital stay
-  await supabase
-    .from("patient_stays")
-    .update({ end_date: now })
-    .eq("patient_id", selectedPatient.id)
-    .eq("type", "hospital")
-    .is("end_date", null)
-
-  // Start rehab stay again
-  await supabase.from("patient_stays").insert([{
-    patient_id: selectedPatient.id,
-    type: "rehab",
-    start_date: now
-  }])
-
-  // 🔥 Assign bed + mark occupied
-  await supabase
-    .from("patients")
-    .update({
-      status: "occupied",
-      bed_number: Number(bed)
-    })
-    .eq("id", selectedPatient.id)
-
-  await fetchPatients()
-  setSelectedPatient(null)
-
-  alert("Returned to rehab 🏥")
-}}
+    alert("Shifted Out 🏥")
+  }}
+  style={{
+    background: "#f59e0b",   // 🟡 Orange
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  }}
 >
+  Shift Out
 </button>
+
       <button
         onClick={handleDischarge}
         style={{
@@ -997,28 +948,45 @@ fetchTimeline(patient.id)
           color: "white",
           padding: "8px",
           border: "none",
-          borderRadius: "5px",
-          cursor: "pointer"
+          borderRadius: "5px"
         }}
       >
         Discharge
       </button>
-      
+    </>
+  )}
+
+  <button
+    onClick={() => setSelectedPatient(null)}
+    style={{
+      marginLeft: "10px",
+      background: "#64748b",
+      color: "white",
+      padding: "8px",
+      border: "none",
+      borderRadius: "5px"
+    }}
+  >
+    Close
+  </button>
+
+</div>
     </div>
     
-  </div>
+  
 )}
 {showForm && (
   <div style={{
   position: "fixed",
   top: "50%",
   left: "50%",
-  transform: "translate(-50%, -50%)",
+  transform: "translate(-50%, -50%) scale(0.9)",
+animation: "popupFade 0.25s ease forwards",
   background: "#1e293b",
   padding: "20px",
   borderRadius: "10px",
   color: "white",
-  zIndex: 1000,
+  zIndex: 999,
   minWidth: "300px"
 }}>
     <h3>Add Patient</h3>
@@ -1027,37 +995,16 @@ fetchTimeline(patient.id)
 
   <input name="name" placeholder="Name" onChange={handleChange} />
 
-<input name="age" placeholder="Age" onChange={handleChange} />
-
-<input name="sex" placeholder="Sex" onChange={handleChange} />
-
-<input name="condition" placeholder="Condition" onChange={handleChange} />
-
-<input name="address" placeholder="Address" onChange={handleChange} />
-
-<input name="contact" placeholder="Contact Number" onChange={handleChange} />
-
-<input name="reference" placeholder="Reference (Who referred?)" onChange={handleChange} />
-
 <input
   type="date"
-  name="admission_date"
+  name="birthdate"
+  value={form.birthdate || ""}
   onChange={handleChange}
 />
 
-  <input
-    placeholder="New Doctor"
-    value={newDoctor}
-    onChange={(e) => setNewDoctor(e.target.value)}
-  />
-
-  <button onClick={handleAddDoctor}>
-    Add Doctor
-  </button>
-
-  <select
-  name="doctor"
-  value={form.doctor || ""}
+<select
+  name="sex"
+  value={form.sex || ""}
   onChange={handleChange}
   style={{
     padding: "10px",
@@ -1067,7 +1014,41 @@ fetchTimeline(patient.id)
     border: "1px solid #334155"
   }}
 >
-  <option value="">Select Doctor</option>
+  <option value="">Select Sex</option>
+  <option value="Male">Male</option>
+  <option value="Female">Female</option>
+  <option value="Other">Other</option>
+</select>
+
+<input name="address" placeholder="Address" onChange={handleChange} />
+
+<input name="to_contact" placeholder="To Contact" onChange={handleChange} />
+
+<input name="physio_incharge" placeholder="Physio Incharge" onChange={handleChange} />
+
+  <input
+    placeholder="New physio_incharge"
+    value={newDoctor}
+    onChange={(e) => setNewDoctor(e.target.value)}
+  />
+
+  <button onClick={handleAddDoctor}>
+    Add Doctor
+  </button>
+
+  <select
+  name="physio_incharge"
+  value={form.physio_incharge || ""}
+  onChange={handleChange}
+  style={{
+    padding: "10px",
+    borderRadius: "6px",
+    background: "#020617",
+    color: "white",
+    border: "1px solid #334155"
+  }}
+>
+  <option value="">Select physio_incharge</option>
 
   {doctors.map((doc) => (
     <option key={doc.id} value={doc.name}>
@@ -1158,13 +1139,6 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   color: "white"
 }}name="sex" value={form.sex || ""} onChange={handleChange} placeholder="Sex" />
 
-  <input style={{
-  padding: "10px",
-  borderRadius: "6px",
-  border: "1px solid #334155",
-  background: "#020617",
-  color: "white"
-}}name="condition" value={form.condition || ""} onChange={handleChange} placeholder="Condition" />
 
   <input style={{
   padding: "10px",
@@ -1180,20 +1154,14 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   border: "1px solid #334155",
   background: "#020617",
   color: "white"
-}}name="contact" value={form.contact || ""} onChange={handleChange} placeholder="Contact" />
+}}name="to_contact" value={form.to_contact || ""} onChange={handleChange} placeholder="To Contact" />
 
-  <input style={{
-  padding: "10px",
-  borderRadius: "6px",
-  border: "1px solid #334155",
-  background: "#020617",
-  color: "white"
-}}name="reference" value={form.reference || ""} onChange={handleChange} placeholder="Reference" />
+ 
 
   {/* Doctor Dropdown */}
   <select
-    name="doctor"
-    value={form.doctor || ""}
+    name="physio_incharge"
+    value={form.physio_incharge || ""}
     onChange={handleChange}
     style={{
       padding: "10px",
@@ -1212,18 +1180,39 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   </select>
 
   {/* Bed */}
-  <input
-    name="bed_number"
-    value={form.bed_number || ""}
-    onChange={handleChange}
-    placeholder="Bed Number"
-  />
+  <select
+  name="bed"
+  value={form.bed_number || ""}
+  onChange={handleChange}
+  style={{
+    padding: "10px",
+    borderRadius: "6px",
+    background: "#020617",
+    color: "white",
+    border: "1px solid #334155"
+  }}
+>
+  <option value="">Select Bed</option>
+
+  {availableBeds.map((bed) => (
+    <option key={bed} value={bed}>
+      Bed {bed}
+    </option>
+  ))}
+
+  {/* ✅ include current bed (important) */}
+  {form.bed && !availableBeds.includes(form.bed) && (
+    <option value={form.bed_number}>
+      Bed {form.bed_number} (current)
+    </option>
+  )}
+</select>
 
 </div>
 
     <button
       onClick={async () => {
-  const bedNumber = parseInt(form.bed_number)
+  const bedNumber = form.bed_number
 
   if (!bedNumber) {
     alert("Invalid bed number")
@@ -1265,7 +1254,117 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
     <button onClick={() => setEditMode(false)}>Cancel</button>
   </div>
 )}
+{showReturnModal && (
+  <div style={{
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    background: "#1e293b",
+    padding: "20px",
+    borderRadius: "10px",
+    color: "white",
+    minWidth: "300px",
+    zIndex: 1000
+  }}>
+    <h3>Select Bed</h3>
+
+    <select
+      value={selectedBed}
+      onChange={(e) => setSelectedBed(e.target.value)}
+      style={{
+        width: "100%",
+        padding: "10px",
+        borderRadius: "6px",
+        background: "#020617",
+        color: "white",
+        marginTop: "10px"
+      }}
+    >
+      <option value="">Select Bed</option>
+
+      {availableBeds.map((bed) => (
+        <option key={bed} value={bed}>
+          Bed {bed}
+        </option>
+      ))}
+    </select>
+
+    <div style={{ marginTop: "15px", display: "flex", gap: "10px" }}>
+      <button
+        onClick={async () => {
+          if (!selectedBed) {
+            alert("Please select a bed ❌")
+            return
+          }
+
+          const now = new Date().toISOString()
+
+          // close hospital stay
+          await supabase
+            .from("patient_stays")
+            .update({ end_date: now })
+            .eq("patient_id", returnPatient.id)
+            .eq("type", "hospital")
+            .is("end_date", null)
+
+          // start rehab stay
+          await supabase.from("patient_stays").insert([{
+            patient_id: returnPatient.id,
+            type: "rehab",
+            start_date: now
+          }])
+
+          // assign bed
+          await supabase
+            .from("patients")
+            .update({
+              status: "occupied",
+              bed_number: selectedBed
+            })
+            .eq("id", returnPatient.id)
+
+          await fetchPatients()
+
+          // reset
+          setShowReturnModal(false)
+          setSelectedBed("")
+          setReturnPatient(null)
+
+          alert("Returned to rehab 🏥")
+        }}
+        style={{
+          background: "#22c55e",
+          padding: "8px",
+          border: "none",
+          borderRadius: "6px",
+          color: "white"
+        }}
+      >
+        Confirm
+      </button>
+
+      <button
+        onClick={() => {
+          setShowReturnModal(false)
+          setSelectedBed("")
+          setReturnPatient(null)
+        }}
+        style={{
+          background: "#64748b",
+          padding: "8px",
+          border: "none",
+          borderRadius: "6px",
+          color: "white"
+        }}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
   </div>   
 </div>
 )
 }
+
