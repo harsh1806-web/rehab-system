@@ -1089,7 +1089,7 @@ onMouseLeave={(e) => {
   <b>Address:</b> {selectedPatient.address}
 </p>
  <p><b>To Contact:</b> {selectedPatient.to_contact}</p>
- <p><b>Physio Incharge:</b> {selectedPatient.Physio/Inch}</p>
+ <p><b>Physio Incharge:</b> {selectedPatient.physio_incharge}</p>
 <p style={{
   maxWidth: "300px",
   wordBreak: "break-word"                                 
@@ -1515,7 +1515,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
 
   {/* Bed */}
   <select
-  name="bed"
+  name="bed_number"
   value={form.bed_number || ""}
   onChange={handleChange}
   style={{
