@@ -456,7 +456,7 @@ const fetchTimeline = async (patientId) => {
     borderRadius: "6px"
   }}
 >
-  Hospital
+  Shift Out
 </button>
     </div>
   </div>
@@ -854,7 +854,7 @@ onMouseLeave={(e) => {
 )}
 {view === "hospital" && (
   <div style={{ padding: "20px" }}>
-    <h2>🏥 Hospital Patients</h2>
+    <h2>🏥 Shifted Out Patients</h2>
 
     {hospitalPatients.length === 0 ? (
       <p style={{ color: "#94a3b8" }}>
@@ -1114,7 +1114,7 @@ animation: "popupFade 0.25s ease forwards",
     await fetchPatients()
     setSelectedPatient(null)
 
-    alert("Transferred to hospital 🏥")
+    alert("Shifted Out 🏥")
   }}
   style={{
     background: "#f59e0b",   // 🟡 Orange
@@ -1125,7 +1125,7 @@ animation: "popupFade 0.25s ease forwards",
     cursor: "pointer"
   }}
 >
-  Transfer
+  Shift Out
 </button>
 
       <button
