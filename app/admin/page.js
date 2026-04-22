@@ -133,21 +133,46 @@ const fetchUserRole = async () => {
   }
 }
 const calculateRehabDays = (stays) => {
-  let total = 0
+  let totalDays = 0
 
   stays.forEach((stay) => {
     if (stay.type === "rehab") {
-      const start = new Date(stay.start_date)
-      const end = stay.end_date
-        ? new Date(stay.end_date)
-        : new Date()
+      let start = new Date(stay.start_date)
+      let end = stay.end_date ? new Date(stay.end_date) : new Date()
 
-      const diff = (end - start) / (1000 * 60 * 60 * 24)
-      total += diff
+      // ⏰ Check admission time
+      const startHour = start.getHours()
+
+      // ⏰ Check discharge time
+      const endHour = end.getHours()
+
+      // 👉 Normalize to midnight for day calculation
+      const startDate = new Date(start)
+      startDate.setHours(0, 0, 0, 0)
+
+      const endDate = new Date(end)
+      endDate.setHours(0, 0, 0, 0)
+
+      let diffDays = (endDate - startDate) / (1000 * 60 * 60 * 24)
+
+      // ✅ Rule 1: if admitted BEFORE 10 AM → count that day
+      if (startHour < 10) {
+        diffDays += 1
+      }
+
+      // ❌ Rule 2: if discharged BEFORE 10 AM → don't count last day
+      if (endHour < 10) {
+        diffDays -= 1
+      }
+
+      // 🛑 Prevent negative
+      if (diffDays < 0) diffDays = 0
+
+      totalDays += diffDays
     }
   })
 
-  return Math.floor(total)
+  return Math.floor(totalDays)
 }
 const calculateShiftDays = (stays) => {
   let total = 0
@@ -191,7 +216,7 @@ const fetchHistory = async () => {
   age: calculateAge(form.birthdate),   // 👈 THIS LINE ADDED
   status: "occupied",
   bed_number: form.bed_number,
-  admission_date: new Date().toISOString()
+  admission_date: new Date().toLocaleString("sv-SE")
 }])
   .select()
   .single()
@@ -205,7 +230,7 @@ const fetchHistory = async () => {
 await supabase.from("patient_stays").insert([{
   patient_id: data.id,
   type: "rehab",
-  start_date: new Date().toISOString()
+  start_date: new Date().toLocaleString("sv-SE")
 }])
       await supabase.from("patient_history").insert([{
   patient_name: form.name,
@@ -229,7 +254,7 @@ const handleDischarge = async () => {
   const { error } = await supabase
     .from("patients")
     .update({
-  discharge_date: new Date().toISOString()
+  discharge_date: new Date().toLocaleString("sv-SE")
 })
     .eq("id", selectedPatient.id)
 
@@ -1137,7 +1162,7 @@ onMouseLeave={(e) => {
 
 <button
   onClick={async () => {
-    const now = new Date().toISOString()
+    const now = new Date().toLocaleString("sv-SE")
 
     await supabase
       .from("patient_stays")
@@ -1613,7 +1638,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
             return
           }
 
-          const now = new Date().toISOString()
+          const now = new Date().toLocaleString("sv-SE")
 
           // close hospital stay
           await supabase
