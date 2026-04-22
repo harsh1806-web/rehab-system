@@ -863,7 +863,7 @@ onMouseLeave={(e) => {
           }
 
           await supabase
-            .from("physio_incharge")
+            .from("doctors")
             .delete()
             .eq("name", doc)
 
