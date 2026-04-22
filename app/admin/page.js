@@ -82,7 +82,7 @@ const [form, setForm] = useState({
   condition: "",
   parent_doctor: "",
   parent_hospital: "",
-  refrred_from: "",
+  referred_from: "",
   referral: "",
   admission_date: "",
   bed_number: ""
