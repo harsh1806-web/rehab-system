@@ -730,6 +730,7 @@ const calculateAge = (birthdate) => {
 <th style={th}>Sex</th>
 <th style={th}>Address</th>
 <th style={th}>To Contact</th>
+<th style={th}>Physio/Inch</th>
 <th style={th}>Condition</th>
 <th style={th}>Parent Doctor</th>
 <th style={th}>Hospital</th>
@@ -1292,8 +1293,6 @@ animation: "popupFade 0.25s ease forwards",
 <input name="address" placeholder="Address" onChange={handleChange} />
 
 <input name="to_contact" placeholder="To Contact" onChange={handleChange} />
-
-<input name="Physio/Inch" placeholder="Physio Incharge" onChange={handleChange} />
 
 <input name="condition" placeholder="Condition" onChange={handleChange} />
 
