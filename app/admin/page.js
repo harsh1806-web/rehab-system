@@ -1236,6 +1236,14 @@ animation: "popupFade 0.25s ease forwards",
   name="birthdate"
   value={form.birthdate || ""}
   onChange={handleChange}
+  max={new Date().toISOString().split("T")[0]} // prevent future date
+  style={{
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #334155",
+    background: "#020617",
+    color: "white"
+  }}
 />
 
 <select
@@ -1369,13 +1377,20 @@ animation: "popupFade 0.25s ease forwards",
 }}
 name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" />
 
-  <input style={{
-  padding: "10px",
-  borderRadius: "6px",
-  border: "1px solid #334155",
-  background: "#020617",
-  color: "white"
-}}name="age" value={form.age || ""} onChange={handleChange} placeholder="Age" />
+  <input
+  type="date"
+  name="birthdate"
+  value={form.birthdate || ""}
+  onChange={handleChange}
+  max={new Date().toISOString().split("T")[0]} // prevent future date
+  style={{
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #334155",
+    background: "#020617",
+    color: "white"
+  }}
+/>
 
   <input style={{
   padding: "10px",
@@ -1392,6 +1407,34 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   background: "#020617",
   color: "white"
 }}name="condition" value={form.condition || ""} onChange={handleChange} placeholder="Condition" />
+
+<input
+  style={{
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #334155",
+    background: "#020617",
+    color: "white"
+  }}
+  name="parent_doctor"
+  value={form.parent_doctor || ""}
+  onChange={handleChange}
+  placeholder="Parent Doctor"
+/>
+
+<input
+  style={{
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #334155",
+    background: "#020617",
+    color: "white"
+  }}
+  name="parent_hospital"
+  value={form.parent_hospital || ""}
+  onChange={handleChange}
+  placeholder="Parent Hospital"
+/>
 
   <input style={{
   padding: "10px",
@@ -1502,7 +1545,11 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   // ✅ Safe to update
   const { error } = await supabase
     .from("patients")
-    .update({ ...form, bed_number: bedNumber })
+    .update({
+  ...form,
+  age: calculateAge(form.birthdate),
+  bed_number: bedNumber
+})
     .eq("id", selectedPatient.id)
 
   if (error) {
