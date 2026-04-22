@@ -74,7 +74,7 @@ const [showForm, setShowForm] = useState(false)
 
 const [form, setForm] = useState({
   name: "",
-  age: "",
+  birthdate: "",
   sex: "",
   address: "",
   to_contact: "",
@@ -185,12 +185,13 @@ const fetchHistory = async () => {
 
   const { data, error } = await supabase
   .from("patients")
-  .insert([{
-    ...form,
-    status: "occupied",
-  bed_number: form.bed_number,
-    admission_date: new Date().toISOString()
-  }])
+ .insert([{
+  ...form,
+  age: calculateAge(form.birthdate),   // 👈 THIS LINE ADDED
+  status: "occupied",
+  bed: form.bed,
+  admission_date: new Date().toISOString()
+}])
   .select()
   .single()
 
@@ -356,6 +357,21 @@ const fetchTimeline = async (patientId) => {
     .order("start_date", { ascending: true })
 
   setTimeline(data || [])
+}
+const calculateAge = (birthdate) => {
+  if (!birthdate) return ""
+
+  const today = new Date()
+  const birth = new Date(birthdate)
+
+  let age = today.getFullYear() - birth.getFullYear()
+  const m = today.getMonth() - birth.getMonth()
+
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--
+  }
+
+  return age
 }
 
  return (
@@ -1215,9 +1231,30 @@ animation: "popupFade 0.25s ease forwards",
 
   <input name="name" placeholder="Name" onChange={handleChange} />
 
-<input name="age" placeholder="Age" onChange={handleChange} />
+<input
+  type="date"
+  name="birthdate"
+  value={form.birthdate || ""}
+  onChange={handleChange}
+/>
 
-<input name="sex" placeholder="Sex" onChange={handleChange} />
+<select
+  name="sex"
+  value={form.sex || ""}
+  onChange={handleChange}
+  style={{
+    padding: "10px",
+    borderRadius: "6px",
+    background: "#020617",
+    color: "white",
+    border: "1px solid #334155"
+  }}
+>
+  <option value="">Select Sex</option>
+  <option value="Male">Male</option>
+  <option value="Female">Female</option>
+  <option value="Other">Other</option>
+</select>
 
 <input name="address" placeholder="Address" onChange={handleChange} />
 
