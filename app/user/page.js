@@ -32,7 +32,7 @@ const checkAccess = async () => {
   .single()
 
 if (profile?.role !== "user") {
-  router.push("/")
+  router.push("/admin")
 }
 }
 
@@ -45,7 +45,7 @@ const [selectedBed, setSelectedBed] = useState("")
     
     const [editMode, setEditMode] = useState(false)
     const [doctorFilter, setDoctorFilter] = useState(null)
-    const [newDoctor, setNewDoctor] = useState("")
+   
    const [doctors, setDoctors] = useState([])
     const [search, setSearch] = useState("")
     const [selectedPatient, setSelectedPatient] = useState(null)
@@ -71,6 +71,17 @@ activePatients.forEach((p) => {
     
   const [loading, setLoading] = useState(false)
 const [showForm, setShowForm] = useState(false)
+const [timeline, setTimeline] = useState([])
+
+const fetchTimeline = async (patientId) => {
+  const { data } = await supabase
+    .from("patient_stays")
+    .select("*")
+    .eq("patient_id", patientId)
+    .order("start_date", { ascending: true })
+
+  setTimeline(data || [])
+}
 
 const [form, setForm] = useState({
   name: "",
@@ -79,12 +90,6 @@ const [form, setForm] = useState({
   address: "",
   to_contact: "",
   physio_incharge: "",
-  condition: "",
-  parent_doctor: "",
-  parent_hospital: "",
-  referred_from: "",
-  referral: "",
-  admission_date: "",
   bed_number: ""
 })
 
@@ -114,8 +119,8 @@ const fetchUserRole = async () => {
     .eq("id", userData.user.id)
     .single()
 
-  if (profile?.role !== "admin") {
-    router.push("/user")
+  if (profile?.role !== "user") {
+    router.push("/admin")
   }
 
   setRole(profile?.role)   // ✅ FIXED
@@ -252,36 +257,6 @@ const td = {
   color: "#e2e8f0"
 }
 
-const handleAddDoctor = async () => {
-  if (!newDoctor.trim()) {
-    return alert("Enter doctor name")
-  }
-
-  // ✅ normalize input
-  const doctorName = newDoctor.trim().toLowerCase()
-
-  // 🔍 check existing doctors (case insensitive)
-  const exists = doctors.find(
-    (d) => d.name.toLowerCase() === doctorName
-  )
-
-  if (exists) {
-    alert("physio_incharge already exists ❌")
-    return
-  }
-
-  const { error } = await supabase
-    .from("doctors")
-    .insert([{ name: newDoctor.trim() }])
-
-  if (error) {
-    console.log(error)
-    alert("Error adding doctor")
-  } else {
-    setNewDoctor("")
-    fetchDoctors()
-  }
-}
 const cardStyle = {
   flex: 1,
   background: "#0f172a",
@@ -997,6 +972,7 @@ animation: "popupFade 0.25s ease forwards",
 
 <input
   type="date"
+max={new Date().toISOString().split("T")[0]}
   name="birthdate"
   value={form.birthdate || ""}
   onChange={handleChange}
@@ -1026,15 +1002,6 @@ animation: "popupFade 0.25s ease forwards",
 
 <input name="physio_incharge" placeholder="Physio Incharge" onChange={handleChange} />
 
-  <input
-    placeholder="New physio_incharge"
-    value={newDoctor}
-    onChange={(e) => setNewDoctor(e.target.value)}
-  />
-
-  <button onClick={handleAddDoctor}>
-    Add Doctor
-  </button>
 
   <select
   name="physio_incharge"
@@ -1129,7 +1096,12 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   border: "1px solid #334155",
   background: "#020617",
   color: "white"
-}}name="age" value={form.age || ""} onChange={handleChange} placeholder="Age" />
+}}type="date"
+name="birthdate"
+value={form.birthdate || ""}
+onChange={handleChange}
+max={new Date().toISOString().split("T")[0]} 
+ />
 
   <input style={{
   padding: "10px",
@@ -1181,7 +1153,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
 
   {/* Bed */}
   <select
-  name="bed"
+  name="bed_number"
   value={form.bed_number || ""}
   onChange={handleChange}
   style={{
@@ -1235,7 +1207,11 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   // ✅ Safe to update
   const { error } = await supabase
     .from("patients")
-    .update({ ...form, bed_number: bedNumber })
+    .update({
+  ...form,
+  age: calculateAge(form.birthdate),
+  bed_number: bedNumber
+})
     .eq("id", selectedPatient.id)
 
   if (error) {
