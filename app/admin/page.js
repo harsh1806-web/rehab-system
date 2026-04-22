@@ -148,6 +148,23 @@ const calculateRehabDays = (stays) => {
 
   return Math.floor(total)
 }
+const calculateShiftDays = (stays) => {
+  let total = 0
+
+  stays.forEach((stay) => {
+    if (stay.type === "hospital") {   // 👈 your "shift out"
+      const start = new Date(stay.start_date)
+      const end = stay.end_date
+        ? new Date(stay.end_date)
+        : new Date()
+
+      const diff = (end - start) / (1000 * 60 * 60 * 24)
+      total += diff
+    }
+  })
+
+  return Math.floor(total)
+}
 const fetchHistory = async () => {
   const { data } = await supabase
     .from("patient_history")
@@ -995,13 +1012,18 @@ onMouseLeave={(e) => {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%) scale(0.9)",
-animation: "popupFade 0.25s ease forwards",
+  animation: "popupFade 0.25s ease forwards",
+
   background: "rgba(15, 23, 42, 0.9)",
   backdropFilter: "blur(10px)",
   padding: "25px",
   borderRadius: "16px",
   color: "white",
   minWidth: "320px",
+
+  maxHeight: "80vh",     // ✅ IMPORTANT
+  overflowY: "auto",     // ✅ IMPORTANT
+
   boxShadow: "0 10px 40px rgba(0,0,0,0.6)",
   border: "1px solid #334155"
 }}>
@@ -1059,8 +1081,18 @@ animation: "popupFade 0.25s ease forwards",
 <p style={{ marginTop: "10px", color: "#22c55e" }}>
   Total Rehab Days: {calculateRehabDays(timeline)}
 </p>
+<p style={{ marginTop: "5px", color: "#f59e0b" }}>
+  Total Shift Out Days: {calculateShiftDays(timeline)}
+</p>
 
-    <div style={{ marginTop: "15px" }}>
+    <div style={{
+  marginTop: "15px",
+  position: "sticky",
+  bottom: 0,
+  background: "rgba(15, 23, 42, 0.95)",
+  paddingTop: "10px",
+  paddingBottom: "5px"
+}}>
 
   {selectedPatient.discharge_date ? (
     <p style={{ color: "#94a3b8" }}>
