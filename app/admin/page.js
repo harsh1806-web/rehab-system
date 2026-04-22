@@ -675,7 +675,8 @@ const fetchTimeline = async (patientId) => {
 <th>Condition</th>
 <th>Parent Doctor</th>
 <th>Hospital</th>
-<th>Ref</th>
+<th>Reference</th>
+<th>Refferal</th>
 <th>Admission</th>
 <th>Discharge</th>
 <th>Bed</th>
@@ -938,6 +939,7 @@ onMouseLeave={(e) => {
       <th style={th}>Address</th>
       <th style={th}>To Contact</th>
       <th style={th}>Reference</th>
+      <th style={th}>Refferal</th>
       <th style={th}>Admission</th>
       <th style={th}>Discharge</th>
       <th style={th}>physio_incharge</th>
@@ -1030,8 +1032,8 @@ animation: "popupFade 0.25s ease forwards",
 </p>
 <p><b>Parent Doctor:</b> {selectedPatient.parent_doctor}</p>
 <p><b>Parent Hospital:</b> {selectedPatient.parent_hospital}</p>
-<p><b>Ref. From:</b> {selectedPatient.ref_from}</p>
 <p><b>Reference:</b> {selectedPatient.reference}</p>
+<p><b>Refferal:</b> {selectedPatient.refferal}</p>
 <p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
 <p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
 <p><b>Bed:</b> {selectedPatient.bed_number}</p>
@@ -1195,9 +1197,9 @@ animation: "popupFade 0.25s ease forwards",
 
 <input name="parent_hospital" placeholder="Parent Hospital" onChange={handleChange} />
 
-<input name="ref_from" placeholder="Ref. From" onChange={handleChange} />
+<input name="reference" placeholder="Reference " onChange={handleChange} />
 
-<input name="reference" placeholder="Reference (Who referred?)" onChange={handleChange} />
+<input name="refferal" placeholder="Refferal " onChange={handleChange} />
 
   <input
     placeholder="New physio_incharge"
@@ -1343,6 +1345,14 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   background: "#020617",
   color: "white"
 }}name="reference" value={form.reference || ""} onChange={handleChange} placeholder="Reference" />
+
+<input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}name="refferal" value={form.refferal || ""} onChange={handleChange} placeholder="Refferal" />
 
   {/* Doctor Dropdown */}
   <select
