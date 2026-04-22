@@ -64,7 +64,7 @@ const hospitalPatients = (patients || []).filter(
 
 doctors.forEach((doc) => {
   const count = activePatients.filter(
-    (p) => p.physio_incharge === doc.name
+    (p) => p.Physio/Inch === doc.name
   ).length
 
   doctorStats[doc.name] = count
@@ -201,7 +201,7 @@ const fetchHistory = async () => {
 }
 
   const handleSubmit = async () => {
-    if (!form.physio_incharge) {
+    if (!form.Physio/Inch) {
   alert("Please select a Physio/Inch")
   return
 }
@@ -236,7 +236,7 @@ await supabase.from("patient_stays").insert([{
   patient_name: form.name,
   action: "admitted",
  bed_number: form.bed_number,
-  physio_incharge: form.physio_incharge
+  physio_incharge: form.Physio/Inch
 }])
 
 fetchPatients()
@@ -273,7 +273,7 @@ fetchHistory()   // 👈 ADD THIS
   patient_name: selectedPatient.name,
   action: "discharged",
   bed_number: selectedPatient.bed_number,
-  physio_incharge: selectedPatient.physio_incharge
+  physio_incharge: selectedPatient.Physio/Inch
 }])
   }
 }
@@ -730,7 +730,6 @@ const calculateAge = (birthdate) => {
 <th style={th}>Sex</th>
 <th style={th}>Address</th>
 <th style={th}>To Contact</th>
-<th style={th}>Physio/Inch</th>
 <th style={th}>Condition</th>
 <th style={th}>Parent Doctor</th>
 <th style={th}>Hospital</th>
@@ -746,7 +745,7 @@ const calculateAge = (birthdate) => {
     {activePatients
   .filter(p =>
   p.name?.toLowerCase().includes(search.toLowerCase()) &&
-  (doctorFilter ? p.physio_incharge === doctorFilter : true)
+  (doctorFilter ? p.Physio/Inch === doctorFilter : true)
 )
   .map((p) => (
       <tr
@@ -773,7 +772,7 @@ onMouseLeave={(e) => {
   {p.address}
 </td>
 <td>{p.to_contact}</td>
-<td>{p.physio_incharge}</td>
+<td>{p.Physio/Inch}</td>
 <td style={{
   ...td,
   maxWidth: "200px",
@@ -880,7 +879,7 @@ onMouseLeave={(e) => {
           if (!confirmDelete) return
 
           // ❌ Prevent delete if patients exist
-          const hasPatients = activePatients.some(p => p.physio_incharge === doc)
+          const hasPatients = activePatients.some(p => p.Physio/Inch === doc)
 
           if (hasPatients) {
             alert("Cannot delete Physio/Inch with active patients ❌")
@@ -938,7 +937,7 @@ onMouseLeave={(e) => {
             <br />
             Bed: {p.bed_number}
             <br />
-            Physio/Inch: {p.physio_incharge}
+            Physio/Inch: {p.Physio/Inch}
           </div>
 
           <button
@@ -1011,7 +1010,7 @@ onMouseLeave={(e) => {
     {dischargedPatients
   .filter(p =>
     p.name?.toLowerCase().includes(adminSearch.toLowerCase()) ||
-    p.physio_incharge?.toLowerCase().includes(adminSearch.toLowerCase())
+    p.Physio/Inch?.toLowerCase().includes(adminSearch.toLowerCase())
   )
   .map((p) => (
       <tr
@@ -1089,7 +1088,7 @@ onMouseLeave={(e) => {
   <b>Address:</b> {selectedPatient.address}
 </p>
  <p><b>To Contact:</b> {selectedPatient.to_contact}</p>
- <p><b>Physio Incharge:</b> {selectedPatient.physio_incharge}</p>
+ <p><b>Physio Incharge:</b> {selectedPatient.Physio/Inch}</p>
 <p style={{
   maxWidth: "300px",
   wordBreak: "break-word"                                 
@@ -1294,7 +1293,7 @@ animation: "popupFade 0.25s ease forwards",
 
 <input name="to_contact" placeholder="To Contact" onChange={handleChange} />
 
-<input name="physio_incharge" placeholder="Physio Incharge" onChange={handleChange} />
+<input name="Physio/Inch" placeholder="Physio Incharge" onChange={handleChange} />
 
 <input name="condition" placeholder="Condition" onChange={handleChange} />
 
@@ -1307,7 +1306,7 @@ animation: "popupFade 0.25s ease forwards",
 <input name="referral" placeholder="Referral " onChange={handleChange} />
 
   <input
-    placeholder="New physio_incharge"
+    placeholder="New Physio/Inch"
     value={newDoctor}
     onChange={(e) => setNewDoctor(e.target.value)}
   />
@@ -1318,7 +1317,7 @@ animation: "popupFade 0.25s ease forwards",
 
   <select
   name="Physio/Inch"
-  value={form.physio_incharge || ""}
+  value={form.Physio/Inch || ""}
   onChange={handleChange}
   style={{
     padding: "10px",
@@ -1497,7 +1496,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   {/* Doctor Dropdown */}
   <select
     name="Physio/Inch"
-    value={form.physio_incharge || ""}
+    value={form.Physio/Inch || ""}
     onChange={handleChange}
     style={{
       padding: "10px",
