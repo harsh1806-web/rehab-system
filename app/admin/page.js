@@ -1033,7 +1033,7 @@ animation: "popupFade 0.25s ease forwards",
 <p><b>Parent Doctor:</b> {selectedPatient.parent_doctor}</p>
 <p><b>Parent Hospital:</b> {selectedPatient.parent_hospital}</p>
 <p><b>Reference:</b> {selectedPatient.referred_from}</p>
-<p><b>Refferal:</b> {selectedPatient.refferal}</p>
+<p><b>Referral:</b> {selectedPatient.referral}</p>
 <p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
 <p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
 <p><b>Bed:</b> {selectedPatient.bed_number}</p>
@@ -1199,7 +1199,7 @@ animation: "popupFade 0.25s ease forwards",
 
 <input name="referred_from" placeholder="referred_from" onChange={handleChange} />
 
-<input name="refferal" placeholder="Refferal " onChange={handleChange} />
+<input name="referral" placeholder="Referral " onChange={handleChange} />
 
   <input
     placeholder="New physio_incharge"
@@ -1352,7 +1352,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   border: "1px solid #334155",
   background: "#020617",
   color: "white"
-}}name="refferal" value={form.refferal || ""} onChange={handleChange} placeholder="Refferal" />
+}}name="referral" value={form.referral || ""} onChange={handleChange} placeholder="Referral" />
 
   {/* Doctor Dropdown */}
   <select
