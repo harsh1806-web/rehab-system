@@ -189,7 +189,7 @@ const fetchHistory = async () => {
   ...form,
   age: calculateAge(form.birthdate),   // 👈 THIS LINE ADDED
   status: "occupied",
-  bed: form.bed,
+  bed_number: form.bed_number,
   admission_date: new Date().toISOString()
 }])
   .select()
