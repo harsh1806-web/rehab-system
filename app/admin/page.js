@@ -82,8 +82,8 @@ const [form, setForm] = useState({
   condition: "",
   parent_doctor: "",
   parent_hospital: "",
-  ref_from: "",
-  reference: "",
+  refrred_from: "",
+  referral: "",
   admission_date: "",
   bed_number: ""
 })
@@ -975,7 +975,7 @@ onMouseLeave={(e) => {
         </td>
         <td style={td}>{p.address}</td>
         <td style={td}>{p.to_contact}</td>
-        <td style={td}>{p.reference}</td>
+        <td style={td}>{p.referred_from}</td>
         <td style={td}>{p.admission_date?.slice(0,10)}</td>
         <td style={td}>{p.discharge_date?.slice(0,10)}</td>
         <td style={td}>{p.physio_incharge}</td>
@@ -1032,7 +1032,7 @@ animation: "popupFade 0.25s ease forwards",
 </p>
 <p><b>Parent Doctor:</b> {selectedPatient.parent_doctor}</p>
 <p><b>Parent Hospital:</b> {selectedPatient.parent_hospital}</p>
-<p><b>Reference:</b> {selectedPatient.reference}</p>
+<p><b>Reference:</b> {selectedPatient.referred_from}</p>
 <p><b>Refferal:</b> {selectedPatient.refferal}</p>
 <p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
 <p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
@@ -1197,7 +1197,7 @@ animation: "popupFade 0.25s ease forwards",
 
 <input name="parent_hospital" placeholder="Parent Hospital" onChange={handleChange} />
 
-<input name="reference" placeholder="Reference " onChange={handleChange} />
+<input name="referred_from" placeholder="referred_from" onChange={handleChange} />
 
 <input name="refferal" placeholder="Refferal " onChange={handleChange} />
 
@@ -1344,7 +1344,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   border: "1px solid #334155",
   background: "#020617",
   color: "white"
-}}name="reference" value={form.reference || ""} onChange={handleChange} placeholder="Reference" />
+}}name="referred_from" value={form.referred_from || ""} onChange={handleChange} placeholder="referred_from" />
 
 <input style={{
   padding: "10px",
