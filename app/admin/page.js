@@ -202,7 +202,7 @@ const fetchHistory = async () => {
 
   const handleSubmit = async () => {
     if (!form.physio_incharge) {
-  alert("Please select a physio_incharge")
+  alert("Please select a Physio/Inch")
   return
 }
   if (loading) return   // ⛔ prevent double click
@@ -703,7 +703,7 @@ const calculateAge = (birthdate) => {
     borderRadius: "6px"
   }}
 >
-  <option value="">All physio_incharge</option>
+  <option value="">All Physio/Inch</option>
 
   {doctors.map((doc) => (
     <option
@@ -846,7 +846,7 @@ onMouseLeave={(e) => {
 )}
 {view === "doctors" && (
   <div style={{ padding: "20px" }}>
-    <h2>👨‍⚕️ physio_incharge</h2>
+    <h2>👨‍⚕️ Physio/Incharge</h2>
 
     {Object.keys(doctorStats).map((doc) => (
   <div
@@ -1039,7 +1039,7 @@ onMouseLeave={(e) => {
         <td style={td}>{p.referral}</td>
         <td style={td}>{p.admission_date?.slice(0,10)}</td>
         <td style={td}>{p.discharge_date?.slice(0,10)}</td>
-        <td style={td}>{p.physio_incharge}</td>
+        <td style={td}>{p.Physio/Inch}</td>
         <td style={td}>{p.bed_number}</td>
       </tr>
     ))}
@@ -1317,7 +1317,7 @@ animation: "popupFade 0.25s ease forwards",
   </button>
 
   <select
-  name="physio_incharge"
+  name="Physio/Inch"
   value={form.physio_incharge || ""}
   onChange={handleChange}
   style={{
@@ -1328,7 +1328,7 @@ animation: "popupFade 0.25s ease forwards",
     border: "1px solid #334155"
   }}
 >
-  <option value="">Select physio_incharge</option>
+  <option value="">Select Physio/Inch</option>
 
   {doctors.map((doc) => (
     <option key={doc.id} value={doc.name}>
@@ -1496,7 +1496,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
 
   {/* Doctor Dropdown */}
   <select
-    name="physio_incharge"
+    name="Physio/Inch"
     value={form.physio_incharge || ""}
     onChange={handleChange}
     style={{
