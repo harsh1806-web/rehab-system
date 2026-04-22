@@ -730,7 +730,7 @@ const calculateAge = (birthdate) => {
 <th style={th}>Sex</th>
 <th style={th}>Address</th>
 <th style={th}>To Contact</th>
-<th style={th}>Physio</th>
+<th style={th}>Physio/Inch</th>
 <th style={th}>Condition</th>
 <th style={th}>Parent Doctor</th>
 <th style={th}>Hospital</th>
@@ -995,14 +995,14 @@ onMouseLeave={(e) => {
       <th style={th}>Name</th>
       <th style={th}>Age</th>
       <th style={th}>Sex</th>
-      <th style={th}>Condition</th>
       <th style={th}>Address</th>
       <th style={th}>To Contact</th>
+      <th style={th}>Physio/Inch</th>
+      <th style={th}>Condition</th>
       <th style={th}>Reference</th>
       <th style={th}>Refferal</th>
       <th style={th}>Admission</th>
       <th style={th}>Discharge</th>
-      <th style={th}>physio_incharge</th>
       <th style={th}>Bed</th>
     </tr>
   </thead>
