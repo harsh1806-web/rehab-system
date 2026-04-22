@@ -1378,12 +1378,33 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   </select>
 
   {/* Bed */}
-  <input
-    name="bed_number"
-    value={form.bed_number || ""}
-    onChange={handleChange}
-    placeholder="Bed Number"
-  />
+  <select
+  name="bed"
+  value={form.bed_number || ""}
+  onChange={handleChange}
+  style={{
+    padding: "10px",
+    borderRadius: "6px",
+    background: "#020617",
+    color: "white",
+    border: "1px solid #334155"
+  }}
+>
+  <option value="">Select Bed</option>
+
+  {availableBeds.map((bed) => (
+    <option key={bed} value={bed}>
+      Bed {bed}
+    </option>
+  ))}
+
+  {/* ✅ include current bed (important) */}
+  {form.bed && !availableBeds.includes(form.bed) && (
+    <option value={form.bed_number}>
+      Bed {form.bed_number} (current)
+    </option>
+  )}
+</select>
 
 </div>
 
