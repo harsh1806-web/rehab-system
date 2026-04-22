@@ -304,7 +304,7 @@ const handleAddDoctor = async () => {
   )
 
   if (exists) {
-    alert("physio_incharge already exists ❌")
+    alert("Physio/Inch already exists ❌")
     return
   }
 
@@ -488,7 +488,7 @@ const calculateAge = (birthdate) => {
           borderRadius: "6px"
         }}
       >
-        physio_incharge
+        Physio/Inch
       </button>
       
 {role === "admin" && (
@@ -876,14 +876,14 @@ onMouseLeave={(e) => {
 
       <button
         onClick={async () => {
-          const confirmDelete = confirm(`Delete physio_incharge ${doc}?`)
+          const confirmDelete = confirm(`Delete Physio/Inch ${doc}?`)
           if (!confirmDelete) return
 
           // ❌ Prevent delete if patients exist
           const hasPatients = activePatients.some(p => p.physio_incharge === doc)
 
           if (hasPatients) {
-            alert("Cannot delete physio_incharge with active patients ❌")
+            alert("Cannot delete Physio/Inch with active patients ❌")
             return
           }
 
@@ -938,7 +938,7 @@ onMouseLeave={(e) => {
             <br />
             Bed: {p.bed_number}
             <br />
-            physio_incharge: {p.physio_incharge}
+            Physio/Inch: {p.physio_incharge}
           </div>
 
           <button
