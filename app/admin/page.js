@@ -535,8 +535,10 @@ const calculateAge = (birthdate) => {
     </div>
   </div>
   <div style={{
+    display: "flex",
+    flexDirection: "column",
   padding: "20px",
-  width: "120px",
+  width: "100%",
   maxWidth: "100%",
   overflowX: "auto",
   animation: "fadeIn 0.2s ease"
@@ -548,7 +550,8 @@ const calculateAge = (birthdate) => {
     <div style={{
   display: "flex",
   gap: "20px",
-  marginBottom: "20px"
+  marginBottom: "20px",
+  flexWrap: "wrap"
 }}>
 
   <div style={cardStyle}>
