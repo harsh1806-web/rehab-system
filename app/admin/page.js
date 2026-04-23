@@ -214,11 +214,17 @@ const fetchHistory = async () => {
   } else {
     alert("Patient added ✅")
     // ✅ Create first rehab stay
-await supabase.from("patient_stays").insert([{
-  patient_id: data.id,
-  type: "rehab",
-  start_date: new Date().toLocaleString("sv-SE")
-}])
+const { error: stayError } = await supabase
+  .from("patient_stays")
+  .insert([{
+    patient_id: data.id,
+    type: "rehab",
+    start_date: data.created_at   // ✅ FIX
+  }])
+
+if (stayError) {
+  console.log("❌ Admission stay error:", stayError)
+}
       await supabase.from("patient_history").insert([{
   patient_name: form.name,
   action: "admitted",
@@ -1164,7 +1170,7 @@ onMouseLeave={(e) => {
 
 <button
   onClick={async () => {
-    const now = new Date().toLocaleString("sv-SE")
+    const now = new Date().toISOString()
 
     await supabase
       .from("patient_stays")
@@ -1641,7 +1647,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
             return
           }
 
-          const now = new Date().toLocaleString("sv-SE")
+          const now = new Date().toISOString()
 
           // close hospital stay
           await supabase
@@ -1652,11 +1658,17 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
             .is("end_date", null)
 
           // start rehab stay
-          await supabase.from("patient_stays").insert([{
-            patient_id: returnPatient.id,
-            type: "rehab",
-            start_date: now
-          }])
+          const { error: returnError } = await supabase
+  .from("patient_stays")
+  .insert([{
+    patient_id: returnPatient.id,
+    type: "rehab",
+    start_date: now
+  }])
+
+if (returnError) {
+  console.log("❌ Return error:", returnError)
+}
 
           // assign bed
           await supabase
