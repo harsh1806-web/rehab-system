@@ -771,14 +771,18 @@ const calculateAge = (birthdate) => {
       <tr
   key={p.id}
   style={{ cursor: "pointer" }}
+  onClick={() => {
+    setSelectedPatient(p)          // ✅ open popup
+    fetchTimeline(p.id)            // ✅ load timeline
+  }}
   onMouseEnter={(e) => {
-  e.currentTarget.style.background = "#1e293b"
-  e.currentTarget.style.transform = "scale(1.01)"
-}}
-onMouseLeave={(e) => {
-  e.currentTarget.style.background = "transparent"
-  e.currentTarget.style.transform = "scale(1)"
-}}
+    e.currentTarget.style.background = "#1e293b"
+    e.currentTarget.style.transform = "scale(1.01)"
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.background = "transparent"
+    e.currentTarget.style.transform = "scale(1)"
+  }}
 >
 <td style={td}>{p.name}</td>
 <td style={td}>{p.age}</td>
