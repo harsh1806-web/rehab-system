@@ -729,7 +729,7 @@ const calculateAge = (birthdate) => {
 <th style={th}>Age</th>
 <th style={th}>Sex</th>
 <th style={th}>Address</th>
-<th style={th}>To Contact</th>
+<th style={th}>2 Contact</th>
 <th style={th}>Physio/Inch</th>
 <th style={th}>Condition</th>
 <th style={th}>Parent Doctor</th>
@@ -996,7 +996,7 @@ onMouseLeave={(e) => {
       <th style={th}>Age</th>
       <th style={th}>Sex</th>
       <th style={th}>Address</th>
-      <th style={th}>To Contact</th>
+      <th style={th}>2 Contact</th>
       <th style={th}>Physio/Inch</th>
       <th style={th}>Condition</th>
       <th style={th}>Reference</th>
@@ -1088,7 +1088,7 @@ onMouseLeave={(e) => {
 }}>
   <b>Address:</b> {selectedPatient.address}
 </p>
- <p><b>To Contact:</b> {selectedPatient.to_contact}</p>
+ <p><b>2 Contact:</b> {selectedPatient.to_contact}</p>
  <p><b>Physio Incharge:</b> {selectedPatient.physio_incharge}</p>
 <p style={{
   maxWidth: "300px",
@@ -1292,7 +1292,7 @@ animation: "popupFade 0.25s ease forwards",
 
 <input name="address" placeholder="Address" onChange={handleChange} />
 
-<input name="to_contact" placeholder="To Contact" onChange={handleChange} />
+<input name="to_contact" placeholder="2 Contact" onChange={handleChange} />
 
 <input name="condition" placeholder="Condition" onChange={handleChange} />
 
@@ -1474,7 +1474,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   border: "1px solid #334155",
   background: "#020617",
   color: "white"
-}}name="to_contact" value={form.to_contact || ""} onChange={handleChange} placeholder="To Contact" />
+}}name="to_contact" value={form.to_contact || ""} onChange={handleChange} placeholder="2 Contact" />
 
   <input style={{
   padding: "10px",
