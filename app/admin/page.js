@@ -1207,7 +1207,7 @@ onMouseLeave={(e) => {
 
 await fetchTimeline(selectedPatient.id)   // 🔥 ADD THIS
 
-setSelectedPatient({ ...selectedPatient })
+
 
     alert("Shifted Out 🏥")
   }}
