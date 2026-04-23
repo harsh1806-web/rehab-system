@@ -1107,20 +1107,20 @@ onMouseLeave={(e) => {
 <p><b style={{ color: "#f97316" }}>Age:</b> {selectedPatient.age}</p>
 <p><b style={{ color: "#f97316" }}>Sex:</b> {selectedPatient.sex}</p>
 <p style={{
-  color: "#f97316",
   maxWidth: "300px",
   wordBreak: "break-word"
 }}>
-  <b>Address:</b> {selectedPatient.address}
+  <b style={{ color: "#f97316" }}>Address:</b> {selectedPatient.address}
 </p>
  <p><b style={{ color: "#f97316" }}>2 Contact:</b> {selectedPatient.to_contact}</p>
  <p><b style={{ color: "#f97316" }}>Physio Incharge:</b> {selectedPatient.physio_incharge}</p>
 <p style={{
-  color: "#f97316",
+  
   maxWidth: "300px",
   wordBreak: "break-word"                                 
 }}>
-  <b>Condition:</b> {selectedPatient.condition}
+
+  <b style={{ color: "#f97316" }}>Condition:</b> {selectedPatient.condition}
 </p>
 <p><b style={{ color: "#f97316" }}>Parent Doctor:</b> {selectedPatient.parent_doctor}</p>
 <p><b style={{ color: "#f97316" }}>Parent Hospital:</b> {selectedPatient.parent_hospital}</p>
