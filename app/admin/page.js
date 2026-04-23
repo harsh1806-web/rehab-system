@@ -16,6 +16,11 @@ useEffect(() => {
   fetchDoctors()
   fetchHistory()
 }, [])
+useEffect(() => {
+  if (selectedPatient) {
+    fetchTimeline(selectedPatient.id)
+  }
+}, [selectedPatient])
 
 const checkAccess = async () => {
   const { data } = await supabase.auth.getUser()
