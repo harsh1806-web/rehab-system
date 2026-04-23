@@ -795,7 +795,7 @@ onMouseLeave={(e) => {
 <td style={td}>{p.to_contact}</td>
 <td style={td}>{p.physio_incharge}</td>
 <td style={{
-  ...td,
+    ...td,
   minWidth: "250px",
   maxWidth: "300px",
   whiteSpace: "normal",
@@ -1103,30 +1103,32 @@ onMouseLeave={(e) => {
   🧾 Patient Details
 </h3>
 
-    <p><b>Name:</b> {selectedPatient.name}</p>
-<p><b>Age:</b> {selectedPatient.age}</p>
-<p><b>Sex:</b> {selectedPatient.sex}</p>
+<p><b style={{ color: "#f97316" }}>Name:</b> {selectedPatient.name}</p>
+<p><b style={{ color: "#f97316" }}>Age:</b> {selectedPatient.age}</p>
+<p><b style={{ color: "#f97316" }}>Sex:</b> {selectedPatient.sex}</p>
 <p style={{
+  color: "#f97316",
   maxWidth: "300px",
   wordBreak: "break-word"
 }}>
   <b>Address:</b> {selectedPatient.address}
 </p>
- <p><b>2 Contact:</b> {selectedPatient.to_contact}</p>
- <p><b>Physio Incharge:</b> {selectedPatient.physio_incharge}</p>
+ <p><b style={{ color: "#f97316" }}>2 Contact:</b> {selectedPatient.to_contact}</p>
+ <p><b style={{ color: "#f97316" }}>Physio Incharge:</b> {selectedPatient.physio_incharge}</p>
 <p style={{
+  color: "#f97316",
   maxWidth: "300px",
   wordBreak: "break-word"                                 
 }}>
   <b>Condition:</b> {selectedPatient.condition}
 </p>
-<p><b>Parent Doctor:</b> {selectedPatient.parent_doctor}</p>
-<p><b>Parent Hospital:</b> {selectedPatient.parent_hospital}</p>
-<p><b>Reference:</b> {selectedPatient.referred_from}</p>
-<p><b>Referral:</b> {selectedPatient.referral}</p>
-<p><b>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
-<p><b>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
-<p><b>Bed:</b> {selectedPatient.bed_number}</p>
+<p><b style={{ color: "#f97316" }}>Parent Doctor:</b> {selectedPatient.parent_doctor}</p>
+<p><b style={{ color: "#f97316" }}>Parent Hospital:</b> {selectedPatient.parent_hospital}</p>
+<p><b style={{ color: "#f97316" }}>Reference:</b> {selectedPatient.referred_from}</p>
+<p><b style={{ color: "#f97316" }}>Referral:</b> {selectedPatient.referral}</p>
+<p><b style={{ color: "#f97316" }}>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
+<p><b style={{ color: "#f97316" }}>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
+<p><b style={{ color: "#f97316" }}>Bed:</b> {selectedPatient.bed_number}</p>
 
 
 <h4 style={{ marginTop: "15px" }}>Timeline</h4>
