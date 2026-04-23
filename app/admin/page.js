@@ -536,9 +536,9 @@ const calculateAge = (birthdate) => {
   </div>
   <div style={{
   padding: "20px",
-  width: "100%",
+  width: "120px",
   maxWidth: "100%",
-  overflowX: "hidden",
+  overflowX: "auto",
   animation: "fadeIn 0.2s ease"
 }}>
     
@@ -735,6 +735,7 @@ const calculateAge = (birthdate) => {
   <table style={{
     borderCollapse: "collapse",
     width: "max-content",   // 🔥 KEY FIX
+    minWidth: "100%",
     background: "#020617",
     borderRadius: "10px"
   }}>
@@ -776,7 +777,7 @@ onMouseLeave={(e) => {
   e.currentTarget.style.transform = "scale(1)"
 }}
 >
-        <td style={td}>{p.name}</td>
+<td style={td}>{p.name}</td>
 <td style={td}>{p.age}</td>
 <td style={td}>{p.sex}</td>
 <td style={{
@@ -1042,6 +1043,10 @@ onMouseLeave={(e) => {
         <td style={td}>{p.name}</td>
         <td style={td}>{p.age}</td>
         <td style={td}>{p.sex}</td>
+        
+        <td style={td}>{p.address}</td>
+        <td style={td}>{p.to_contact}</td>
+        <td style={td}>{p.physio_incharge}</td>
         <td style={{
           ...td,
           maxWidth: "200px",
@@ -1051,8 +1056,6 @@ onMouseLeave={(e) => {
         }}>
           {p.condition}
         </td>
-        <td style={td}>{p.address}</td>
-        <td style={td}>{p.to_contact}</td>
         <td style={td}>{p.referred_from}</td>
         <td style={td}>{p.referral}</td>
         <td style={td}>{p.admission_date?.slice(0,10)}</td>
