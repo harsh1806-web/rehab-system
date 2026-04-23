@@ -1196,7 +1196,10 @@ onMouseLeave={(e) => {
       .eq("id", selectedPatient.id)
 
     await fetchPatients()
-    setSelectedPatient(null)
+
+await fetchTimeline(selectedPatient.id)   // 🔥 ADD THIS
+
+setSelectedPatient({ ...selectedPatient })
 
     alert("Shifted Out 🏥")
   }}
@@ -1674,10 +1677,12 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
 
           await fetchPatients()
 
-          // reset
-          setShowReturnModal(false)
-          setSelectedBed("")
-          setReturnPatient(null)
+await fetchTimeline(returnPatient.id)   // 🔥 ADD THIS
+
+// reset
+setShowReturnModal(false)
+setSelectedBed("")
+setReturnPatient(null)
 
           alert("Returned to rehab 🏥")
         }}
