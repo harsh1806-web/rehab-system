@@ -146,16 +146,18 @@ const calculateRehabDays = (stays) => {
     let days = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1
 
     // ✅ Admit after 10 AM → remove first day
-    if (start.getHours() >= 10) {
-      days -= 1
-    }
+    const sameDay = start.toDateString() === end.toDateString()
+
+if (!sameDay && start.getHours() >= 10) {
+  days -= 1
+}
 
     // ✅ Discharge before 10 AM → remove last day
     if (stay.end_date && end.getHours() < 10) {
       days -= 1
     }
 
-    if (days < 0) days = 0
+    if (days < 1) days = 1
 
     total += days
   })
