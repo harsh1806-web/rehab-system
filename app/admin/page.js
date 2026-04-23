@@ -134,46 +134,32 @@ const fetchUserRole = async () => {
   }
 }
 const calculateRehabDays = (stays) => {
-  let totalDays = 0
+  let total = 0
 
   stays.forEach((stay) => {
-    if (stay.type === "rehab") {
-      let start = new Date(stay.start_date)
-      let end = stay.end_date ? new Date(stay.end_date) : new Date()
+    if (stay.type !== "rehab") return
 
-      // ⏰ Check admission time
-      const startHour = start.getHours()
+    const start = new Date(stay.start_date)
+    const end = stay.end_date ? new Date(stay.end_date) : new Date()
 
-      // ⏰ Check discharge time
-      const endHour = end.getHours()
+    let days = Math.ceil((end - start) / (1000 * 60 * 60 * 24))
 
-      // 👉 Normalize to midnight for day calculation
-      const startDate = new Date(start)
-      startDate.setHours(0, 0, 0, 0)
-
-      const endDate = new Date(end)
-      endDate.setHours(0, 0, 0, 0)
-
-      let diffDays = (endDate - startDate) / (1000 * 60 * 60 * 24)
-
-      // ✅ Rule 1: if admitted BEFORE 10 AM → count that day
-      if (startHour < 10) {
-        diffDays += 1
-      }
-
-      // ❌ Rule 2: if discharged BEFORE 10 AM → don't count last day
-      if (endHour < 10) {
-        diffDays -= 1
-      }
-
-      // 🛑 Prevent negative
-      if (diffDays < 0) diffDays = 0
-
-      totalDays += diffDays
+    // ✅ Admit after 10 AM → remove first day
+    if (start.getHours() >= 10) {
+      days -= 1
     }
+
+    // ✅ Discharge before 10 AM → remove last day
+    if (end.getHours() < 10) {
+      days -= 1
+    }
+
+    if (days < 0) days = 0
+
+    total += days
   })
 
-  return Math.floor(totalDays)
+  return total
 }
 const calculateShiftDays = (stays) => {
   let total = 0
