@@ -281,13 +281,17 @@ const th = {
   padding: "12px",
   textAlign: "left",
   background: "#1e293b",
-  color: "#cbd5f5"
+  color: "#cbd5f5",
+  minWidth: "120px"   // 🔥 IMPORTANT
 }
 
 const td = {
   padding: "12px",
   borderTop: "1px solid #1e293b",
-  color: "#e2e8f0"
+  color: "#e2e8f0",
+  textAlign: "left",
+  verticalAlign: "top",
+  minWidth: "120px"   // 🔥 ADD THIS
 }
 
 const handleAddDoctor = async () => {
@@ -719,6 +723,7 @@ const calculateAge = (birthdate) => {
      <table style={{
   width: "100%",
   borderCollapse: "collapse",
+  tableLayout: "fixed",
   background: "#020617",
   borderRadius: "10px",
   overflow: "hidden"
@@ -772,8 +777,8 @@ onMouseLeave={(e) => {
 }}>
   {p.address}
 </td>
-<td>{p.to_contact}</td>
-<td>{p.physio_incharge}</td>
+<td style={td}>{p.to_contact}</td>
+<td style={td}>{p.physio_incharge}</td>
 <td style={{
   ...td,
   maxWidth: "200px",
@@ -782,13 +787,13 @@ onMouseLeave={(e) => {
 }}>
   {p.condition}
 </td>
-<td>{p.parent_doctor}</td>
-<td>{p.parent_hospital}</td>
-<td>{p.referred_from}</td>
-<td>{p.referral}</td>
-<td>{p.admission_date?.slice(0,10)}</td>
-<td>{p.discharge_date?.slice(0,10) || "-"}</td>
-<td>{p.bed_number}</td>
+<td style={td}>{p.parent_doctor}</td>
+<td style={td}>{p.parent_hospital}</td>
+<td style={td}>{p.referred_from}</td>
+<td style={td}>{p.referral}</td>
+<td style={td}>{p.admission_date?.slice(0,10)}</td>
+<td style={td}>{p.discharge_date?.slice(0,10) || "-"}</td>
+<td style={td}>{p.bed_number}</td>
 
       </tr>
     ))}
