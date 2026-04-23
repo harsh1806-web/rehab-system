@@ -16,11 +16,7 @@ useEffect(() => {
   fetchDoctors()
   fetchHistory()
 }, [])
-useEffect(() => {
-  if (selectedPatient) {
-    fetchTimeline(selectedPatient.id)
-  }
-}, [selectedPatient])
+
 
 const checkAccess = async () => {
   const { data } = await supabase.auth.getUser()
@@ -396,6 +392,11 @@ const fetchTimeline = async (patientId) => {
 
   setTimeline(data || [])
 }
+useEffect(() => {
+  if (selectedPatient) {
+    fetchTimeline(selectedPatient.id)
+  }
+}, [selectedPatient])
 const calculateAge = (birthdate) => {
   if (!birthdate) return ""
 
