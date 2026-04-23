@@ -207,6 +207,8 @@ const fetchHistory = async () => {
 }])
   .select()
   .single()
+  console.log("PATIENT DATA:", data)
+console.log("PATIENT ERROR:", error)
 
   if (error) {
     alert(error.message)
@@ -214,13 +216,21 @@ const fetchHistory = async () => {
   } else {
     alert("Patient added ✅")
     // ✅ Create first rehab stay
+const now = new Date().toISOString()
+
 const { error: stayError } = await supabase
   .from("patient_stays")
   .insert([{
     patient_id: data.id,
     type: "rehab",
-    start_date: data.created_at   // ✅ FIX
+    start_date: now
   }])
+
+if (stayError) {
+  console.log("❌ Admission stay error:", stayError)
+} else {
+  console.log("✅ Stay inserted")
+}
 
 if (stayError) {
   console.log("❌ Admission stay error:", stayError)
