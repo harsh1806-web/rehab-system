@@ -725,10 +725,8 @@ const calculateAge = (birthdate) => {
 
      <div style={{ overflowX: "auto", width: "100%" }}>
   <table style={{
-    width: "100%",
-    minWidth: "1200px",   // 🔥 important
     borderCollapse: "collapse",
-    tableLayout: "fixed", // 🔥 important
+    width: "max-content",   // 🔥 KEY FIX
     background: "#020617",
     borderRadius: "10px"
   }}>
@@ -775,7 +773,8 @@ onMouseLeave={(e) => {
 <td style={td}>{p.sex}</td>
 <td style={{
   ...td,
-  maxWidth: "200px",
+  minWidth: "200px",
+  maxWidth: "250px",
   whiteSpace: "normal",
   wordBreak: "break-word"
 }}>
@@ -785,7 +784,8 @@ onMouseLeave={(e) => {
 <td style={td}>{p.physio_incharge}</td>
 <td style={{
   ...td,
-  maxWidth: "200px",
+  minWidth: "250px",
+  maxWidth: "300px",
   whiteSpace: "normal",
   wordBreak: "break-word"
 }}>
