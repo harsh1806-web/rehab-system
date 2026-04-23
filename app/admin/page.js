@@ -291,7 +291,10 @@ const td = {
   color: "#e2e8f0",
   textAlign: "left",
   verticalAlign: "top",
-  minWidth: "120px"   // 🔥 ADD THIS
+  minWidth: "120px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap"
 }
 
 const handleAddDoctor = async () => {
@@ -720,14 +723,15 @@ const calculateAge = (birthdate) => {
   ))}
 </select>
 
-     <table style={{
-  width: "100%",
-  borderCollapse: "collapse",
-  tableLayout: "fixed",
-  background: "#020617",
-  borderRadius: "10px",
-  overflow: "hidden"
-}}>
+     <div style={{ overflowX: "auto", width: "100%" }}>
+  <table style={{
+    width: "100%",
+    minWidth: "1200px",   // 🔥 important
+    borderCollapse: "collapse",
+    tableLayout: "fixed", // 🔥 important
+    background: "#020617",
+    borderRadius: "10px"
+  }}>
   <thead style={{ background: "#1e293b" }}>
     <tr>
       <th style={th}>Name</th>
@@ -799,6 +803,7 @@ onMouseLeave={(e) => {
     ))}
   </tbody>
 </table>
+</div>
 <h3 style={{ marginTop: "20px" }}>📜 History</h3>
 {history.map((h) => (
   <div key={h.id} style={{
