@@ -703,21 +703,23 @@ const toggleHoldBed = (bed) => {
               <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
                 {block.ground.map((zone) => (
                   <ZoneBox
-                    key={zone.title}
-                    title={zone.title}
-                    beds={zone.beds}
-                    columns={zone.columns}
-                    activePatients={activePatients}
-                    onBedClick={(bed, patient) => {
-                      if (patient) {
-                        setSelectedPatient(patient)
-                        fetchTimeline(patient.id)
-                      } else {
-                        setShowForm(true)
-                        setForm({ ...form, bed_number: bed })
-                      }
-                    }}
-                  />
+  key={zone.title}
+  title={zone.title}
+  beds={zone.beds}
+  columns={zone.columns}
+  activePatients={activePatients}
+  heldBeds={heldBeds}              // ✅ ADD THIS
+  onHoldToggle={toggleHoldBed}     // ✅ ADD THIS
+  onBedClick={(bed, patient) => {
+    if (patient) {
+      setSelectedPatient(patient)
+      fetchTimeline(patient.id)
+    } else {
+      setShowForm(true)
+      setForm({ ...form, bed_number: bed })
+    }
+  }}
+/>
                 ))}
               </div>
             </>
@@ -731,21 +733,23 @@ const toggleHoldBed = (bed) => {
               <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
                 {block.first.map((zone) => (
                   <ZoneBox
-                    key={zone.title}
-                    title={zone.title}
-                    beds={zone.beds}
-                    columns={zone.columns}
-                    activePatients={activePatients}
-                    onBedClick={(bed, patient) => {
-                      if (patient) {
-                        setSelectedPatient(patient)
-                        fetchTimeline(patient.id)
-                      } else {
-                        setShowForm(true)
-                        setForm({ ...form, bed_number: bed })
-                      }
-                    }}
-                  />
+  key={zone.title}
+  title={zone.title}
+  beds={zone.beds}
+  columns={zone.columns}
+  activePatients={activePatients}
+  heldBeds={heldBeds}              // ✅ ADD THIS
+  onHoldToggle={toggleHoldBed}     // ✅ ADD THIS
+  onBedClick={(bed, patient) => {
+    if (patient) {
+      setSelectedPatient(patient)
+      fetchTimeline(patient.id)
+    } else {
+      setShowForm(true)
+      setForm({ ...form, bed_number: bed })
+    }
+  }}
+/>
                 ))}
               </div>
             </>
