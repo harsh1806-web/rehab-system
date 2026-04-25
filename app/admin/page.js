@@ -1546,31 +1546,6 @@ animation: "popupFade 0.25s ease forwards",
   }}
 >
   Hold Bed
-</button><button
-  onClick={() => {
-    if (!form.bed_number) {
-      alert("Select bed first ❌")
-      return
-    }
-
-    console.log("CLICKED HOLD:", form.bed_number)   // 👈 DEBUG
-
-    toggleHoldBed(form.bed_number)                  // ✅ THIS IS THE FIX
-
-    setShowForm(false)
-  }}
-  style={{
-    flex: 1,
-    background: "#f97316",
-    color: "white",
-    padding: "10px",
-    borderRadius: "6px",
-    border: "none",
-    fontWeight: "bold",
-    cursor: "pointer"
-  }}
->
-  Hold Bed
 </button>
     {/* Close */}
   <button
