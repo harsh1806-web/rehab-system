@@ -461,11 +461,13 @@ const shortGap = calculateShortGapAdjustment(timeline)
 
 const finalDays = Math.max(0, rehab - penalty - shortGap)
 const toggleHoldBed = (bed) => {
-  if (heldBeds.includes(bed)) {
-    setHeldBeds(heldBeds.filter(b => b !== bed))
-  } else {
-    setHeldBeds([...heldBeds, bed])
-  }
+  setHeldBeds((prev) => {
+    if (prev.includes(bed)) {
+      return prev.filter((b) => b !== bed)   // remove (unhold)
+    } else {
+      return [...prev, bed]                 // add (hold)
+    }
+  })
 }
 
  return (
@@ -1526,7 +1528,34 @@ animation: "popupFade 0.25s ease forwards",
       return
     }
 
-    toggleHoldBed(form.bed_number)   // ✅ ACTUAL STATE CHANGE
+    console.log("CLICKED HOLD:", form.bed_number)   // 👈 DEBUG
+
+    toggleHoldBed(form.bed_number)                  // ✅ THIS IS THE FIX
+
+    setShowForm(false)
+  }}
+  style={{
+    flex: 1,
+    background: "#f97316",
+    color: "white",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "none",
+    fontWeight: "bold",
+    cursor: "pointer"
+  }}
+>
+  Hold Bed
+</button><button
+  onClick={() => {
+    if (!form.bed_number) {
+      alert("Select bed first ❌")
+      return
+    }
+
+    console.log("CLICKED HOLD:", form.bed_number)   // 👈 DEBUG
+
+    toggleHoldBed(form.bed_number)                  // ✅ THIS IS THE FIX
 
     setShowForm(false)
   }}
