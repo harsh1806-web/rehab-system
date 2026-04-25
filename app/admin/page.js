@@ -454,6 +454,11 @@ const calculateAge = (birthdate) => {
 
   return age
 }
+const rehab = calculateRehabDays(timeline)
+const penalty = calculateHospitalPenalty(timeline)
+const shortGap = calculateShortGapAdjustment(timeline)
+
+const finalDays = Math.max(0, rehab - penalty - shortGap)
 
  return (
   <div style={{
@@ -1211,13 +1216,7 @@ const calculateAge = (birthdate) => {
 ))}
 
 <p style={{ marginTop: "10px", color: "#22c55e" }}>
-  const rehab = calculateRehabDays(timeline)
-const penalty = calculateHospitalPenalty(timeline)
-const shortGap = calculateShortGapAdjustment(timeline)
-
-const finalDays = Math.max(0, rehab - penalty - shortGap)
-
-Total Rehab Days: {finalDays}
+  Total Rehab Days: {finalDays}
 </p>
 <p style={{ marginTop: "5px", color: "#f59e0b" }}>
   Total Shift Out Days: {calculateShiftDays(timeline)}
