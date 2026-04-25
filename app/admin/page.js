@@ -40,6 +40,7 @@ if (profile?.role !== "admin") {
     const [showReturnModal, setShowReturnModal] = useState(false)
 const [returnPatient, setReturnPatient] = useState(null)
 const [selectedBed, setSelectedBed] = useState("")
+const [heldBeds, setHeldBeds] = useState([])
     const [timeline, setTimeline] = useState([])
     const [role, setRole] = useState(null)
     const [view, setView] = useState("beds")
@@ -400,8 +401,8 @@ hospitalLayout.first.forEach(block =>
 // Filter available beds
 const availableBeds = allBeds.filter(bed =>
   !activePatients.find(
-    p => p.bed_number?.toString().trim().toUpperCase() === bed.toString().trim().toUpperCase() && p.id !== selectedPatient?.id
-  )
+    p => p.bed_number?.toString().trim().toUpperCase() === bed.toString().trim().toUpperCase()
+  ) && !heldBeds.includes(bed)   // 🚫 BLOCK HELD
 )
 const combinedLayout = {}
 
@@ -459,6 +460,13 @@ const penalty = calculateHospitalPenalty(timeline)
 const shortGap = calculateShortGapAdjustment(timeline)
 
 const finalDays = Math.max(0, rehab - penalty - shortGap)
+const toggleHoldBed = (bed) => {
+  if (heldBeds.includes(bed)) {
+    setHeldBeds(heldBeds.filter(b => b !== bed))
+  } else {
+    setHeldBeds([...heldBeds, bed])
+  }
+}
 
  return (
   <div style={{
@@ -622,7 +630,46 @@ const finalDays = Math.max(0, rehab - penalty - shortGap)
 
     {/* LEGEND */}
     
+<div style={{
+  display: "flex",
+  gap: "20px",
+  marginBottom: "15px",
+  alignItems: "center",
+  flexWrap: "wrap"
+}}>
 
+  {/* Empty */}
+  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+    <div style={{
+      width: "15px",
+      height: "15px",
+      background: "#ffffff",
+      border: "1px solid #ccc"
+    }}></div>
+    <span>Empty</span>
+  </div>
+
+  {/* Occupied */}
+  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+    <div style={{
+      width: "15px",
+      height: "15px",
+      background: "#22c55e"
+    }}></div>
+    <span>Occupied</span>
+  </div>
+
+  {/* Held */}
+  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+    <div style={{
+      width: "15px",
+      height: "15px",
+      background: "#f97316"
+    }}></div>
+    <span>Held</span>
+  </div>
+
+</div>
     {view === "beds" && (
   <div style={{ display: "block" }}>
 

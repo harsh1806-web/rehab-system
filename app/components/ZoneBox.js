@@ -1,14 +1,14 @@
 
 export default function ZoneBox({
-  
-  
   title,
   beds,
   columns = 3,
   activePatients,
+  heldBeds,          // ✅ ADD
+  onHoldToggle,      // ✅ ADD
   onBedClick
-  
-}) {
+})
+ {
   return (
     <div style={{
       background: "#020617",
@@ -51,22 +51,30 @@ wordBreak: "break-word",
     bed.toString().trim().toUpperCase()
 )
 
-          let bg = "#e5e7eb" // empty
+          let bg = "#ffffff"   // ⚪ empty
+let textColor = "black"
 
-          if (patient) {
-            bg = "#22c55e" // occupied
-          }
+if (heldBeds?.includes(bed)) {
+  bg = "#f97316"     // 🟠 held (orange)
+  textColor = "white"
+} else if (patient) {
+  bg = "#22c55e"     // 🟢 occupied
+  textColor = "white"
+}
 
           return (
             <button
               key={bed}
-              onClick={() => onBedClick(bed, patient)}
+              onClick={() => {
+  if (heldBeds?.includes(bed)) return  // 🚫 block
+  onBedClick(bed, patient)
+}}
               style={{
   width: "60px",
   height: "50px",
   borderRadius: "8px",
   background: bg,
-  color: patient ? "white" : "black",
+  color: textColor, 
   border: "none",
   fontWeight: "bold",
   cursor: "pointer",
@@ -82,11 +90,13 @@ onMouseLeave={(e) => {
   e.currentTarget.style.boxShadow = "none"
 }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.1)"
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)"
-              }}
+  e.currentTarget.style.transform = "scale(1.1)"
+  e.currentTarget.style.boxShadow = "0 0 12px rgba(255,255,255,0.4)"
+}}
+onMouseLeave={(e) => {
+  e.currentTarget.style.transform = "scale(1)"
+  e.currentTarget.style.boxShadow = "none"
+}}
             >
               {bed}
             </button>
