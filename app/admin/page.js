@@ -1504,22 +1504,61 @@ animation: "popupFade 0.25s ease forwards",
 </div>
 
     <button
-  onClick={handleSubmit}
-  disabled={loading}
-  style={{
-    background: loading ? "#64748b" : "#22c55e",
-    cursor: loading ? "not-allowed" : "pointer",
-    opacity: loading ? 0.7 : 1,
-    padding: "10px",
-    borderRadius: "6px",
-    border: "none",
-    color: "white",
-    transition: "0.2s"
-  }}
->
-  {loading ? "Saving..." : "Save"}
-</button>
-    <button onClick={() => setShowForm(false)}>Close</button>
+    onClick={handleSubmit}
+    disabled={loading}
+    style={{
+      flex: 1,
+      background: "#22c55e",
+      color: "white",
+      padding: "10px",
+      borderRadius: "6px",
+      border: "none",
+      fontWeight: "bold",
+      cursor: "pointer"
+    }}
+  >
+    Save
+  </button>
+  <button
+    onClick={() => {
+      if (!form.bed_number) {
+        alert("Select bed first ❌")
+        return
+      }
+
+      // you will store this later in DB
+      alert(`Bed ${form.bed_number} held 🟠`)
+      setShowForm(false)
+    }}
+    style={{
+      flex: 1,
+      background: "#f97316", // 🟠 orange
+      color: "white",
+      padding: "10px",
+      borderRadius: "6px",
+      border: "none",
+      fontWeight: "bold",
+      cursor: "pointer"
+    }}
+  >
+    Hold Bed
+  </button>
+    {/* Close */}
+  <button
+    onClick={() => setShowForm(false)}
+    style={{
+      flex: 1,
+      background: "#64748b",
+      color: "white",
+      padding: "10px",
+      borderRadius: "6px",
+      border: "none",
+      fontWeight: "bold",
+      cursor: "pointer"
+    }}
+  >
+    Close
+  </button>
   </div>
 )}
 {editMode && (
