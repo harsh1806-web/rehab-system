@@ -51,7 +51,7 @@ wordBreak: "break-word",
     bed.toString().trim().toUpperCase()
 )
 
-          let bg = "#22c55e" // empty
+          let bg = "#ffffff" // empty
 
           if (patient) {
             bg = "#22c55e" // occupied
