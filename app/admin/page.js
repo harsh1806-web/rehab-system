@@ -1526,24 +1526,23 @@ animation: "popupFade 0.25s ease forwards",
       return
     }
 
-    toggleHoldBed(form.bed_number)   // ✅ THIS IS THE REAL FIX
+    toggleHoldBed(form.bed_number)   // ✅ ACTUAL STATE CHANGE
 
-    alert(`Bed ${form.bed_number} held 🟠`)
     setShowForm(false)
   }}
-    style={{
-      flex: 1,
-      background: "#f97316", // 🟠 orange
-      color: "white",
-      padding: "10px",
-      borderRadius: "6px",
-      border: "none",
-      fontWeight: "bold",
-      cursor: "pointer"
-    }}
-  >
-    Hold Bed
-  </button>
+  style={{
+    flex: 1,
+    background: "#f97316",
+    color: "white",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "none",
+    fontWeight: "bold",
+    cursor: "pointer"
+  }}
+>
+  Hold Bed
+</button>
     {/* Close */}
   <button
     onClick={() => setShowForm(false)}

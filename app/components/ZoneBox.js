@@ -66,7 +66,16 @@ if (heldBeds?.includes(bed)) {
             <button
               key={bed}
               onClick={() => {
-  if (heldBeds?.includes(bed)) return  // 🚫 block
+  // 🟠 If bed is held → ask to unhold
+  if (heldBeds?.includes(bed)) {
+    const confirmUnhold = confirm(`Unhold bed ${bed}?`)
+    if (confirmUnhold) {
+      onHoldToggle(bed)
+    }
+    return
+  }
+
+  // 🟢 normal flow
   onBedClick(bed, patient)
 }}
               style={{
