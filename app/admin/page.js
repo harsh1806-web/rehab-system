@@ -623,7 +623,7 @@ const toggleHoldBed = (bed) => {
     <p>Available</p>
     <h2>{allBeds.length - activePatients.length}</h2>
   </div>
-  
+
   <div style={cardStyle}>
   <p>Shift Out</p>
   <h2>{hospitalPatients.length}</h2>
@@ -1253,12 +1253,40 @@ const toggleHoldBed = (bed) => {
 <p><b style={{ color: "#f97316" }}>Parent Hospital:</b> {selectedPatient.parent_hospital}</p>
 <p><b style={{ color: "#f97316" }}>Reference:</b> {selectedPatient.referred_from}</p>
 <p><b style={{ color: "#f97316" }}>Referral:</b> {selectedPatient.referral}</p>
-<p><b style={{ color: "#f97316" }}>Admission:</b> {selectedPatient.admission_date?.slice(0,10)}</p>
-<p><b style={{ color: "#f97316" }}>Discharge:</b> {selectedPatient.discharge_date?.slice(0,10) || "-"}</p>
+<p><b style={{ color: "#f97316" }}>Admission:</b> 
+  {selectedPatient.admission_date 
+    ? new Date(selectedPatient.admission_date).toLocaleString()
+    : "-"
+  }
+</p>
+
+<p><b style={{ color: "#f97316" }}>Discharge:</b> 
+  {selectedPatient.discharge_date 
+    ? new Date(selectedPatient.discharge_date).toLocaleString()
+    : "-"
+  }
+</p>
 <p><b style={{ color: "#f97316" }}>Bed:</b> {selectedPatient.bed_number}</p>
 
 
 <h4 style={{ marginTop: "15px" }}>Timeline</h4>
+<h4 style={{ marginTop: "15px", color: "#38bdf8" }}>
+  Transfer Details
+</h4>
+
+{timeline.map((t, i) => {
+  if (t.type === "hospital") {
+    return (
+      <div key={i} style={{ marginTop: "5px", fontSize: "14px" }}>
+        🔴 Transfer Out: {new Date(t.start_date).toLocaleString()} <br />
+        🟢 Transfer In: {t.end_date 
+          ? new Date(t.end_date).toLocaleString() 
+          : "Still Out"}
+      </div>
+    )
+  }
+  return null
+})}
 
 {timeline.map((t) => (
   <div key={t.id} style={{
@@ -1269,9 +1297,12 @@ const toggleHoldBed = (bed) => {
   }}>
     <b>{t.type.toUpperCase()}</b>
     <br />
-    {t.start_date?.slice(0,10)} → {t.end_date?.slice(0,10) || "Present"}
+    {new Date(t.start_date).toLocaleString()} 
+→ 
+{t.end_date ? new Date(t.end_date).toLocaleString() : "Present"}
   </div>
 ))}
+
 
 <p style={{ marginTop: "10px", color: "#22c55e" }}>
   Total Rehab Days: {finalDays}
