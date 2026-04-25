@@ -136,33 +136,70 @@ const fetchUserRole = async () => {
 const calculateRehabDays = (stays) => {
   let total = 0
 
-  stays.forEach((stay) => {
-    if (stay.type !== "rehab") return
+  const rehabStays = stays.filter(s => s.type === "rehab")
 
+  rehabStays.forEach((stay, index) => {
     const start = new Date(stay.start_date)
     const end = stay.end_date ? new Date(stay.end_date) : new Date()
 
-    // ✅ Calculate difference in days
-    let days = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1
+    let days = Math.ceil((end - start) / (1000 * 60 * 60 * 24))
 
-    // ✅ Admit after 10 AM → remove first day
-    const sameDay = start.toDateString() === end.toDateString()
-
-if (!sameDay && start.getHours() >= 10) {
-  days -= 1
-}
-
-    // ✅ Discharge before 10 AM → remove last day
-    if (stay.end_date && end.getHours() < 10) {
+    // ✅ 10 AM RULE
+    if (start.getHours() >= 10) {
       days -= 1
     }
 
-    if (days < 1) days = 1
+    if (end.getHours() < 10) {
+      days -= 1
+    }
+
+    // ✅ minimum 1 for first stay
+    if (index === 0 && days < 1) days = 1
+
+    if (days < 0) days = 0
 
     total += days
   })
 
   return total
+}
+const calculateHospitalPenalty = (stays) => {
+  let penalty = 0
+
+  stays.forEach((stay) => {
+    if (stay.type !== "hospital") return
+
+    const start = new Date(stay.start_date)
+    const end = stay.end_date ? new Date(stay.end_date) : new Date()
+
+    const hours = (end - start) / (1000 * 60 * 60)
+
+    if (hours >= 12) {
+      penalty += 1
+    }
+  })
+
+  return penalty
+}
+const calculateShortGapAdjustment = (stays) => {
+  let adjustment = 0
+
+  const rehabStays = stays
+    .filter(s => s.type === "rehab")
+    .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+
+  for (let i = 1; i < rehabStays.length; i++) {
+    const prevEnd = new Date(rehabStays[i - 1].end_date)
+    const currStart = new Date(rehabStays[i].start_date)
+
+    const gapHours = (currStart - prevEnd) / (1000 * 60 * 60)
+
+    if (gapHours < 6) {
+      adjustment += 1   // remove extra counted day
+    }
+  }
+
+  return adjustment
 }
 const calculateShiftDays = (stays) => {
   let total = 0
@@ -1174,7 +1211,13 @@ const calculateAge = (birthdate) => {
 ))}
 
 <p style={{ marginTop: "10px", color: "#22c55e" }}>
-  Total Rehab Days: {calculateRehabDays(timeline)}
+  const rehab = calculateRehabDays(timeline)
+const penalty = calculateHospitalPenalty(timeline)
+const shortGap = calculateShortGapAdjustment(timeline)
+
+const finalDays = Math.max(0, rehab - penalty - shortGap)
+
+Total Rehab Days: {finalDays}
 </p>
 <p style={{ marginTop: "5px", color: "#f59e0b" }}>
   Total Shift Out Days: {calculateShiftDays(timeline)}
