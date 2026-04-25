@@ -623,6 +623,11 @@ const toggleHoldBed = (bed) => {
     <p>Available</p>
     <h2>{allBeds.length - activePatients.length}</h2>
   </div>
+  
+  <div style={cardStyle}>
+  <p>Shift Out</p>
+  <h2>{hospitalPatients.length}</h2>
+</div>
 
 </div>
     {view === "beds" && (
