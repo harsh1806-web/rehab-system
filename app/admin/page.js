@@ -1520,16 +1520,17 @@ animation: "popupFade 0.25s ease forwards",
     Save
   </button>
   <button
-    onClick={() => {
-      if (!form.bed_number) {
-        alert("Select bed first ❌")
-        return
-      }
+  onClick={() => {
+    if (!form.bed_number) {
+      alert("Select bed first ❌")
+      return
+    }
 
-      // you will store this later in DB
-      alert(`Bed ${form.bed_number} held 🟠`)
-      setShowForm(false)
-    }}
+    toggleHoldBed(form.bed_number)   // ✅ THIS IS THE REAL FIX
+
+    alert(`Bed ${form.bed_number} held 🟠`)
+    setShowForm(false)
+  }}
     style={{
       flex: 1,
       background: "#f97316", // 🟠 orange
