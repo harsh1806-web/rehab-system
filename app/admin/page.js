@@ -887,9 +887,27 @@ const toggleHoldBed = (bed) => {
     e.currentTarget.style.transform = "scale(1)"
   }}
 >
-<td style={td}>{p.name}</td>
-<td style={td}>{p.age}</td>
-<td style={td}>{p.sex}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.name}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.age}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.sex}</td>
 <td style={{
   ...td,
   minWidth: "200px",
@@ -899,8 +917,20 @@ const toggleHoldBed = (bed) => {
 }}>
   {p.address}
 </td>
-<td style={td}>{p.to_contact}</td>
-<td style={td}>{p.physio_incharge}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.to_contact}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.physio_incharge}</td>
 <td style={{
     ...td,
   minWidth: "250px",
@@ -910,13 +940,55 @@ const toggleHoldBed = (bed) => {
 }}>
   {p.condition}
 </td>
-<td style={td}>{p.parent_doctor}</td>
-<td style={td}>{p.parent_hospital}</td>
-<td style={td}>{p.referred_from}</td>
-<td style={td}>{p.referral}</td>
-<td style={td}>{p.admission_date?.slice(0,10)}</td>
-<td style={td}>{p.discharge_date?.slice(0,10) || "-"}</td>
-<td style={td}>{p.bed_number}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.parent_doctor}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.parent_hospital}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.referred_from}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.referral}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.admission_date?.slice(0,10)}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.discharge_date?.slice(0,10) || "-"}</td>
+<td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.bed_number}</td>
 
       </tr>
     ))}
@@ -1170,13 +1242,49 @@ const toggleHoldBed = (bed) => {
         onMouseEnter={(e) => e.currentTarget.style.background = "#1e293b"}
         onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
       >
-        <td style={td}>{p.name}</td>
-        <td style={td}>{p.age}</td>
-        <td style={td}>{p.sex}</td>
+        <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.name}</td>
+        <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.age}</td>
+        <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.sex}</td>
         
-        <td style={td}>{p.address}</td>
-        <td style={td}>{p.to_contact}</td>
-        <td style={td}>{p.physio_incharge}</td>
+        <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.address}</td>
+        <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.to_contact}</td>
+       <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.physio_incharge}</td>
         <td style={{
           ...td,
           maxWidth: "200px",
@@ -1186,12 +1294,41 @@ const toggleHoldBed = (bed) => {
         }}>
           {p.condition}
         </td>
-        <td style={td}>{p.referred_from}</td>
-        <td style={td}>{p.referral}</td>
-        <td style={td}>{p.admission_date?.slice(0,10)}</td>
-        <td style={td}>{p.discharge_date?.slice(0,10)}</td>
-        <td style={td}>{p.physio_incharge}</td>
-        <td style={td}>{p.bed_number}</td>
+        <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.referred_from}</td>
+        <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.referral}</td>
+       <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.admission_date?.slice(0,10)}</td>
+        <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.discharge_date?.slice(0,10)}</td>
+        <td style={{
+  ...td,
+  minWidth: "200px",
+  maxWidth: "250px",
+  whiteSpace: "normal",
+  wordBreak: "break-word"
+}}>{p.bed_number}</td>
       </tr>
     ))}
   </tbody>
