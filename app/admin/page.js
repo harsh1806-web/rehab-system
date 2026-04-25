@@ -888,107 +888,107 @@ const toggleHoldBed = (bed) => {
   }}
 >
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.name}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.name}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.age}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.age}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.sex}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.sex}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>
   {p.address}
 </td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.to_contact}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.to_contact}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.physio_incharge}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.physio_incharge}</td>
 <td style={{
-    ...td,
-  minWidth: "250px",
-  maxWidth: "300px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>
   {p.condition}
 </td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.parent_doctor}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.parent_doctor}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.parent_hospital}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.parent_hospital}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.referred_from}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.referred_from}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.referral}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.referral}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.admission_date?.slice(0,10)}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.admission_date?.slice(0,10)}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.discharge_date?.slice(0,10) || "-"}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.discharge_date?.slice(0,10) || "-"}</td>
 <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.bed_number}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.bed_number}</td>
 
       </tr>
     ))}
@@ -1243,48 +1243,48 @@ const toggleHoldBed = (bed) => {
         onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
       >
         <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.name}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.name}</td>
         <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.age}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.age}</td>
         <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.sex}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.sex}</td>
         
         <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.address}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.address}</td>
         <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.to_contact}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.to_contact}</td>
        <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.physio_incharge}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.physio_incharge}</td>
         <td style={{
           ...td,
           maxWidth: "200px",
@@ -1295,40 +1295,40 @@ const toggleHoldBed = (bed) => {
           {p.condition}
         </td>
         <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.referred_from}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.referred_from}</td>
         <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.referral}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.referral}</td>
        <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.admission_date?.slice(0,10)}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.admission_date?.slice(0,10)}</td>
         <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.discharge_date?.slice(0,10)}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.discharge_date?.slice(0,10)}</td>
         <td style={{
-  ...td,
-  minWidth: "200px",
-  maxWidth: "250px",
-  whiteSpace: "normal",
-  wordBreak: "break-word"
-}}>{p.bed_number}</td>
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.bed_number}</td>
       </tr>
     ))}
   </tbody>
