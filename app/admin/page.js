@@ -852,8 +852,28 @@ const calculateAge = (birthdate) => {
 
   <hr style={{ borderColor: "#1e293b" }} />
 
-  <p>🟩 Empty: {allBeds.length - activePatients.length}</p>
-  <p>🟥 Occupied: {activePatients.length}</p>
+  <p>
+  <span style={{
+    display: "inline-block",
+    width: "12px",
+    height: "12px",
+    background: "white",
+    border: "1px solid #ccc",
+    marginRight: "6px"
+  }}></span>
+  Empty: {allBeds.length - activePatients.length}
+</p>
+
+<p>
+  <span style={{
+    display: "inline-block",
+    width: "12px",
+    height: "12px",
+    background: "#22c55e",
+    marginRight: "6px"
+  }}></span>
+  Occupied: {activePatients.length}
+</p>
 
 </div>
 
