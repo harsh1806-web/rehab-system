@@ -54,7 +54,7 @@ wordBreak: "break-word",
           let bg = "#22c55e" // empty
 
           if (patient) {
-            bg = "#ef4444" // occupied
+            bg = "#22c55e" // occupied
           }
 
           return (
