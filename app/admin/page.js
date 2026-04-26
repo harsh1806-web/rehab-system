@@ -896,14 +896,20 @@ const toggleHoldBed = (bed) => {
     setSelectedPatient(p)          // ✅ open popup
     fetchTimeline(p.id)            // ✅ load timeline
   }}
-  onMouseEnter={(e) => {
+onMouseEnter={(e) => {
+  if (highlightedPatients[p.id]) {
+    e.currentTarget.style.opacity = "0.8"
+  } else {
     e.currentTarget.style.background = "#1e293b"
-    e.currentTarget.style.transform = "scale(1.01)"
-  }}
-  onMouseLeave={(e) => {
+  }
+}}
+
+onMouseLeave={(e) => {
+  e.currentTarget.style.opacity = "1"
+  if (!highlightedPatients[p.id]) {
     e.currentTarget.style.background = "transparent"
-    e.currentTarget.style.transform = "scale(1)"
-  }}
+  }
+}}
 >
   <td style={{
           ...td,
@@ -1263,8 +1269,20 @@ const toggleHoldBed = (bed) => {
     color: highlightedPatients[p.id] ? "black" : undefined
   }}
         onClick={() => setSelectedPatient(p)}
-        onMouseEnter={(e) => e.currentTarget.style.background = "#1e293b"}
-        onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+        onMouseEnter={(e) => {
+  if (highlightedPatients[p.id]) {
+    e.currentTarget.style.opacity = "0.8"
+  } else {
+    e.currentTarget.style.background = "#1e293b"
+  }
+}}
+
+onMouseLeave={(e) => {
+  e.currentTarget.style.opacity = "1"
+  if (!highlightedPatients[p.id]) {
+    e.currentTarget.style.background = "transparent"
+  }
+}}
       >
         <td style={{
           ...td,
@@ -2213,25 +2231,7 @@ setReturnPatient(null)
     </div>
   </div>
 )}
-<button
-  onClick={() => {
-    setHighlightedPatients(prev => {
-      const copy = { ...prev }
-      delete copy[selectedPatient.id]
-      return copy
-    })
-  }}
-  style={{
-    marginTop: "5px",
-    background: "#ef4444",
-    padding: "6px",
-    border: "none",
-    borderRadius: "5px",
-    color: "white"
-  }}
->
-  Remove Highlight
-</button>
+
   </div>   
 </div>
 )
