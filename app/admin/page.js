@@ -1247,7 +1247,7 @@ const toggleHoldBed = (bed) => {
       >
         <td style={{
           ...td,
-          maxWidth: "200px",
+          maxWidth: "50px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
