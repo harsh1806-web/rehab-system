@@ -1789,6 +1789,22 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   color: "white"
 }}name="sex" value={form.sex || ""} onChange={handleChange} placeholder="Sex" />
 
+<input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}name="address" value={form.address || ""} onChange={handleChange} placeholder="Address" />
+
+<input style={{
+  padding: "10px",
+  borderRadius: "6px",
+  border: "1px solid #334155",
+  background: "#020617",
+  color: "white"
+}}name="to_contact" value={form.to_contact || ""} onChange={handleChange} placeholder="2 Contact" />
+
   <input style={{
   padding: "10px",
   borderRadius: "6px",
@@ -1825,21 +1841,7 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
   placeholder="Parent Hospital"
 />
 
-  <input style={{
-  padding: "10px",
-  borderRadius: "6px",
-  border: "1px solid #334155",
-  background: "#020617",
-  color: "white"
-}}name="address" value={form.address || ""} onChange={handleChange} placeholder="Address" />
-
-  <input style={{
-  padding: "10px",
-  borderRadius: "6px",
-  border: "1px solid #334155",
-  background: "#020617",
-  color: "white"
-}}name="to_contact" value={form.to_contact || ""} onChange={handleChange} placeholder="2 Contact" />
+  
 
   <input style={{
   padding: "10px",
@@ -1909,52 +1911,87 @@ name="name" value={form.name || ""} onChange={handleChange} placeholder="Name" /
 
 </div>
 
-    <button
-      onClick={async () => {
-  const bedNumber = form.bed_number
+    <div style={{
+  display: "flex",
+  gap: "10px",
+  marginTop: "15px"
+}}>
 
-  if (!bedNumber) {
-    alert("Invalid bed number")
-    return
-  }
+  <button
+    onClick={async () => {
+      try {
+        const bedNumber = form.bed_number
 
-  // 🔴 Check if another patient already has this bed
-  const { data: existing } = await supabase
-    .from("patients")
-    .select("*")
-    .eq("bed_number", bedNumber)
+        if (!bedNumber) {
+          alert("Invalid bed number")
+          return
+        }
 
-  const conflict = existing.find(p => p.id !== selectedPatient.id)
+        const { data: existing } = await supabase
+          .from("patients")
+          .select("*")
+          .eq("bed_number", bedNumber)
 
-  if (conflict) {
-    alert("This bed is already occupied")
-    return
-  }
+        const conflict = existing.find(p => p.id !== selectedPatient.id)
 
-  // ✅ Safe to update
-  const { error } = await supabase
-    .from("patients")
-    .update({
-  ...form,
-  age: calculateAge(form.birthdate),
-  bed_number: bedNumber
-})
-    .eq("id", selectedPatient.id)
+        if (conflict) {
+          alert("This bed is already occupied")
+          return
+        }
 
-  if (error) {
-    alert("Error updating")
-  } else {
-    alert("Updated ✅")
-    setEditMode(false)
-    setSelectedPatient(null)
-    fetchPatients()
-  }
-}}
-    >
-      Save Changes
-    </button>
+        const { error } = await supabase
+          .from("patients")
+          .update({
+            ...form,
+            age: calculateAge(form.birthdate),
+            bed_number: bedNumber
+          })
+          .eq("id", selectedPatient.id)
 
-    <button onClick={() => setEditMode(false)}>Cancel</button>
+        if (error) {
+          alert("Error updating")
+        } else {
+          alert("Updated ✅")
+          setEditMode(false)
+          setSelectedPatient(null)
+          fetchPatients()
+        }
+      } catch (err) {
+        console.log(err)
+        alert("Something went wrong ❌")
+      }
+    }}
+    style={{
+      flex: 1,
+      background: "#3b82f6",
+      color: "white",
+      padding: "10px",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontWeight: "bold"
+    }}
+  >
+    Save Changes
+  </button>
+
+  <button
+    onClick={() => setEditMode(false)}
+    style={{
+      flex: 1,
+      background: "#64748b",
+      color: "white",
+      padding: "10px",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontWeight: "bold"
+    }}
+  >
+    Cancel
+  </button>
+
+</div>
   </div>
 )}
 {showReturnModal && (
