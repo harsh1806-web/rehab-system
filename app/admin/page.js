@@ -36,6 +36,7 @@ if (profile?.role !== "admin") {
   router.push("/user")
 }
 }
+const [selectedColor, setSelectedColor] = useState("")
 const [highlightedPatients, setHighlightedPatients] = useState({})
     const [showReturnModal, setShowReturnModal] = useState(false)
 const [returnPatient, setReturnPatient] = useState(null)
@@ -420,16 +421,16 @@ hospitalLayout.first.forEach(block => {
   combinedLayout[block.block].first = block.zones
 })
 const highlightColors = [
-  "#f87171", // red
-  "#fb923c", // orange
-  "#facc15", // yellow
-  "#4ade80", // green
-  "#22c55e", // darker green
-  "#38bdf8", // blue
-  "#818cf8", // indigo
-  "#c084fc", // purple
-  "#f472b6", // pink
-  "#94a3b8"  // gray
+  { name: "Red", value: "#f87171" },
+  { name: "Orange", value: "#fb923c" },
+  { name: "Yellow", value: "#facc15" },
+  { name: "Green", value: "#4ade80" },
+  { name: "Dark Green", value: "#22c55e" },
+  { name: "Blue", value: "#38bdf8" },
+  { name: "Indigo", value: "#818cf8" },
+  { name: "Purple", value: "#c084fc" },
+  { name: "Pink", value: "#f472b6" },
+  { name: "Gray", value: "#94a3b8" }
 ]
 if (role === "user" && view === "admin") {
   return (
@@ -1584,30 +1585,73 @@ await fetchTimeline(selectedPatient.id)   // 🔥 ADD THIS
   <p style={{ fontSize: "14px" }}>Highlight Patient:</p>
 
   <select
-    onChange={(e) => {
-      const color = e.target.value
+  value={selectedColor}
+  onChange={(e) => setSelectedColor(e.target.value)}
+  style={{
+    width: "100%",
+    padding: "6px",
+    borderRadius: "6px",
+    background: "#020617",
+    color: "white"
+  }}
+>
+  <option value="">Select Color</option>
+
+  {highlightColors.map((c, i) => (
+    <option key={i} value={c.value}>
+      {c.name}
+    </option>
+  ))}
+</select>
+</div>
+<div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+
+  {/* APPLY HIGHLIGHT */}
+  <button
+    onClick={() => {
+      if (!selectedColor) {
+        alert("Select a color first ❌")
+        return
+      }
 
       setHighlightedPatients(prev => ({
         ...prev,
-        [selectedPatient.id]: color
+        [selectedPatient.id]: selectedColor
       }))
     }}
     style={{
-      width: "100%",
-      padding: "6px",
+      background: "#22c55e",
+      padding: "8px",
+      border: "none",
       borderRadius: "6px",
-      background: "#020617",
-      color: "white"
+      color: "white",
+      cursor: "pointer"
     }}
   >
-    <option value="">Select Color</option>
+    Highlight
+  </button>
 
-    {highlightColors.map((c, i) => (
-      <option key={i} value={c}>
-        Color {i + 1}
-      </option>
-    ))}
-  </select>
+  {/* REMOVE HIGHLIGHT */}
+  <button
+    onClick={() => {
+      setHighlightedPatients(prev => {
+        const copy = { ...prev }
+        delete copy[selectedPatient.id]
+        return copy
+      })
+    }}
+    style={{
+      background: "#ef4444",
+      padding: "8px",
+      border: "none",
+      borderRadius: "6px",
+      color: "white",
+      cursor: "pointer"
+    }}
+  >
+    Remove
+  </button>
+
 </div>
 
 </div>
