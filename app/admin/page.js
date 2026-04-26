@@ -847,6 +847,7 @@ const toggleHoldBed = (bed) => {
   }}>
   <thead style={{ background: "#1e293b" }}>
     <tr>
+      <th style={th}>Bed</th>
       <th style={th}>Name</th>
 <th style={th}>Age</th>
 <th style={th}>Sex</th>
@@ -860,7 +861,7 @@ const toggleHoldBed = (bed) => {
 <th style={th}>Refferal</th>
 <th style={th}>Admission</th>
 <th style={th}>Discharge</th>
-<th style={th}>Bed</th>
+
     </tr>
   </thead>
 
@@ -887,6 +888,13 @@ const toggleHoldBed = (bed) => {
     e.currentTarget.style.transform = "scale(1)"
   }}
 >
+  <td style={{
+          ...td,
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }}>{p.bed_number}</td>
 <td style={{
           ...td,
           maxWidth: "200px",
@@ -896,14 +904,14 @@ const toggleHoldBed = (bed) => {
         }}>{p.name}</td>
 <td style={{
           ...td,
-          maxWidth: "200px",
+          maxWidth: "100px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
         }}>{p.age}</td>
 <td style={{
           ...td,
-          maxWidth: "200px",
+          maxWidth: "100px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
@@ -919,7 +927,7 @@ const toggleHoldBed = (bed) => {
 </td>
 <td style={{
           ...td,
-          maxWidth: "200px",
+          maxWidth: "150px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
@@ -933,7 +941,7 @@ const toggleHoldBed = (bed) => {
         }}>{p.physio_incharge}</td>
 <td style={{
           ...td,
-          maxWidth: "200px",
+          maxWidth: "300px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
@@ -982,13 +990,7 @@ const toggleHoldBed = (bed) => {
           overflow: "hidden",
           textOverflow: "ellipsis"
         }}>{p.discharge_date?.slice(0,10) || "-"}</td>
-<td style={{
-          ...td,
-          maxWidth: "200px",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis"
-        }}>{p.bed_number}</td>
+
 
       </tr>
     ))}
@@ -1213,6 +1215,7 @@ const toggleHoldBed = (bed) => {
 }}>
   <thead style={{ background: "#1e293b" }}>
     <tr>
+      <th style={th}>Bed</th>
       <th style={th}>Name</th>
       <th style={th}>Age</th>
       <th style={th}>Sex</th>
@@ -1224,7 +1227,7 @@ const toggleHoldBed = (bed) => {
       <th style={th}>Refferal</th>
       <th style={th}>Admission</th>
       <th style={th}>Discharge</th>
-      <th style={th}>Bed</th>
+      
     </tr>
   </thead>
 
@@ -1248,17 +1251,25 @@ const toggleHoldBed = (bed) => {
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
+        }}>{p.bed_number}</td>
+
+        <td style={{
+          ...td,
+          maxWidth: "100px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
         }}>{p.name}</td>
         <td style={{
           ...td,
-          maxWidth: "200px",
+          maxWidth: "100px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
         }}>{p.age}</td>
         <td style={{
           ...td,
-          maxWidth: "200px",
+          maxWidth: "100px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
@@ -1287,7 +1298,7 @@ const toggleHoldBed = (bed) => {
         }}>{p.physio_incharge}</td>
         <td style={{
           ...td,
-          maxWidth: "200px",
+          maxWidth: "300px",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis"
@@ -1322,13 +1333,7 @@ const toggleHoldBed = (bed) => {
           overflow: "hidden",
           textOverflow: "ellipsis"
         }}>{p.discharge_date?.slice(0,10)}</td>
-        <td style={{
-          ...td,
-          maxWidth: "200px",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis"
-        }}>{p.bed_number}</td>
+        
       </tr>
     ))}
   </tbody>
