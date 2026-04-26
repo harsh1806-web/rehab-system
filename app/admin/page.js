@@ -36,7 +36,7 @@ if (profile?.role !== "admin") {
   router.push("/user")
 }
 }
-
+const [highlightedPatients, setHighlightedPatients] = useState({})
     const [showReturnModal, setShowReturnModal] = useState(false)
 const [returnPatient, setReturnPatient] = useState(null)
 const [selectedBed, setSelectedBed] = useState("")
@@ -419,6 +419,18 @@ hospitalLayout.first.forEach(block => {
   }
   combinedLayout[block.block].first = block.zones
 })
+const highlightColors = [
+  "#f87171", // red
+  "#fb923c", // orange
+  "#facc15", // yellow
+  "#4ade80", // green
+  "#22c55e", // darker green
+  "#38bdf8", // blue
+  "#818cf8", // indigo
+  "#c084fc", // purple
+  "#f472b6", // pink
+  "#94a3b8"  // gray
+]
 if (role === "user" && view === "admin") {
   return (
     <div style={{ color: "white", padding: "50px" }}>
@@ -872,9 +884,13 @@ const toggleHoldBed = (bed) => {
   (doctorFilter ? p.physio_incharge === doctorFilter : true)
 )
   .map((p) => (
-      <tr
+     <tr
   key={p.id}
-  style={{ cursor: "pointer" }}
+  style={{
+    cursor: "pointer",
+    background: highlightedPatients[p.id] || "transparent",
+    color: highlightedPatients[p.id] ? "black" : undefined
+  }}
   onClick={() => {
     setSelectedPatient(p)          // ✅ open popup
     fetchTimeline(p.id)            // ✅ load timeline
@@ -1239,8 +1255,12 @@ const toggleHoldBed = (bed) => {
   )
   .map((p) => (
       <tr
-        key={p.id}
-        style={{ cursor: "pointer" }}
+  key={p.id}
+  style={{
+    cursor: "pointer",
+    background: highlightedPatients[p.id] || "transparent",
+    color: highlightedPatients[p.id] ? "black" : undefined
+  }}
         onClick={() => setSelectedPatient(p)}
         onMouseEnter={(e) => e.currentTarget.style.background = "#1e293b"}
         onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
@@ -1560,12 +1580,44 @@ await fetchTimeline(selectedPatient.id)   // 🔥 ADD THIS
   >
     Close
   </button>
+  <div style={{ marginTop: "10px" }}>
+  <p style={{ fontSize: "14px" }}>Highlight Patient:</p>
+
+  <select
+    onChange={(e) => {
+      const color = e.target.value
+
+      setHighlightedPatients(prev => ({
+        ...prev,
+        [selectedPatient.id]: color
+      }))
+    }}
+    style={{
+      width: "100%",
+      padding: "6px",
+      borderRadius: "6px",
+      background: "#020617",
+      color: "white"
+    }}
+  >
+    <option value="">Select Color</option>
+
+    {highlightColors.map((c, i) => (
+      <option key={i} value={c}>
+        Color {i + 1}
+      </option>
+    ))}
+  </select>
+</div>
 
 </div>
     </div>
     
   
-)}
+)
+
+}
+
 {showForm && (
   <div style={{
   position: "fixed",
@@ -2113,9 +2165,29 @@ setReturnPatient(null)
       >
         Cancel
       </button>
+
     </div>
   </div>
 )}
+<button
+  onClick={() => {
+    setHighlightedPatients(prev => {
+      const copy = { ...prev }
+      delete copy[selectedPatient.id]
+      return copy
+    })
+  }}
+  style={{
+    marginTop: "5px",
+    background: "#ef4444",
+    padding: "6px",
+    border: "none",
+    borderRadius: "5px",
+    color: "white"
+  }}
+>
+  Remove Highlight
+</button>
   </div>   
 </div>
 )
