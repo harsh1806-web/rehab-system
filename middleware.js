@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
 
 export function middleware(request) {
-  const hasSession = request.cookies.getAll().some(cookie =>
-    cookie.name.includes("sb-")
+  const allCookies = request.cookies.getAll()
+  const hasSession = allCookies.some(cookie =>
+    cookie.name.includes("sb-") || cookie.name.includes("supabase")
   )
 
   const path = request.nextUrl.pathname
@@ -14,11 +15,13 @@ export function middleware(request) {
   const isLoginPage = path.startsWith("/login")
 
   if (!hasSession && isProtected) {
-    return NextResponse.redirect(new URL("/login", request.url))
+    const loginUrl = new URL("/login", request.url)
+    return NextResponse.redirect(loginUrl)
   }
 
   if (hasSession && isLoginPage) {
-    return NextResponse.redirect(new URL("/admin", request.url))
+    const adminUrl = new URL("/admin", request.url)
+    return NextResponse.redirect(adminUrl)
   }
 
   return NextResponse.next()

@@ -1,113 +1,127 @@
+"use client"
 
 export default function ZoneBox({
   title,
-  beds,
+  beds = [],
   columns = 3,
-  activePatients,
-  heldBeds,          // ✅ ADD
-  onHoldToggle,      // ✅ ADD
-  onBedClick
-})
- {
+  activePatients = [],
+  heldBeds = [],
+  onHoldToggle,
+  onBedClick,
+  highlightedPatients = {}
+}) {
   return (
-    <div style={{
-      background: "#020617",
-      border: "2px solid #22d3ee",
-      boxShadow: "0 0 10px rgba(34,211,238,0.3)",
-      borderRadius: "10px",
-      padding: "10px",
-      minWidth: "160px",
-      flex: "0 0 auto"   // 🔥 THIS FIXES ALIGNMENT
-    }}>
-
-      {/* TITLE */}
-      <div style={{
-        background: "#facc15",
-        color: "black",
-        fontWeight: "bold",
-        textAlign: "center",
-        padding: "5px",
-        marginBottom: "8px"
-      }}>
+    <div
+      style={{
+        background: "#0b132b",
+        border: "1px solid rgba(56, 189, 248, 0.3)",
+        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+        borderRadius: "12px",
+        padding: "12px",
+        minWidth: "170px",
+        flex: "0 0 auto",
+        transition: "all 0.2s ease"
+      }}
+    >
+      {/* Zone Title Header */}
+      <div
+        style={{
+          background: "linear-gradient(135deg, #facc15, #eab308)",
+          color: "#0f172a",
+          fontWeight: "800",
+          textAlign: "center",
+          padding: "6px 10px",
+          borderRadius: "6px",
+          marginBottom: "10px",
+          fontSize: "13px",
+          letterSpacing: "0.5px"
+        }}
+      >
         {title}
       </div>
 
-      {/* BEDS */}
-      <div style={{
-        display: "grid",  
-alignItems: "center",
-justifyContent: "center",
-fontSize: "11px",
-whiteSpace: "normal",
-wordBreak: "break-word",
-        gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        gap: "6px",
-        justifyItems: "center"
-      }}>
+      {/* Bed Tiles Grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${columns}, minmax(48px, 1fr))`,
+          gap: "8px",
+          justifyItems: "center"
+        }}
+      >
         {beds.map((bed) => {
           const patient = activePatients.find(
-  p =>
-    p.bed_number?.toString().trim().toUpperCase() ===
-    bed.toString().trim().toUpperCase()
-)
+            (p) =>
+              p.bed_number?.toString().trim().toUpperCase() ===
+              bed.toString().trim().toUpperCase()
+          )
 
-          let bg = "#ffffff"   // ⚪ empty
-let textColor = "black"
+          const isHeld = heldBeds?.includes(bed)
+          const customColor = patient ? highlightedPatients[patient.id] : null
 
-if (heldBeds?.includes(bed)) {
-  bg = "#f97316"     // 🟠 held (orange)
-  textColor = "white"
-} else if (patient) {
-  bg = "#22c55e"     // 🟢 occupied
-  textColor = "white"
-}
+          let bg = "#ffffff"
+          let textColor = "#0f172a"
+          let border = "1px solid #cbd5e1"
+          let tooltip = `Bed ${bed}: Empty`
+
+          if (isHeld) {
+            bg = "#f97316"
+            textColor = "#ffffff"
+            border = "1px solid #ea580c"
+            tooltip = `Bed ${bed}: Reserved / Held`
+          } else if (patient) {
+            bg = customColor || "#22c55e"
+            textColor = customColor ? "#000000" : "#ffffff"
+            border = "1px solid rgba(255,255,255,0.2)"
+            tooltip = `Bed ${bed}: ${patient.name} (${patient.physio_incharge || "No Physio"})`
+          }
 
           return (
             <button
               key={bed}
+              title={tooltip}
               onClick={() => {
-  // 🟠 If bed is held → ask to unhold
-  if (heldBeds?.includes(bed)) {
-    const confirmUnhold = confirm(`Unhold bed ${bed}?`)
-    if (confirmUnhold) {
-      onHoldToggle(bed)
-    }
-    return
-  }
-
-  // 🟢 normal flow
-  onBedClick(bed, patient)
-}}
+                if (isHeld && !patient) {
+                  if (onHoldToggle) onHoldToggle(bed)
+                  return
+                }
+                onBedClick(bed, patient)
+              }}
               style={{
-  width: "60px",
-  height: "50px",
-  borderRadius: "8px",
-  background: bg,
-  color: textColor, 
-  border: "none",
-  fontWeight: "bold",
-  cursor: "pointer",
-  transition: "all 0.2s ease",
-  transform: "scale(1)"
-}}
-onMouseEnter={(e) => {
-  e.currentTarget.style.transform = "scale(1.1)"
-  e.currentTarget.style.boxShadow = "0 0 12px rgba(255,255,255,0.4)"
-}}
-onMouseLeave={(e) => {
-  e.currentTarget.style.transform = "scale(1)"
-  e.currentTarget.style.boxShadow = "none"
-}}
-              onMouseEnter={(e) => {
-  e.currentTarget.style.transform = "scale(1.1)"
-  e.currentTarget.style.boxShadow = "0 0 12px rgba(255,255,255,0.4)"
-}}
-onMouseLeave={(e) => {
-  e.currentTarget.style.transform = "scale(1)"
-  e.currentTarget.style.boxShadow = "none"
-}}
+                width: "56px",
+                height: "48px",
+                borderRadius: "8px",
+                background: bg,
+                color: textColor,
+                border: border,
+                fontWeight: "700",
+                fontSize: "12px",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+                position: "relative",
+                overflow: "hidden"
+              }}
             >
-              {bed}
+              <span>{bed}</span>
+              {patient && (
+                <span
+                  style={{
+                    fontSize: "9px",
+                    maxWidth: "50px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    opacity: 0.9,
+                    fontWeight: "500"
+                  }}
+                >
+                  {patient.name.split(" ")[0]}
+                </span>
+              )}
             </button>
           )
         })}
@@ -115,4 +129,3 @@ onMouseLeave={(e) => {
     </div>
   )
 }
-
