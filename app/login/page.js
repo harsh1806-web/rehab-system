@@ -7,9 +7,10 @@ import { supabase } from "@/lib/supabase"
 export default function Login() {
   const router = useRouter()
 
-  const [selectedRole, setSelectedRole] = useState("admin") // "admin" | "administrator" | "receptionist" | "doctor"
+  const [selectedRole, setSelectedRole] = useState("admin")
   const [email, setEmail] = useState("admin@test.com")
-  const [password, setPassword] = useState("123456")
+  const [password, setPassword] = useState("") // Empty at start as requested
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
 
@@ -64,6 +65,7 @@ export default function Login() {
     if (portal) {
       setEmail(portal.defaultEmail)
     }
+    setPassword("") // Clear password when switching portals
     setErrorMsg("")
   }
 
@@ -280,20 +282,33 @@ export default function Login() {
           </div>
 
           <div>
-            <label
-              style={{
-                display: "block",
-                fontSize: "12px",
-                color: "#94a3b8",
-                marginBottom: "6px",
-                fontWeight: "600"
-              }}
-            >
-              Password
-            </label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+              <label
+                style={{
+                  fontSize: "12px",
+                  color: "#94a3b8",
+                  fontWeight: "600"
+                }}
+              >
+                Password
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#38bdf8",
+                  fontSize: "11px",
+                  cursor: "pointer"
+                }}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
             <input
-              type="password"
-              placeholder="••••••••"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
