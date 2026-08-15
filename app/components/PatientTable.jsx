@@ -6,6 +6,7 @@ export default function PatientTable({
   title = "Patients",
   patients = [],
   doctors = [],
+  role = "admin", // "admin" | "administrator" | "receptionist" | "doctor"
   isDischargedView = false,
   doctorFilter = "",
   onDoctorFilterChange,
@@ -15,6 +16,11 @@ export default function PatientTable({
 }) {
   const [searchTerm, setSearchTerm] = useState("")
 
+  const isDoctor = role === "doctor"
+  const isReceptionist = role === "receptionist"
+  const isAdministrator = role === "administrator"
+  const canAdmit = role === "admin" || role === "receptionist"
+
   const filteredPatients = useMemo(() => {
     return patients.filter((p) => {
       const matchSearch =
@@ -23,14 +29,18 @@ export default function PatientTable({
         p.bed_number?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.physio_incharge?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.condition?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.to_contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (!isDoctor && (
+          p.to_contact_1?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.to_contact_2?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.to_contact?.toLowerCase().includes(searchTerm.toLowerCase())
+        )) ||
         p.address?.toLowerCase().includes(searchTerm.toLowerCase())
 
       const matchDoctor = !doctorFilter || p.physio_incharge === doctorFilter
 
       return matchSearch && matchDoctor
     })
-  }, [patients, searchTerm, doctorFilter])
+  }, [patients, searchTerm, doctorFilter, isDoctor])
 
   const exportCSV = () => {
     if (filteredPatients.length === 0) return
@@ -40,14 +50,11 @@ export default function PatientTable({
       "Name",
       "Age",
       "Sex",
-      "Contact",
+      ...(!isDoctor ? ["Contact 1", "Contact 2", "Contact 3", "Contact 4"] : []),
       "Address",
       "Physio Incharge",
       "Condition",
-      "Parent Doctor",
-      "Parent Hospital",
-      "Referred From",
-      "Referral",
+      ...(!isReceptionist ? ["Parent Doctor", "Parent Hospital", "Referred From", "Referral"] : []),
       "Admission Date",
       ...(isDischargedView ? ["Discharge Date"] : [])
     ]
@@ -57,14 +64,25 @@ export default function PatientTable({
       `"${p.name || ""}"`,
       `"${p.age || ""}"`,
       `"${p.sex || ""}"`,
-      `"${p.to_contact || ""}"`,
+      ...(!isDoctor
+        ? [
+            `"${p.to_contact_1 || p.to_contact || ""}"`,
+            `"${p.to_contact_2 || ""}"`,
+            `"${p.to_contact_3 || ""}"`,
+            `"${p.to_contact_4 || ""}"`
+          ]
+        : []),
       `"${p.address?.replace(/"/g, '""') || ""}"`,
       `"${p.physio_incharge || ""}"`,
       `"${p.condition?.replace(/"/g, '""') || ""}"`,
-      `"${p.parent_doctor || ""}"`,
-      `"${p.parent_hospital || ""}"`,
-      `"${p.referred_from || ""}"`,
-      `"${p.referral || ""}"`,
+      ...(!isReceptionist
+        ? [
+            `"${p.parent_doctor || ""}"`,
+            `"${p.parent_hospital || ""}"`,
+            `"${p.referred_from || ""}"`,
+            `"${p.referral || ""}"`
+          ]
+        : []),
       `"${p.admission_date ? p.admission_date.slice(0, 10) : ""}"`,
       ...(isDischargedView ? [`"${p.discharge_date ? p.discharge_date.slice(0, 10) : ""}"`] : [])
     ])
@@ -119,7 +137,7 @@ export default function PatientTable({
       >
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", flex: 1 }}>
           <input
-            placeholder="🔍 Search by name, bed, physio, condition, phone..."
+            placeholder={`🔍 Search by name, bed, physio, condition${!isDoctor ? ", phone..." : "..."}`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -174,7 +192,7 @@ export default function PatientTable({
         </div>
 
         <div style={{ display: "flex", gap: "10px" }}>
-          {onAddClick && (
+          {canAdmit && onAddClick && (
             <button
               onClick={onAddClick}
               style={{
@@ -231,11 +249,11 @@ export default function PatientTable({
               <th style={thStyle}>Bed</th>
               <th style={thStyle}>Patient Name</th>
               <th style={thStyle}>Age/Sex</th>
-              <th style={thStyle}>Contact</th>
+              {!isDoctor && <th style={thStyle}>Primary Contact</th>}
               <th style={thStyle}>Physio Incharge</th>
-              <th style={thStyle}>Condition</th>
-              <th style={thStyle}>Parent Doctor</th>
-              <th style={thStyle}>Hospital</th>
+              <th style={thStyle}>Condition / Diagnosis</th>
+              {!isReceptionist && <th style={thStyle}>Parent Doctor</th>}
+              {!isReceptionist && <th style={thStyle}>Hospital</th>}
               <th style={thStyle}>Admission</th>
               {isDischargedView && <th style={thStyle}>Discharge</th>}
             </tr>
@@ -244,7 +262,7 @@ export default function PatientTable({
             {filteredPatients.length === 0 ? (
               <tr>
                 <td
-                  colSpan={isDischargedView ? 10 : 9}
+                  colSpan={10}
                   style={{ textAlign: "center", padding: "40px", color: "#64748b", fontSize: "14px" }}
                 >
                   No patient records matching current criteria.
@@ -253,6 +271,8 @@ export default function PatientTable({
             ) : (
               filteredPatients.map((p) => {
                 const customBg = highlightedPatients[p.id]
+                const primaryContact = p.to_contact_1 || p.to_contact || "-"
+
                 return (
                   <tr
                     key={p.id}
@@ -277,7 +297,7 @@ export default function PatientTable({
                     <td style={tdStyle}>
                       {p.age ? `${p.age}y` : "-"} / {p.sex || "-"}
                     </td>
-                    <td style={tdStyle}>{p.to_contact || "-"}</td>
+                    {!isDoctor && <td style={tdStyle}>{primaryContact}</td>}
                     <td style={{ ...tdStyle, color: "#a5f3fc" }}>{p.physio_incharge || "-"}</td>
                     <td
                       style={{
@@ -290,8 +310,8 @@ export default function PatientTable({
                     >
                       {p.condition || "-"}
                     </td>
-                    <td style={tdStyle}>{p.parent_doctor || "-"}</td>
-                    <td style={tdStyle}>{p.parent_hospital || "-"}</td>
+                    {!isReceptionist && <td style={tdStyle}>{p.parent_doctor || "-"}</td>}
+                    {!isReceptionist && <td style={tdStyle}>{p.parent_hospital || "-"}</td>}
                     <td style={tdStyle}>{p.admission_date ? p.admission_date.slice(0, 10) : "-"}</td>
                     {isDischargedView && (
                       <td style={{ ...tdStyle, color: "#f87171" }}>

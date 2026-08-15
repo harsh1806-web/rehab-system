@@ -6,11 +6,12 @@ import { calculateFinalRehabDays, calculateShiftDays } from "@/lib/calculations"
 export default function PatientDetailModal({
   patient,
   timeline = [],
-  role = "user",
+  role = "admin", // "admin" | "administrator" | "receptionist" | "doctor"
   onClose,
   onEdit,
   onShiftOut,
   onDischarge,
+  onOpenDoctorDiagnosis,
   highlightColor,
   onSetHighlight
 }) {
@@ -36,6 +37,20 @@ export default function PatientDetailModal({
   const isDischarged = Boolean(patient.discharge_date)
   const isShiftedOut = patient.status === "hospital"
 
+  // Role permissions
+  const isDoctor = role === "doctor"
+  const isReceptionist = role === "receptionist"
+  const isAdministrator = role === "administrator"
+  const isAdmin = role === "admin"
+
+  // 4 Contacts parsing / resolution
+  const contacts = [
+    { label: "Contact 1 (Primary)", value: patient.to_contact_1 || patient.to_contact },
+    { label: "Contact 2", value: patient.to_contact_2 },
+    { label: "Contact 3", value: patient.to_contact_3 },
+    { label: "Contact 4", value: patient.to_contact_4 }
+  ].filter((c) => Boolean(c.value?.trim()))
+
   return (
     <div
       style={{
@@ -57,7 +72,7 @@ export default function PatientDetailModal({
           border: "1px solid #334155",
           borderRadius: "18px",
           width: "100%",
-          maxWidth: "620px",
+          maxWidth: "640px",
           maxHeight: "90vh",
           overflowY: "auto",
           boxShadow: "0 20px 60px rgba(0, 0, 0, 0.7)",
@@ -96,7 +111,7 @@ export default function PatientDetailModal({
                   }`
                 }}
               >
-                {isDischarged ? "Discharged" : isShiftedOut ? "Hospital Shifted Out" : `Bed ${patient.bed_number}`}
+                {isDischarged ? "Discharged" : isShiftedOut ? "Hospital Shifted Out" : `Bed ${patient.bed_number || "Unassigned"}`}
               </span>
             </div>
             <p style={{ margin: "4px 0 0 0", fontSize: "13px", color: "#94a3b8" }}>
@@ -173,33 +188,33 @@ export default function PatientDetailModal({
             </div>
 
             <div>
-              <span style={{ color: "#64748b" }}>Contact Number:</span>
-              <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>{patient.to_contact || "N/A"}</p>
-            </div>
-
-            <div>
-              <span style={{ color: "#64748b" }}>Parent Doctor:</span>
-              <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>{patient.parent_doctor || "N/A"}</p>
-            </div>
-
-            <div>
-              <span style={{ color: "#64748b" }}>Parent Hospital:</span>
-              <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>{patient.parent_hospital || "N/A"}</p>
-            </div>
-
-            <div>
-              <span style={{ color: "#64748b" }}>Referral / Referred From:</span>
-              <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>
-                {patient.referred_from || patient.referral || "N/A"}
-              </p>
-            </div>
-
-            <div>
               <span style={{ color: "#64748b" }}>Admission Date:</span>
               <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>
                 {patient.admission_date ? new Date(patient.admission_date).toLocaleDateString() : "N/A"}
               </p>
             </div>
+
+            {/* Parent Doctor / Hospital (HIDDEN for Receptionist) */}
+            {!isReceptionist && (
+              <>
+                <div>
+                  <span style={{ color: "#64748b" }}>Parent Doctor:</span>
+                  <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>{patient.parent_doctor || "N/A"}</p>
+                </div>
+
+                <div>
+                  <span style={{ color: "#64748b" }}>Parent Hospital:</span>
+                  <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>{patient.parent_hospital || "N/A"}</p>
+                </div>
+
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <span style={{ color: "#64748b" }}>Referral / Referred From:</span>
+                  <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>
+                    {patient.referred_from || patient.referral || "N/A"}
+                  </p>
+                </div>
+              </>
+            )}
 
             {patient.discharge_date && (
               <div>
@@ -217,17 +232,38 @@ export default function PatientDetailModal({
               </p>
             </div>
 
+            {/* Condition / Medical Diagnosis */}
             <div style={{ gridColumn: "1 / -1" }}>
-              <span style={{ color: "#64748b" }}>Condition & Diagnosis:</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                <span style={{ color: "#64748b" }}>Condition & Diagnosis:</span>
+                {isDoctor && onOpenDoctorDiagnosis && (
+                  <button
+                    onClick={() => onOpenDoctorDiagnosis(patient)}
+                    style={{
+                      background: "rgba(56, 189, 248, 0.2)",
+                      border: "1px solid rgba(56, 189, 248, 0.4)",
+                      color: "#38bdf8",
+                      fontSize: "11px",
+                      padding: "3px 8px",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      fontWeight: "700"
+                    }}
+                  >
+                    ✏️ Update Diagnosis
+                  </button>
+                )}
+              </div>
               <p
                 style={{
                   margin: "2px 0 0 0",
                   fontWeight: "500",
                   color: "#cbd5e1",
                   background: "#020617",
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: "1px solid #1e293b"
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  border: "1px solid #1e293b",
+                  lineHeight: "1.5"
                 }}
               >
                 {patient.condition || "No clinical condition notes."}
@@ -235,7 +271,29 @@ export default function PatientDetailModal({
             </div>
           </div>
 
-          {/* Stays Timeline */}
+          {/* 4 Contact Details Card (HIDDEN for Doctor) */}
+          {!isDoctor && (
+            <div style={{ background: "#080e1e", border: "1px solid #1e293b", borderRadius: "12px", padding: "14px" }}>
+              <span style={{ fontSize: "13px", fontWeight: "700", color: "#38bdf8", display: "block", marginBottom: "10px" }}>
+                📞 Contact Numbers ({contacts.length})
+              </span>
+
+              {contacts.length === 0 ? (
+                <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>No contact numbers recorded.</p>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "10px" }}>
+                  {contacts.map((c, i) => (
+                    <div key={i} style={{ background: "#0f172a", padding: "8px 12px", borderRadius: "8px", border: "1px solid #1e293b" }}>
+                      <span style={{ fontSize: "11px", color: "#94a3b8", display: "block" }}>{c.label}</span>
+                      <b style={{ fontSize: "13px", color: "#f8fafc" }}>{c.value}</b>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Stays Timeline with Shift Out Destination */}
           <div>
             <h4 style={{ margin: "0 0 10px 0", fontSize: "14px", color: "#38bdf8", fontWeight: "700" }}>
               ⏱️ Stay History & Transfers ({timeline.length})
@@ -262,15 +320,31 @@ export default function PatientDetailModal({
                       }}
                     >
                       <div>
-                        <span
-                          style={{
-                            fontWeight: "700",
-                            color: isHospital ? "#f59e0b" : "#22c55e",
-                            textTransform: "uppercase"
-                          }}
-                        >
-                          {isHospital ? "🏥 External Hospital Transfer" : "🛏️ Rehab Stay"}
-                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span
+                            style={{
+                              fontWeight: "700",
+                              color: isHospital ? "#f59e0b" : "#22c55e",
+                              textTransform: "uppercase"
+                            }}
+                          >
+                            {isHospital ? "🏥 External Hospital Transfer" : "🛏️ Rehab Stay"}
+                          </span>
+                          {stay.destination && (
+                            <span
+                              style={{
+                                background: "rgba(245, 158, 11, 0.2)",
+                                color: "#fbbf24",
+                                padding: "1px 6px",
+                                borderRadius: "4px",
+                                fontSize: "11px",
+                                fontWeight: "600"
+                              }}
+                            >
+                              📍 {stay.destination}
+                            </span>
+                          )}
+                        </div>
                         <div style={{ color: "#94a3b8", marginTop: "2px" }}>
                           {new Date(stay.start_date).toLocaleString()} →{" "}
                           {stay.end_date ? new Date(stay.end_date).toLocaleString() : "Present"}
@@ -295,8 +369,8 @@ export default function PatientDetailModal({
             )}
           </div>
 
-          {/* Color Highlight Tagging (Admin Feature) */}
-          {role === "admin" && onSetHighlight && (
+          {/* Color Highlight Tagging (Admin only) */}
+          {isAdmin && onSetHighlight && (
             <div
               style={{
                 background: "#080e1e",
@@ -380,9 +454,30 @@ export default function PatientDetailModal({
             borderBottomRightRadius: "18px"
           }}
         >
-          {!isDischarged && (
+          {/* Action buttons (Disabled for Administrator) */}
+          {!isDischarged && !isAdministrator && (
             <>
-              {onEdit && (
+              {/* Doctor diagnosis button */}
+              {isDoctor && onOpenDoctorDiagnosis && (
+                <button
+                  onClick={() => onOpenDoctorDiagnosis(patient)}
+                  style={{
+                    background: "#22c55e",
+                    color: "#020617",
+                    border: "none",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    cursor: "pointer"
+                  }}
+                >
+                  🩺 Edit Diagnosis
+                </button>
+              )}
+
+              {/* Admin & Receptionist: Edit details */}
+              {(isAdmin || isReceptionist) && onEdit && (
                 <button
                   onClick={() => onEdit(patient)}
                   style={{
@@ -400,7 +495,8 @@ export default function PatientDetailModal({
                 </button>
               )}
 
-              {!isShiftedOut && onShiftOut && (
+              {/* Admin & Receptionist: Shift out */}
+              {(isAdmin || isReceptionist) && !isShiftedOut && onShiftOut && (
                 <button
                   onClick={() => onShiftOut(patient)}
                   style={{
@@ -418,7 +514,8 @@ export default function PatientDetailModal({
                 </button>
               )}
 
-              {onDischarge && (
+              {/* Admin & Receptionist: Discharge */}
+              {(isAdmin || isReceptionist) && onDischarge && (
                 <button
                   onClick={() => onDischarge(patient)}
                   style={{

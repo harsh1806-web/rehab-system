@@ -6,6 +6,7 @@ import { calculateAge } from "@/lib/calculations"
 export default function PatientFormModal({
   isOpen,
   mode = "add", // "add" | "edit"
+  role = "admin", // "admin" | "administrator" | "receptionist" | "doctor"
   initialData = null,
   availableBeds = [],
   doctors = [],
@@ -17,12 +18,17 @@ export default function PatientFormModal({
 }) {
   if (!isOpen) return null
 
+  const isReceptionist = role === "receptionist"
+
   const [form, setForm] = useState({
     name: "",
     birthdate: "",
     sex: "Male",
     address: "",
-    to_contact: "",
+    to_contact_1: "",
+    to_contact_2: "",
+    to_contact_3: "",
+    to_contact_4: "",
     physio_incharge: "",
     condition: "",
     parent_doctor: "",
@@ -40,7 +46,11 @@ export default function PatientFormModal({
       setForm({
         ...initialData,
         birthdate: initialData.birthdate ? initialData.birthdate.slice(0, 10) : "",
-        bed_number: initialData.bed_number || ""
+        bed_number: initialData.bed_number || "",
+        to_contact_1: initialData.to_contact_1 || initialData.to_contact || "",
+        to_contact_2: initialData.to_contact_2 || "",
+        to_contact_3: initialData.to_contact_3 || "",
+        to_contact_4: initialData.to_contact_4 || ""
       })
     } else {
       setForm({
@@ -48,7 +58,10 @@ export default function PatientFormModal({
         birthdate: "",
         sex: "Male",
         address: "",
-        to_contact: "",
+        to_contact_1: "",
+        to_contact_2: "",
+        to_contact_3: "",
+        to_contact_4: "",
         physio_incharge: doctors[0]?.name || "",
         condition: "",
         parent_doctor: "",
@@ -100,6 +113,19 @@ export default function PatientFormModal({
     color: "#94a3b8",
     marginBottom: "4px",
     fontWeight: "600"
+  }
+
+  const handleFormSubmit = () => {
+    // Generate combined contact for backward-compatibility
+    const combinedContact = [form.to_contact_1, form.to_contact_2, form.to_contact_3, form.to_contact_4]
+      .filter(Boolean)
+      .join(", ")
+
+    onSave({
+      ...form,
+      to_contact: combinedContact || form.to_contact_1,
+      age: computedAge
+    })
   }
 
   return (
@@ -230,22 +256,63 @@ export default function PatientFormModal({
             </div>
           </div>
 
-          {/* Row 3: Contact & Physio Incharge */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-            <div>
-              <label style={labelStyle}>Primary / Secondary Contact</label>
-              <input
-                style={inputStyle}
-                name="to_contact"
-                value={form.to_contact || ""}
-                onChange={handleChange}
-                placeholder="Phone number / Attendant"
-              />
-            </div>
+          {/* Row 3: 4 Contact Fields */}
+          <div style={{ background: "#080e1e", border: "1px solid #1e293b", borderRadius: "12px", padding: "14px" }}>
+            <span style={{ fontSize: "13px", fontWeight: "700", color: "#38bdf8", display: "block", marginBottom: "10px" }}>
+              📞 Patient Contact Details (Up to 4 Contacts)
+            </span>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+              <div>
+                <label style={labelStyle}>Contact 1 (Primary) *</label>
+                <input
+                  style={inputStyle}
+                  name="to_contact_1"
+                  value={form.to_contact_1 || ""}
+                  onChange={handleChange}
+                  placeholder="Primary phone / Attendant"
+                />
+              </div>
 
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                <label style={{ ...labelStyle, marginBottom: 0 }}>Physio / Incharge *</label>
+              <div>
+                <label style={labelStyle}>Contact 2 (Secondary)</label>
+                <input
+                  style={inputStyle}
+                  name="to_contact_2"
+                  value={form.to_contact_2 || ""}
+                  onChange={handleChange}
+                  placeholder="Secondary phone"
+                />
+              </div>
+
+              <div>
+                <label style={labelStyle}>Contact 3 (Emergency)</label>
+                <input
+                  style={inputStyle}
+                  name="to_contact_3"
+                  value={form.to_contact_3 || ""}
+                  onChange={handleChange}
+                  placeholder="Emergency contact 3"
+                />
+              </div>
+
+              <div>
+                <label style={labelStyle}>Contact 4 (Other)</label>
+                <input
+                  style={inputStyle}
+                  name="to_contact_4"
+                  value={form.to_contact_4 || ""}
+                  onChange={handleChange}
+                  placeholder="Emergency contact 4"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Row 4: Physio / Incharge Selector */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+              <label style={{ ...labelStyle, marginBottom: 0 }}>Physio / Incharge *</label>
+              {role === "admin" && (
                 <button
                   type="button"
                   onClick={() => setShowDoctorInput(!showDoctorInput)}
@@ -260,53 +327,53 @@ export default function PatientFormModal({
                 >
                   {showDoctorInput ? "Cancel" : "+ New Physio"}
                 </button>
-              </div>
-
-              {showDoctorInput ? (
-                <div style={{ display: "flex", gap: "6px" }}>
-                  <input
-                    style={inputStyle}
-                    placeholder="Doctor Name"
-                    value={newDoctorName}
-                    onChange={(e) => setNewDoctorName(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleCreateDoctor}
-                    style={{
-                      background: "#22c55e",
-                      color: "white",
-                      border: "none",
-                      padding: "0 12px",
-                      borderRadius: "8px",
-                      fontSize: "12px",
-                      fontWeight: "700",
-                      cursor: "pointer"
-                    }}
-                  >
-                    Add
-                  </button>
-                </div>
-              ) : (
-                <select
-                  style={inputStyle}
-                  name="physio_incharge"
-                  value={form.physio_incharge || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Physio/Inch</option>
-                  {doctors.map((doc) => (
-                    <option key={doc.id || doc.name} value={doc.name}>
-                      {doc.name}
-                    </option>
-                  ))}
-                </select>
               )}
             </div>
+
+            {showDoctorInput ? (
+              <div style={{ display: "flex", gap: "6px" }}>
+                <input
+                  style={inputStyle}
+                  placeholder="Doctor Name"
+                  value={newDoctorName}
+                  onChange={(e) => setNewDoctorName(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={handleCreateDoctor}
+                  style={{
+                    background: "#22c55e",
+                    color: "white",
+                    border: "none",
+                    padding: "0 12px",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    cursor: "pointer"
+                  }}
+                >
+                  Add
+                </button>
+              </div>
+            ) : (
+              <select
+                style={inputStyle}
+                name="physio_incharge"
+                value={form.physio_incharge || ""}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Physio/Inch</option>
+                {doctors.map((doc) => (
+                  <option key={doc.id || doc.name} value={doc.name}>
+                    {doc.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
-          {/* Row 4: Address */}
+          {/* Row 5: Address */}
           <div>
             <label style={labelStyle}>Address</label>
             <input
@@ -318,7 +385,7 @@ export default function PatientFormModal({
             />
           </div>
 
-          {/* Row 5: Condition & Diagnosis */}
+          {/* Row 6: Condition & Diagnosis */}
           <div>
             <label style={labelStyle}>Condition / Medical Diagnosis</label>
             <textarea
@@ -330,55 +397,59 @@ export default function PatientFormModal({
             />
           </div>
 
-          {/* Row 6: Parent Hospital & Parent Doctor */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-            <div>
-              <label style={labelStyle}>Parent Doctor</label>
-              <input
-                style={inputStyle}
-                name="parent_doctor"
-                value={form.parent_doctor || ""}
-                onChange={handleChange}
-                placeholder="Referring Physician"
-              />
-            </div>
+          {/* Row 7: Parent Hospital & Parent Doctor (HIDDEN for Receptionist) */}
+          {!isReceptionist && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div>
+                <label style={labelStyle}>Parent Doctor</label>
+                <input
+                  style={inputStyle}
+                  name="parent_doctor"
+                  value={form.parent_doctor || ""}
+                  onChange={handleChange}
+                  placeholder="Referring Physician"
+                />
+              </div>
 
-            <div>
-              <label style={labelStyle}>Parent Hospital</label>
-              <input
-                style={inputStyle}
-                name="parent_hospital"
-                value={form.parent_hospital || ""}
-                onChange={handleChange}
-                placeholder="Referring Hospital"
-              />
+              <div>
+                <label style={labelStyle}>Parent Hospital</label>
+                <input
+                  style={inputStyle}
+                  name="parent_hospital"
+                  value={form.parent_hospital || ""}
+                  onChange={handleChange}
+                  placeholder="Referring Hospital"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Row 7: Referred From & Referral Notes */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-            <div>
-              <label style={labelStyle}>Referred From</label>
-              <input
-                style={inputStyle}
-                name="referred_from"
-                value={form.referred_from || ""}
-                onChange={handleChange}
-                placeholder="Source / Department"
-              />
-            </div>
+          {/* Row 8: Referred From & Referral Notes (HIDDEN for Receptionist) */}
+          {!isReceptionist && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div>
+                <label style={labelStyle}>Referred From</label>
+                <input
+                  style={inputStyle}
+                  name="referred_from"
+                  value={form.referred_from || ""}
+                  onChange={handleChange}
+                  placeholder="Source / Department"
+                />
+              </div>
 
-            <div>
-              <label style={labelStyle}>Referral Details</label>
-              <input
-                style={inputStyle}
-                name="referral"
-                value={form.referral || ""}
-                onChange={handleChange}
-                placeholder="Referral notes or reference ID"
-              />
+              <div>
+                <label style={labelStyle}>Referral Details</label>
+                <input
+                  style={inputStyle}
+                  name="referral"
+                  value={form.referral || ""}
+                  onChange={handleChange}
+                  placeholder="Referral notes or reference ID"
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -416,7 +487,7 @@ export default function PatientFormModal({
           <button
             type="button"
             disabled={loading}
-            onClick={() => onSave({ ...form, age: computedAge })}
+            onClick={handleFormSubmit}
             style={{
               background: "#22c55e",
               color: "#020617",

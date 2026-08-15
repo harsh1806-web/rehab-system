@@ -41,6 +41,7 @@ export default function Login() {
         return
       }
 
+      // Check user role from profiles
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
@@ -51,12 +52,8 @@ export default function Login() {
         console.warn("Could not fetch user profile role:", profileError)
       }
 
-      const role = profile?.role || "user"
-      if (role === "admin") {
-        router.push("/admin")
-      } else {
-        router.push("/user")
-      }
+      // Seamlessly route to dashboard (which dynamically renders according to role)
+      router.push("/admin")
     } catch (err) {
       console.error(err)
       setErrorMsg("An unexpected error occurred. Please try again.")
@@ -214,17 +211,24 @@ export default function Login() {
           </button>
         </form>
 
-        <p
+        <div
           style={{
-            marginTop: "24px",
-            fontSize: "12px",
-            color: "#64748b",
-            textAlign: "center",
-            lineHeight: "1.5"
+            marginTop: "20px",
+            padding: "12px",
+            background: "rgba(15, 23, 42, 0.6)",
+            border: "1px solid #1e293b",
+            borderRadius: "10px",
+            fontSize: "11px",
+            color: "#94a3b8",
+            lineHeight: "1.6"
           }}
         >
-          Staff access only. Contact your medical administrator for account provisioning.
-        </p>
+          <div style={{ fontWeight: "700", color: "#cbd5e1", marginBottom: "4px" }}>Available Roles:</div>
+          <div>👑 <b>Admin</b>: Full control & management</div>
+          <div>🛡️ <b>Administrator</b>: Full view-only access</div>
+          <div>💼 <b>Receptionist</b>: Beds, admission & operational view</div>
+          <div>🩺 <b>Doctor</b>: Clinical view & diagnosis updates</div>
+        </div>
       </div>
     </div>
   )
