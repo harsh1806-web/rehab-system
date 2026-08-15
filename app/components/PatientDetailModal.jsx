@@ -43,7 +43,7 @@ export default function PatientDetailModal({
   const isAdministrator = role === "administrator"
   const isAdmin = role === "admin"
 
-  // 4 Contacts parsing / resolution
+  // 4 Contacts resolution
   const contacts = [
     { label: "Contact 1 (Primary)", value: patient.to_contact_1 || patient.to_contact },
     { label: "Contact 2", value: patient.to_contact_2 },
@@ -194,7 +194,7 @@ export default function PatientDetailModal({
               </p>
             </div>
 
-            {/* Parent Doctor / Hospital (HIDDEN for Receptionist) */}
+            {/* Parent Doctor, Parent Hospital, Rehab under & Refered from/refered to (HIDDEN for Receptionist) */}
             {!isReceptionist && (
               <>
                 <div>
@@ -207,10 +207,17 @@ export default function PatientDetailModal({
                   <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>{patient.parent_hospital || "N/A"}</p>
                 </div>
 
-                <div style={{ gridColumn: "1 / -1" }}>
-                  <span style={{ color: "#64748b" }}>Referral / Referred From:</span>
-                  <p style={{ margin: "2px 0 0 0", fontWeight: "600" }}>
-                    {patient.referred_from || patient.referral || "N/A"}
+                <div>
+                  <span style={{ color: "#64748b" }}>Rehab under:</span>
+                  <p style={{ margin: "2px 0 0 0", fontWeight: "600", color: "#38bdf8" }}>
+                    {patient.referred_from || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <span style={{ color: "#64748b" }}>Refered from/refered to:</span>
+                  <p style={{ margin: "2px 0 0 0", fontWeight: "600", color: "#cbd5e1" }}>
+                    {patient.referral || "N/A"}
                   </p>
                 </div>
               </>
@@ -220,7 +227,7 @@ export default function PatientDetailModal({
               <div>
                 <span style={{ color: "#64748b" }}>Discharge Date:</span>
                 <p style={{ margin: "2px 0 0 0", fontWeight: "600", color: "#f87171" }}>
-                  {new Date(patient.discharge_date).toLocaleDateString()}
+                  {new Date(patient.discharge_date).toLocaleString()}
                 </p>
               </div>
             )}
@@ -293,7 +300,7 @@ export default function PatientDetailModal({
             </div>
           )}
 
-          {/* Stays Timeline with Shift Out Destination */}
+          {/* Stays Timeline with Shift Out Destination & Times */}
           <div>
             <h4 style={{ margin: "0 0 10px 0", fontSize: "14px", color: "#38bdf8", fontWeight: "700" }}>
               ⏱️ Stay History & Transfers ({timeline.length})
@@ -454,7 +461,6 @@ export default function PatientDetailModal({
             borderBottomRightRadius: "18px"
           }}
         >
-          {/* Action buttons (Disabled for Administrator) */}
           {!isDischarged && !isAdministrator && (
             <>
               {/* Doctor diagnosis button */}

@@ -33,8 +33,8 @@ export default function PatientFormModal({
     condition: "",
     parent_doctor: "",
     parent_hospital: "",
-    referred_from: "",
-    referral: "",
+    referred_from: "", // Label: "Rehab under"
+    referral: "",      // Label: "Refered from/refered to"
     bed_number: ""
   })
 
@@ -90,7 +90,7 @@ export default function PatientFormModal({
 
   const computedAge = calculateAge(form.birthdate)
 
-  // Build the list of selectable beds: available beds + current assigned bed (if in edit mode)
+  // Build the list of selectable beds
   const selectableBeds = [...availableBeds]
   if (mode === "edit" && form.bed_number && !selectableBeds.includes(form.bed_number)) {
     selectableBeds.unshift(form.bed_number)
@@ -116,7 +116,6 @@ export default function PatientFormModal({
   }
 
   const handleFormSubmit = () => {
-    // Generate combined contact for backward-compatibility
     const combinedContact = [form.to_contact_1, form.to_contact_2, form.to_contact_3, form.to_contact_4]
       .filter(Boolean)
       .join(", ")
@@ -385,15 +384,34 @@ export default function PatientFormModal({
             />
           </div>
 
-          {/* Row 6: Condition & Diagnosis */}
+          {/* Row 6: Condition & Diagnosis (LOCKED / Read-Only for Receptionist when editing) */}
           <div>
-            <label style={labelStyle}>Condition / Medical Diagnosis</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+              <label style={{ ...labelStyle, marginBottom: 0 }}>Condition / Medical Diagnosis</label>
+              {isReceptionist && mode === "edit" && (
+                <span style={{ fontSize: "11px", color: "#f59e0b", fontWeight: "600" }}>
+                  🔒 Read-Only (Doctors & Admin Only)
+                </span>
+              )}
+            </div>
             <textarea
-              style={{ ...inputStyle, minHeight: "60px", resize: "vertical" }}
+              style={{
+                ...inputStyle,
+                minHeight: "60px",
+                resize: "vertical",
+                background: isReceptionist && mode === "edit" ? "#030712" : "#080e1e",
+                color: isReceptionist && mode === "edit" ? "#94a3b8" : "#f8fafc",
+                cursor: isReceptionist && mode === "edit" ? "not-allowed" : "text"
+              }}
               name="condition"
               value={form.condition || ""}
               onChange={handleChange}
-              placeholder="Clinical condition, diagnosis, surgery notes..."
+              readOnly={isReceptionist && mode === "edit"}
+              placeholder={
+                isReceptionist && mode === "edit"
+                  ? "Medical diagnosis cannot be edited by receptionist."
+                  : "Clinical condition, diagnosis, surgery notes..."
+              }
             />
           </div>
 
@@ -424,28 +442,28 @@ export default function PatientFormModal({
             </div>
           )}
 
-          {/* Row 8: Referred From & Referral Notes (HIDDEN for Receptionist) */}
+          {/* Row 8: Rehab under & Refered from/refered to (HIDDEN for Receptionist) */}
           {!isReceptionist && (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
               <div>
-                <label style={labelStyle}>Referred From</label>
+                <label style={labelStyle}>Rehab under</label>
                 <input
                   style={inputStyle}
                   name="referred_from"
                   value={form.referred_from || ""}
                   onChange={handleChange}
-                  placeholder="Source / Department"
+                  placeholder="Rehab under (e.g. Neuro Rehab, Ortho...)"
                 />
               </div>
 
               <div>
-                <label style={labelStyle}>Referral Details</label>
+                <label style={labelStyle}>Refered from/refered to</label>
                 <input
                   style={inputStyle}
                   name="referral"
                   value={form.referral || ""}
                   onChange={handleChange}
-                  placeholder="Referral notes or reference ID"
+                  placeholder="Refered from / Refered to details"
                 />
               </div>
             </div>

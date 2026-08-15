@@ -11,6 +11,7 @@ import PatientDetailModal from "../components/PatientDetailModal"
 import PatientFormModal from "../components/PatientFormModal"
 import ReturnModal from "../components/ReturnModal"
 import ShiftOutModal from "../components/ShiftOutModal"
+import DischargeModal from "../components/DischargeModal"
 import DoctorDiagnosisModal from "../components/DoctorDiagnosisModal"
 import DoctorManager from "../components/DoctorManager"
 import PatientTable from "../components/PatientTable"
@@ -37,6 +38,7 @@ function DashboardContent() {
   const [formMode, setFormMode] = useState("add") // "add" | "edit"
   const [editingPatient, setEditingPatient] = useState(null)
   const [shiftOutPatient, setShiftOutPatient] = useState(null)
+  const [dischargePatient, setDischargePatient] = useState(null)
   const [returnPatient, setReturnPatient] = useState(null)
   const [doctorDiagnosisPatient, setDoctorDiagnosisPatient] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -190,7 +192,6 @@ function DashboardContent() {
 
     setLoading(true)
 
-    // Build payload ensuring 4 contacts and clean fields
     const payload = {
       name: formData.name.trim(),
       birthdate: formData.birthdate || null,
@@ -258,6 +259,11 @@ function DashboardContent() {
         fetchHistory()
       }
     } else {
+      // If receptionist is editing, preserve existing condition notes
+      if (isReceptionist && editingPatient?.condition) {
+        payload.condition = editingPatient.condition
+      }
+
       const { error: updateError } = await supabase
         .from("patients")
         .update(payload)
@@ -286,30 +292,31 @@ function DashboardContent() {
     setLoading(false)
   }
 
-  const handleConfirmShiftOut = async (patient, destination, reason) => {
+  // Shift Out with custom date & time
+  const handleConfirmShiftOut = async (patient, destination, reason, customDateTime) => {
     if (!canAdmitOrEdit) return
     setLoading(true)
-    const now = new Date().toISOString()
+    const transferTime = customDateTime || new Date().toISOString()
 
-    // 1. Close active rehab stay
+    // 1. Close active rehab stay with custom transfer time
     await supabase
       .from("patient_stays")
-      .update({ end_date: now })
+      .update({ end_date: transferTime })
       .eq("patient_id", patient.id)
       .eq("type", "rehab")
       .is("end_date", null)
 
-    // 2. Open hospital stay with destination
+    // 2. Open hospital stay with destination and custom transfer time
     await supabase.from("patient_stays").insert([
       {
         patient_id: patient.id,
         type: "hospital",
         destination: destination,
-        start_date: now
+        start_date: transferTime
       }
     ])
 
-    // 3. Update patient status & free up bed
+    // 3. Update patient status & release bed
     await supabase
       .from("patients")
       .update({
@@ -323,7 +330,7 @@ function DashboardContent() {
     await supabase.from("patient_history").insert([
       {
         patient_name: patient.name,
-        action: `shifted_out to ${destination}`,
+        action: `shifted_out to ${destination} at ${new Date(transferTime).toLocaleString()}`,
         bed_number: patient.bed_number,
         physio_incharge: patient.physio_incharge
       }
@@ -331,6 +338,46 @@ function DashboardContent() {
 
     showToast(`${patient.name} shifted out to ${destination}`, "warning")
     setShiftOutPatient(null)
+    setSelectedPatient(null)
+    setLoading(false)
+    fetchPatients()
+    fetchHistory()
+  }
+
+  // Discharge with custom date & time
+  const handleConfirmDischarge = async (patient, customDateTime, notes) => {
+    if (!canAdmitOrEdit) return
+    setLoading(true)
+    const dischargeTime = customDateTime || new Date().toISOString()
+
+    // 1. Close active stay
+    await supabase
+      .from("patient_stays")
+      .update({ end_date: dischargeTime })
+      .eq("patient_id", patient.id)
+      .is("end_date", null)
+
+    // 2. Update patient record
+    await supabase
+      .from("patients")
+      .update({
+        discharge_date: dischargeTime,
+        bed_number: null
+      })
+      .eq("id", patient.id)
+
+    // 3. Audit log
+    await supabase.from("patient_history").insert([
+      {
+        patient_name: patient.name,
+        action: `discharged at ${new Date(dischargeTime).toLocaleString()}${notes ? ` (${notes})` : ""}`,
+        bed_number: patient.bed_number,
+        physio_incharge: patient.physio_incharge
+      }
+    ])
+
+    showToast(`${patient.name} discharged successfully`, "success")
+    setDischargePatient(null)
     setSelectedPatient(null)
     setLoading(false)
     fetchPatients()
@@ -377,41 +424,6 @@ function DashboardContent() {
     showToast(`${patient.name} returned to Bed ${bed}`, "success")
     setReturnPatient(null)
     setLoading(false)
-    fetchPatients()
-    fetchHistory()
-  }
-
-  const handleDischarge = async (patient) => {
-    if (!canAdmitOrEdit) return
-    if (!confirm(`Are you sure you want to discharge ${patient.name}?`)) return
-
-    const now = new Date().toISOString()
-
-    await supabase
-      .from("patient_stays")
-      .update({ end_date: now })
-      .eq("patient_id", patient.id)
-      .is("end_date", null)
-
-    await supabase
-      .from("patients")
-      .update({
-        discharge_date: now,
-        bed_number: null
-      })
-      .eq("id", patient.id)
-
-    await supabase.from("patient_history").insert([
-      {
-        patient_name: patient.name,
-        action: "discharged",
-        bed_number: patient.bed_number,
-        physio_incharge: patient.physio_incharge
-      }
-    ])
-
-    showToast(`${patient.name} discharged successfully`, "success")
-    setSelectedPatient(null)
     fetchPatients()
     fetchHistory()
   }
@@ -726,7 +738,9 @@ function DashboardContent() {
           onShiftOut={(patient) => {
             setShiftOutPatient(patient)
           }}
-          onDischarge={handleDischarge}
+          onDischarge={(patient) => {
+            setDischargePatient(patient)
+          }}
           onOpenDoctorDiagnosis={(patient) => {
             setDoctorDiagnosisPatient(patient)
           }}
@@ -735,12 +749,22 @@ function DashboardContent() {
         />
       )}
 
-      {/* Shift Out Destination Modal */}
+      {/* Shift Out Destination & Time Modal */}
       {shiftOutPatient && (
         <ShiftOutModal
           patient={shiftOutPatient}
           onConfirm={handleConfirmShiftOut}
           onClose={() => setShiftOutPatient(null)}
+          loading={loading}
+        />
+      )}
+
+      {/* Discharge Date & Time Modal */}
+      {dischargePatient && (
+        <DischargeModal
+          patient={dischargePatient}
+          onConfirm={handleConfirmDischarge}
+          onClose={() => setDischargePatient(null)}
           loading={loading}
         />
       )}

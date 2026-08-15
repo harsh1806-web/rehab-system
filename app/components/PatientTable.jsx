@@ -29,6 +29,8 @@ export default function PatientTable({
         p.bed_number?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.physio_incharge?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.condition?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.referred_from?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.referral?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (!isDoctor && (
           p.to_contact_1?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.to_contact_2?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,7 +56,7 @@ export default function PatientTable({
       "Address",
       "Physio Incharge",
       "Condition",
-      ...(!isReceptionist ? ["Parent Doctor", "Parent Hospital", "Referred From", "Referral"] : []),
+      ...(!isReceptionist ? ["Parent Doctor", "Parent Hospital", "Rehab under", "Refered from/refered to"] : []),
       "Admission Date",
       ...(isDischargedView ? ["Discharge Date"] : [])
     ]
@@ -254,6 +256,8 @@ export default function PatientTable({
               <th style={thStyle}>Condition / Diagnosis</th>
               {!isReceptionist && <th style={thStyle}>Parent Doctor</th>}
               {!isReceptionist && <th style={thStyle}>Hospital</th>}
+              {!isReceptionist && <th style={thStyle}>Rehab under</th>}
+              {!isReceptionist && <th style={thStyle}>Refered from/to</th>}
               <th style={thStyle}>Admission</th>
               {isDischargedView && <th style={thStyle}>Discharge</th>}
             </tr>
@@ -262,7 +266,7 @@ export default function PatientTable({
             {filteredPatients.length === 0 ? (
               <tr>
                 <td
-                  colSpan={10}
+                  colSpan={12}
                   style={{ textAlign: "center", padding: "40px", color: "#64748b", fontSize: "14px" }}
                 >
                   No patient records matching current criteria.
@@ -302,7 +306,7 @@ export default function PatientTable({
                     <td
                       style={{
                         ...tdStyle,
-                        maxWidth: "240px",
+                        maxWidth: "200px",
                         overflow: "hidden",
                         textOverflow: "ellipsis"
                       }}
@@ -312,6 +316,12 @@ export default function PatientTable({
                     </td>
                     {!isReceptionist && <td style={tdStyle}>{p.parent_doctor || "-"}</td>}
                     {!isReceptionist && <td style={tdStyle}>{p.parent_hospital || "-"}</td>}
+                    {!isReceptionist && (
+                      <td style={{ ...tdStyle, color: "#38bdf8" }}>{p.referred_from || "-"}</td>
+                    )}
+                    {!isReceptionist && (
+                      <td style={{ ...tdStyle, color: "#cbd5e1" }}>{p.referral || "-"}</td>
+                    )}
                     <td style={tdStyle}>{p.admission_date ? p.admission_date.slice(0, 10) : "-"}</td>
                     {isDischargedView && (
                       <td style={{ ...tdStyle, color: "#f87171" }}>

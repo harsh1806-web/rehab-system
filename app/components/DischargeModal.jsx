@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-export default function ShiftOutModal({
+export default function DischargeModal({
   patient,
   onConfirm,
   onClose,
@@ -17,15 +17,14 @@ export default function ShiftOutModal({
     return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`
   }
 
-  const [destination, setDestination] = useState("")
-  const [shiftDateTime, setShiftDateTime] = useState(getNowLocal())
-  const [reason, setReason] = useState("")
+  const [dischargeDateTime, setDischargeDateTime] = useState(getNowLocal())
+  const [notes, setNotes] = useState("")
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!destination.trim() || !shiftDateTime) return
-    const isoDateTime = new Date(shiftDateTime).toISOString()
-    onConfirm(patient, destination.trim(), reason.trim(), isoDateTime)
+    if (!dischargeDateTime) return
+    const isoDateTime = new Date(dischargeDateTime).toISOString()
+    onConfirm(patient, isoDateTime, notes.trim())
   }
 
   const inputStyle = {
@@ -83,91 +82,79 @@ export default function ShiftOutModal({
               width: "40px",
               height: "40px",
               borderRadius: "10px",
-              background: "rgba(245, 158, 11, 0.15)",
-              border: "1px solid rgba(245, 158, 11, 0.3)",
+              background: "rgba(239, 68, 68, 0.15)",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: "20px"
             }}
           >
-            🏥
+            🚪
           </div>
           <div>
-            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "700" }}>Shift Out Patient</h3>
+            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "700" }}>Discharge Patient</h3>
             <p style={{ margin: "2px 0 0 0", fontSize: "13px", color: "#94a3b8" }}>
-              Transfer <b>{patient.name}</b> (Bed {patient.bed_number || "N/A"})
+              Patient: <b>{patient.name}</b> {patient.bed_number ? `(Bed ${patient.bed_number})` : ""}
             </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           <div>
-            <label style={labelStyle}>Destination Hospital / Facility *</label>
-            <input
-              style={inputStyle}
-              placeholder="e.g. City General Hospital ICU, Apex Clinic..."
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              required
-              autoFocus
-            />
-          </div>
-
-          <div>
-            <label style={labelStyle}>Shift Out Date & Time *</label>
+            <label style={labelStyle}>Discharge Date & Time *</label>
             <input
               type="datetime-local"
               style={inputStyle}
-              value={shiftDateTime}
-              onChange={(e) => setShiftDateTime(e.target.value)}
+              value={dischargeDateTime}
+              onChange={(e) => setDischargeDateTime(e.target.value)}
               required
             />
             <span style={{ fontSize: "11px", color: "#64748b", marginTop: "4px", display: "block" }}>
-              Select the actual date and time when the patient was shifted out.
+              Select the actual discharge date and time when the patient left.
             </span>
           </div>
 
           <div>
-            <label style={labelStyle}>Reason / Transfer Notes (Optional)</label>
+            <label style={labelStyle}>Discharge Summary / Notes (Optional)</label>
             <textarea
               style={{ ...inputStyle, minHeight: "70px", resize: "vertical" }}
-              placeholder="e.g. Acute respiratory distress, emergency surgery, specialized imaging..."
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
+              placeholder="e.g. Completed rehab protocol, discharged home, stable condition..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
             />
           </div>
 
           <div
             style={{
-              background: "rgba(245, 158, 11, 0.08)",
-              border: "1px solid rgba(245, 158, 11, 0.25)",
+              background: "rgba(239, 68, 68, 0.08)",
+              border: "1px solid rgba(239, 68, 68, 0.25)",
               padding: "10px 14px",
               borderRadius: "8px",
               fontSize: "12px",
-              color: "#fbbf24"
+              color: "#fca5a5"
             }}
           >
-            ℹ️ Shifting out will release Bed <b>{patient.bed_number}</b> and log an external hospital stay.
+            ⚠️ Discharging will close all active stays, release Bed <b>{patient.bed_number || "N/A"}</b>, and archive the patient record.
           </div>
 
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "6px" }}>
             <button
               type="submit"
-              disabled={!destination.trim() || !shiftDateTime || loading}
+              disabled={!dischargeDateTime || loading}
               style={{
-                background: "#f59e0b",
-                color: "#020617",
+                background: "#ef4444",
+                color: "#ffffff",
                 border: "none",
                 padding: "10px 20px",
                 borderRadius: "8px",
                 fontSize: "13px",
                 fontWeight: "700",
-                cursor: !destination.trim() || !shiftDateTime || loading ? "not-allowed" : "pointer",
-                opacity: !destination.trim() || !shiftDateTime || loading ? 0.6 : 1
+                cursor: !dischargeDateTime || loading ? "not-allowed" : "pointer",
+                opacity: !dischargeDateTime || loading ? 0.6 : 1
               }}
             >
-              {loading ? "Processing..." : "Confirm Shift Out"}
+              {loading ? "Discharging..." : "Confirm Discharge"}
             </button>
 
             <button
