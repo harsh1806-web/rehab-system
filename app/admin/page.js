@@ -292,11 +292,12 @@ function DashboardContent() {
     setLoading(false)
   }
 
-  // Shift Out with custom date & time
-  const handleConfirmShiftOut = async (patient, destination, reason, customDateTime) => {
+  // Shift Out with custom date & time & bed hold option
+  const handleConfirmShiftOut = async (patient, destination, reason, customDateTime, keepBedOnHold) => {
     if (!canAdmitOrEdit) return
     setLoading(true)
     const transferTime = customDateTime || new Date().toISOString()
+    const originalBed = patient.bed_number
 
     // 1. Close active rehab stay with custom transfer time
     await supabase
@@ -316,7 +317,7 @@ function DashboardContent() {
       }
     ])
 
-    // 3. Update patient status & release bed
+    // 3. Update patient status & release bed assignment
     await supabase
       .from("patients")
       .update({
@@ -326,17 +327,31 @@ function DashboardContent() {
       })
       .eq("id", patient.id)
 
-    // 4. Audit log
+    // 4. Handle Bed Hold State
+    if (keepBedOnHold && originalBed) {
+      setHeldBeds((prev) => Array.from(new Set([...prev, originalBed])))
+    } else if (originalBed) {
+      setHeldBeds((prev) => prev.filter((b) => b !== originalBed))
+    }
+
+    // 5. Audit log
     await supabase.from("patient_history").insert([
       {
         patient_name: patient.name,
-        action: `shifted_out to ${destination} at ${new Date(transferTime).toLocaleString()}`,
-        bed_number: patient.bed_number,
+        action: `shifted_out to ${destination} at ${new Date(transferTime).toLocaleString()}${
+          keepBedOnHold && originalBed ? ` (Bed ${originalBed} kept on hold)` : ""
+        }`,
+        bed_number: originalBed,
         physio_incharge: patient.physio_incharge
       }
     ])
 
-    showToast(`${patient.name} shifted out to ${destination}`, "warning")
+    showToast(
+      `${patient.name} shifted out to ${destination}${
+        keepBedOnHold && originalBed ? ` (Bed ${originalBed} reserved)` : ""
+      }`,
+      "warning"
+    )
     setShiftOutPatient(null)
     setSelectedPatient(null)
     setLoading(false)
